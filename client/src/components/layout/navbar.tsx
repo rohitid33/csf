@@ -54,8 +54,6 @@ export default function Navbar() {
   const { hasUnseenTasks, unseenTasksCount } = useNotifications();
   const [location] = useLocation();
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showSearchResults, setShowSearchResults] = useState(false);
   const [services, setServices] = useState<ServiceData[]>([]);
   const sheetCloseRef = useRef<HTMLButtonElement>(null);
   
@@ -83,17 +81,6 @@ export default function Navbar() {
     logoutMutation.mutate();
   };
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    setShowSearchResults(query.length > 0);
-  };
-
-  const searchResults = searchQuery ? services.filter(service => 
-    service.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    service.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    service.category?.toLowerCase().includes(searchQuery.toLowerCase())
-  ) : [];
-
   return (
     <div>
       <header className="relative z-50 bg-background/80 backdrop-blur-sm w-full">
@@ -104,58 +91,8 @@ export default function Navbar() {
             </div>
             <span className="font-bold text-lg text-primary">Claimsutra</span>
           </Link>
-
-          {/* Search Bar - Now visible on both mobile and desktop */}
-          <div className="relative flex-1 max-w-xl ml-4 md:ml-8">
-            <div className="relative">
-              <Input
-                type="search"
-                placeholder="Search services..."
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white border-2 border-primary/40 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-lg"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary" />
-            </div>
-            
-            {/* Search Results Dropdown */}
-            {showSearchResults && searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border-4 border-primary/20 max-h-96 overflow-y-auto z-50">
-                {searchResults.map((service) => (
-                  <Link 
-                    key={service.id} 
-                    href={`/service/${service.id}`}
-                    className="flex items-center gap-3 px-4 py-3 hover:bg-primary/5 cursor-pointer border-b-2 border-primary/10 last:border-0"
-                    onClick={() => {
-                      setSearchQuery("");
-                      setShowSearchResults(false);
-                    }}
-                  >
-                    <span className="text-xl">{service.icon}</span>
-                    <div className="flex-1">
-                      <div className="font-medium text-primary">{service.title}</div>
-                      <div className="text-sm text-primary/60 capitalize">{service.category}</div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
           
           <div className="flex items-center h-10 gap-3">
-            {/* Notification Bell - always visible, but redirects to auth if not logged in */}
-            <Link 
-              href={user ? "/tickets" : "/auth?returnUrl=/tickets"} 
-              className="relative flex items-center justify-center h-9 w-9 rounded-full bg-primary/10 border border-primary/20"
-            >
-              <Bell className="h-5 w-5 text-primary" />
-              {user && hasUnseenTasks && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center border-2 border-background">
-                  {unseenTasksCount > 9 ? '9+' : unseenTasksCount}
-                </span>
-              )}
-            </Link>
-            
             {/* Consult Button - visible only on desktop */}
             <Link href="/consult" className="hidden md:flex items-center cursor-pointer">
               <Button 
@@ -270,10 +207,10 @@ export default function Navbar() {
           </div>
         </div>
       </header>
-      <div className="w-full bg-primary/90 backdrop-blur-sm py-1.5">
-        <p className="text-white text-center text-base font-bold flex items-center justify-center gap-2">
-          <span className="flex items-center justify-center bg-white rounded-full h-5 w-5">
-            <span className="text-primary text-sm">✓</span>
+      <div className="w-full bg-primary/90 backdrop-blur-sm py-1">
+        <p className="text-white text-center text-sm font-medium flex items-center justify-center gap-2">
+          <span className="flex items-center justify-center bg-white rounded-full h-4 w-4">
+            <span className="text-primary text-xs">✓</span>
           </span>
           India's Legal Expert
         </p>

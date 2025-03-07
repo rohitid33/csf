@@ -19,42 +19,169 @@ import { Link, useLocation } from "wouter";
 import AuthPage from "@/pages/auth";
 import AdminLogin from "@/pages/admin-dashboard/admin-login";
 import AdminTopNav from "@/pages/admin-dashboard/components/AdminTopNav";
-import React, { useState, Suspense, lazy } from "react";
+import React, { useState, Suspense, lazy, useEffect } from "react";
 import Footer from "@/components/layout/footer";
+import { LoadingProvider, useLoading } from '@/providers/loading-provider';
 
-function Router() {
+function AppContent() {
   const [location] = useLocation();
-  const isAdminDashboard = location.startsWith('/admin-dashboard');
-  
+  const { showLoading, hideLoading } = useLoading();
+
+  useEffect(() => {
+    showLoading();
+    // Hide loading after a short delay to ensure smooth transition
+    const timer = setTimeout(() => {
+      hideLoading();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [location, showLoading, hideLoading]);
+
   return (
     <div className="flex min-h-screen flex-col pb-16">
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={null}>
         {/* Show appropriate navigation based on route */}
-        {isAdminDashboard ? <AdminTopNav /> : <Navbar />}
+        {location.startsWith('/admin-dashboard') ? <AdminTopNav /> : <Navbar />}
         <main className="flex-1">
           <Switch>
             <Route path="/" component={Home} />
             <ProtectedRoute path="/complaint" component={Complaint} />
             <Route path="/resources" component={Resources} />
             <Route path="/auth" component={AuthPage} />
-            <Route path="/services" component={React.lazy(() => import("@/pages/services"))} />
-            <Route path="/consult" component={React.lazy(() => import("@/pages/consult"))} />
-            <Route path="/tickets" component={React.lazy(() => import("@/pages/tickets"))} />
-            <Route path="/ticket/:id" component={React.lazy(() => import("@/pages/ticket/[id]"))} />
-            <Route path="/document-vault" component={React.lazy(() => import("@/pages/document-vault"))} />
-            <Route path="/gogo" component={React.lazy(() => import("@/pages/gogo"))} />
-            <Route path="/about-us" component={React.lazy(() => import("@/pages/more/about-us"))} />
-            <Route path="/events" component={React.lazy(() => import("@/pages/more/events"))} />
-            <Route path="/products" component={React.lazy(() => import("@/pages/more/products"))} />
-            <Route path="/news" component={React.lazy(() => import("@/pages/more/news"))} />
-            <Route path="/blog" component={React.lazy(() => import("@/pages/more/blog"))} />
-            <Route path="/media" component={React.lazy(() => import("@/pages/more/media"))} />
-            <Route path="/careers" component={React.lazy(() => import("@/pages/more/careers"))} />
-            <Route path="/refer" component={React.lazy(() => import("@/pages/more/refer"))} />
-            <Route path="/partner" component={React.lazy(() => import("@/pages/more/partner"))} />
-            <Route path="/talk-to-expert" component={React.lazy(() => import("@/pages/more/talk-to-expert"))} />
-            <Route path="/search" component={React.lazy(() => import("@/pages/search"))} />
-            <Route path="/services-directory" component={React.lazy(() => import("@/pages/services-directory"))} />
+            <Route path="/services">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/services")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/consult">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/consult")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/tickets">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/tickets")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/ticket/:id">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/ticket/[id]")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/document-vault">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/document-vault")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/gogo">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/gogo")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/about-us">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/more/about-us")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/events">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/more/events")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/products">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/more/products")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/news">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/more/news")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/blog">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/more/blog")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/media">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/more/media")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/careers">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/more/careers")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/refer">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/more/refer")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/partner">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/more/partner")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/talk-to-expert">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/more/talk-to-expert")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/search">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/search")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/services-directory">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/services-directory")))}
+                </React.Suspense>
+              )}
+            </Route>
+            
+            {/* Dynamic service route */}
+            <Route path="/service/:id">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("./pages/service/[id]")))}
+                </React.Suspense>
+              )}
+            </Route>
             
             {/* Admin Login Route - Accessible without authentication */}
             <Route path="/admin-dashboard/admin-login" component={AdminLogin} />
@@ -63,7 +190,7 @@ function Router() {
             <Route path="/admin-dashboard">
               {() => (
                 <AdminProtectedRoute>
-                  <React.Suspense fallback={<div>Loading...</div>}>
+                  <React.Suspense fallback={null}>
                     {React.createElement(React.lazy(() => import("@/pages/admin-dashboard")))}
                   </React.Suspense>
                 </AdminProtectedRoute>
@@ -72,7 +199,7 @@ function Router() {
             <Route path="/admin-dashboard/tickets">
               {() => (
                 <AdminProtectedRoute>
-                  <React.Suspense fallback={<div>Loading...</div>}>
+                  <React.Suspense fallback={null}>
                     {React.createElement(React.lazy(() => import("@/pages/admin-dashboard/tickets")))}
                   </React.Suspense>
                 </AdminProtectedRoute>
@@ -81,7 +208,7 @@ function Router() {
             <Route path="/admin-dashboard/tickets/:id">
               {() => (
                 <AdminProtectedRoute>
-                  <React.Suspense fallback={<div>Loading...</div>}>
+                  <React.Suspense fallback={null}>
                     {React.createElement(React.lazy(() => import("@/pages/admin-dashboard/tickets/[id]")))}
                   </React.Suspense>
                 </AdminProtectedRoute>
@@ -90,15 +217,12 @@ function Router() {
             <Route path="/admin-dashboard/users">
               {() => (
                 <AdminProtectedRoute>
-                  <React.Suspense fallback={<div>Loading...</div>}>
+                  <React.Suspense fallback={null}>
                     {React.createElement(React.lazy(() => import("@/pages/admin-dashboard/users")))}
                   </React.Suspense>
                 </AdminProtectedRoute>
               )}
             </Route>
-            
-            {/* Dynamic service route - this replaces all individual service pages */}
-            <Route path="/service/:id" component={React.lazy(() => import("./pages/service/[id]"))} />
             
             {/* Redirects for legacy routes */}
             <Route path="/health-claim">
@@ -146,30 +270,30 @@ function Router() {
             <Route component={NotFound} />
           </Switch>
         </main>
-        {!isAdminDashboard && <Footer />}
-        {!isAdminDashboard && <BottomNav />}
+        {!location.startsWith('/admin-dashboard') && <Footer />}
+        {!location.startsWith('/admin-dashboard') && <BottomNav />}
       </Suspense>
     </div>
   );
 }
 
-function App() {
+export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <AdminAuthProvider>
-          <AuthProvider>
-            <TicketsProvider>
-              <NotificationProvider>
-                <Router />
-                <Toaster />
-              </NotificationProvider>
-            </TicketsProvider>
-          </AuthProvider>
-        </AdminAuthProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <LoadingProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <AdminAuthProvider>
+            <AuthProvider>
+              <TicketsProvider>
+                <NotificationProvider>
+                  <AppContent />
+                  <Toaster />
+                </NotificationProvider>
+              </TicketsProvider>
+            </AuthProvider>
+          </AdminAuthProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </LoadingProvider>
   );
 }
-
-export default App;

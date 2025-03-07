@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "wouter";
-import { getAllServices, ServiceData } from "@/data/services-data";
+import { getAllServices } from "@/data/services-data";
 import { getSubcategoriesByCategoryId, SubcategoryData } from "@/data/subcategories-data";
+import { ServiceData } from "@/components/services/service-template";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface ServicesSectionProps {
@@ -153,15 +154,37 @@ export default function ServicesSection({ selectedCategory }: ServicesSectionPro
   return (
     <section className="pt-2 pb-8 bg-background">
       <div className="container mx-auto px-4">
-        <div className="space-y-8">
-          {/* Services grouped by subcategory */}
-          {subcategories.map(subcategory => (
-            <div key={subcategory.id} className="pt-6">
-              <h3 className="text-2xl font-medium mb-4 pl-4">{subcategory.name}</h3>
-              {servicesBySubcategory[subcategory.id].length > 0 ? (
+        <div className="bg-blue-50/80 rounded-xl p-6 md:p-8 shadow-sm">
+          <div className="space-y-8">
+            {/* Services grouped by subcategory */}
+            {subcategories.map(subcategory => (
+              <div key={subcategory.id} className="pt-4 first:pt-0">
+                <h3 className="text-xl font-medium mb-4 text-blue-900">{subcategory.name}</h3>
+                {servicesBySubcategory[subcategory.id].length > 0 ? (
+                  <div className="overflow-x-auto scrolling-touch">
+                    <div className="flex gap-8 py-2 min-w-max">
+                      {servicesBySubcategory[subcategory.id].map(service => (
+                        <ServiceCard 
+                          key={service.id} 
+                          service={service} 
+                          onClick={() => handleServiceClick(service.id)} 
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-blue-600/70">No services available in this subcategory.</p>
+                )}
+              </div>
+            ))}
+            
+            {/* Services without subcategory */}
+            {servicesBySubcategory["none"].length > 0 && (
+              <div className="pt-4">
+                <h3 className="text-xl font-medium mb-4 text-blue-900">Other Services</h3>
                 <div className="overflow-x-auto scrolling-touch">
-                  <div className="flex gap-10 py-4 pb-4 min-w-max pl-4">
-                    {servicesBySubcategory[subcategory.id].map(service => (
+                  <div className="flex gap-8 py-2 min-w-max">
+                    {servicesBySubcategory["none"].map(service => (
                       <ServiceCard 
                         key={service.id} 
                         service={service} 
@@ -170,29 +193,9 @@ export default function ServicesSection({ selectedCategory }: ServicesSectionPro
                     ))}
                   </div>
                 </div>
-              ) : (
-                <p className="text-muted-foreground pl-4">No services available in this subcategory.</p>
-              )}
-            </div>
-          ))}
-          
-          {/* Services without subcategory */}
-          {servicesBySubcategory["none"].length > 0 && (
-            <div className="pt-6">
-              <h3 className="text-2xl font-medium mb-4 pl-4">Other Services</h3>
-              <div className="overflow-x-auto scrolling-touch">
-                <div className="flex gap-10 py-4 pb-4 min-w-max pl-4">
-                  {servicesBySubcategory["none"].map(service => (
-                    <ServiceCard 
-                      key={service.id} 
-                      service={service} 
-                      onClick={() => handleServiceClick(service.id)} 
-                    />
-                  ))}
-                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </section>
@@ -207,11 +210,16 @@ interface ServiceCardProps {
 
 function ServiceCard({ service, onClick }: ServiceCardProps) {
   return (
-    <div className="flex flex-col items-center text-center cursor-pointer group" onClick={onClick}>
-      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-3 transition-all duration-200 group-hover:bg-primary/20 group-hover:scale-110">
-        <div className="text-3xl text-primary">{service.icon}</div>
+    <div 
+      className="flex flex-col items-center text-center cursor-pointer group" 
+      onClick={onClick}
+    >
+      <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-2 transition-all duration-200 group-hover:bg-blue-100 group-hover:scale-110 shadow-sm">
+        <div className="text-2xl text-blue-600">{service.icon}</div>
       </div>
-      <h3 className="font-semibold line-clamp-2 group-hover:text-primary transition-colors duration-200">{service.title}</h3>
+      <h3 className="font-medium text-blue-900 line-clamp-2 group-hover:text-blue-700 transition-colors duration-200 max-w-[120px] text-sm">
+        {service.title}
+      </h3>
     </div>
   );
 }

@@ -139,7 +139,7 @@ export default function Tickets() {
           <input
             type="search"
             placeholder="Search tickets..."
-            className="w-full p-2 rounded-md border-2 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all"
+            className="w-full p-2 rounded-md border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
@@ -147,7 +147,7 @@ export default function Tickets() {
         <Button
           variant="outline"
           onClick={toggleSortOrder}
-          className="flex items-center gap-1 min-w-[130px] border-2 border-gray-300 hover:border-primary hover:bg-primary/5 shadow-sm"
+          className="flex items-center gap-1 min-w-[130px] border border-gray-300 hover:border-primary hover:bg-primary/5 shadow-sm"
         >
           <span>Sort: {sortOrder === "desc" ? "Newest" : "Oldest"}</span>
           {sortOrder === "desc" ? (
@@ -158,7 +158,7 @@ export default function Tickets() {
         </Button>
       </div>
 
-      <div className="flex space-x-8 border-b-2 border-gray-200 mb-6 overflow-x-auto">
+      <div className="flex space-x-8 border-b border-gray-200 mb-6 overflow-x-auto">
         <button
           onClick={() => setStatus("ongoing")}
           className={`pb-4 px-1 capitalize whitespace-nowrap transition-all ${
@@ -201,7 +201,7 @@ export default function Tickets() {
 
       {/* Error state */}
       {error && (
-        <div className="bg-red-50 border-2 border-red-300 rounded-md p-4 text-center">
+        <div className="bg-red-50 border border-red-300 rounded-md p-4 text-center">
           <p className="text-red-700">
             There was a problem loading your tickets. Please try again.
           </p>
@@ -217,7 +217,7 @@ export default function Tickets() {
 
       {/* No tickets state */}
       {!isLoading && !error && filteredTickets.length === 0 && (
-        <div className="text-center py-12 border-2 border-gray-300 rounded-md">
+        <div className="text-center py-12 border border-gray-300 rounded-md">
           <h3 className="text-xl font-medium mb-2">No tickets found</h3>
           {status === "ongoing" ? (
             <p className="text-muted-foreground mb-4">
@@ -230,7 +230,7 @@ export default function Tickets() {
           )}
           <Button 
             onClick={() => navigate("/services")}
-            className="font-medium border-2 border-primary hover:bg-primary/10"
+            className="font-medium border border-primary hover:bg-primary/10"
           >
             Browse Services
           </Button>
@@ -249,7 +249,7 @@ export default function Tickets() {
           
           {filteredTickets.map((ticket) => (
             <div key={ticket.id} onClick={() => navigate(`/ticket/${ticket.id}`)} className="block mb-4 transform transition-all duration-200 hover:translate-y-[-2px]">
-              <Card className={`cursor-pointer hover:shadow-lg transition-all border-2 ${
+              <Card className={`cursor-pointer hover:shadow-lg transition-all border ${
                 ticket.priority === 'urgent' ? 'border-red-400' : 
                 ticket.priority === 'high' ? 'border-orange-400' : 
                 'border-gray-300 hover:border-primary/60'

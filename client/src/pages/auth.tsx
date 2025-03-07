@@ -59,8 +59,8 @@ export default function AuthPage() {
         </div>
 
         <div>
-          <Card className="border-2 border-primary/20 shadow-lg">
-            <CardHeader className="space-y-1 border-b border-primary/10">
+          <Card className="border border-gray-300 shadow-lg">
+            <CardHeader className="space-y-1 border-b border-gray-200">
               <CardTitle className="text-2xl">Account Access</CardTitle>
               <CardDescription>
                 Login to your account or create a new one
@@ -88,7 +88,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel className="text-base font-semibold">Username</FormLabel>
                             <FormControl>
-                              <Input {...field} className="border-4 border-primary/30 rounded-lg h-12 text-lg focus:ring-4 focus:ring-primary/20 focus:border-primary" />
+                              <Input {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -101,7 +101,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel className="text-base font-semibold">Password</FormLabel>
                             <FormControl>
-                              <Input type="password" {...field} className="border-4 border-primary/30 rounded-lg h-12 text-lg focus:ring-4 focus:ring-primary/20 focus:border-primary" />
+                              <Input type="password" {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -109,7 +109,7 @@ export default function AuthPage() {
                       />
                       <Button
                         type="submit"
-                        className="w-full border-4 border-primary/30 rounded-lg h-12 text-lg font-semibold hover:bg-primary/90"
+                        className="w-full border border-gray-300 rounded-lg h-12 text-lg font-semibold hover:bg-gray-100"
                         disabled={loginMutation.isPending}
                       >
                         {loginMutation.isPending ? "Logging in..." : "Login"}
@@ -133,7 +133,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel className="text-base font-semibold">Username</FormLabel>
                             <FormControl>
-                              <Input {...field} className="border-4 border-primary/30 rounded-lg h-12 text-lg focus:ring-4 focus:ring-primary/20 focus:border-primary" />
+                              <Input {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -146,7 +146,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel className="text-base font-semibold">First Name</FormLabel>
                             <FormControl>
-                              <Input {...field} className="border-4 border-primary/30 rounded-lg h-12 text-lg focus:ring-4 focus:ring-primary/20 focus:border-primary" />
+                              <Input {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -159,7 +159,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel className="text-base font-semibold">Last Name</FormLabel>
                             <FormControl>
-                              <Input {...field} className="border-4 border-primary/30 rounded-lg h-12 text-lg focus:ring-4 focus:ring-primary/20 focus:border-primary" />
+                              <Input {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -172,7 +172,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel className="text-base font-semibold">Email</FormLabel>
                             <FormControl>
-                              <Input type="email" {...field} className="border-4 border-primary/30 rounded-lg h-12 text-lg focus:ring-4 focus:ring-primary/20 focus:border-primary" />
+                              <Input type="email" {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -185,7 +185,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel className="text-base font-semibold">Phone Number</FormLabel>
                             <FormControl>
-                              <Input type="tel" placeholder="Enter your phone number" {...field} className="border-4 border-primary/30 rounded-lg h-12 text-lg focus:ring-4 focus:ring-primary/20 focus:border-primary" />
+                              <Input type="tel" placeholder="Enter your phone number" {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -198,7 +198,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel className="text-base font-semibold">Password</FormLabel>
                             <FormControl>
-                              <Input type="password" {...field} className="border-4 border-primary/30 rounded-lg h-12 text-lg focus:ring-4 focus:ring-primary/20 focus:border-primary" />
+                              <Input type="password" {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -206,7 +206,7 @@ export default function AuthPage() {
                       />
                       <Button
                         type="submit"
-                        className="w-full border-4 border-primary/30 rounded-lg h-12 text-lg font-semibold hover:bg-primary/90"
+                        className="w-full border border-gray-300 rounded-lg h-12 text-lg font-semibold hover:bg-gray-100"
                         disabled={registerMutation.isPending}
                       >
                         {registerMutation.isPending

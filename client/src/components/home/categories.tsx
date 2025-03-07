@@ -30,6 +30,27 @@ export default function Categories({ selected, onSelect }: CategoriesProps) {
   const [showLeftScroll, setShowLeftScroll] = useState(false);
   const [showRightScroll, setShowRightScroll] = useState(true);
   
+  // Add auto-scroll effect for mobile
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    // Only run on mobile devices
+    if (window.innerWidth <= 768) {
+      // Initial scroll to show full scroll capability
+      setTimeout(() => {
+        // First scroll to the end
+        const scrollToEnd = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+        scrollContainer.scrollBy({ left: scrollToEnd, behavior: 'smooth' });
+        
+        // Then scroll back to start after a delay
+        setTimeout(() => {
+          scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+        }, 1000);
+      }, 1000);
+    }
+  }, [categories]);
+
   // Fetch and sort categories
   useEffect(() => {
     const fetchCategories = async () => {
@@ -168,15 +189,18 @@ export default function Categories({ selected, onSelect }: CategoriesProps) {
             <ChevronRight size={24} />
           </button>
           
+          {/* Add right peek gradient */}
+          <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
+          
           {/* Scrollable category container */}
           <div 
             ref={scrollContainerRef}
             className="flex space-x-4 md:space-x-6 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
             style={{ 
-              scrollbarWidth: 'none', // Firefox
-              msOverflowStyle: 'none',  // IE/Edge
-              paddingLeft: '4px',
-              paddingRight: '4px'
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              WebkitOverflowScrolling: 'touch',
+              paddingRight: '48px' // Add padding to show peek
             }}
           >
             {categories.map((category, index) => (
@@ -184,7 +208,6 @@ export default function Categories({ selected, onSelect }: CategoriesProps) {
                 key={category.id} 
                 className="snap-start snap-always flex-shrink-0"
                 style={{ 
-                  padding: '0 4px',
                   width: 'calc(33.333% - 16px)',
                   minWidth: '110px',
                   maxWidth: '150px'
@@ -224,9 +247,17 @@ export default function Categories({ selected, onSelect }: CategoriesProps) {
       </div>
       
       {/* Add this style to hide scrollbars but keep scrolling functionality */}
-      <style jsx global>{`
+      <style global jsx>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
+        }
+        
+        @media (max-width: 768px) {
+          .scrollbar-hide {
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+          }
         }
       `}</style>
     </section>

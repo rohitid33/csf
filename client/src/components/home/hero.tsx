@@ -149,7 +149,7 @@ export default function HeroBanner({ category }: HeroBannerProps) {
 
   return (
     <div className="px-6 py-2 md:px-6 md:py-6">
-      <div className="relative h-[30vh] md:h-[45vh] rounded-2xl overflow-hidden shadow-xl">
+      <div className="relative h-[25vh] md:h-[45vh] rounded-2xl overflow-hidden">
         {/* Background image with overlay - only changes with category */}
         <AnimatePresence mode="wait">
           <motion.div 
@@ -167,9 +167,9 @@ export default function HeroBanner({ category }: HeroBannerProps) {
         </AnimatePresence>
         
         {/* Content container */}
-        <div className="relative h-full flex flex-col justify-between">
+        <div className="relative h-full flex flex-col justify-center">
           {/* Text content - changes with timer */}
-          <div className="container mx-auto px-4 pt-6 md:pt-12">
+          <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -186,35 +186,12 @@ export default function HeroBanner({ category }: HeroBannerProps) {
                   <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-3">
                     {currentBannerContent.title}
                   </h1>
-                  <p className="text-base md:text-xl lg:text-2xl mb-3 md:mb-5 text-gray-200">
+                  <p className="text-base md:text-xl lg:text-2xl text-gray-200">
                     {currentBannerContent.subtitle}
                   </p>
                 </motion.div>
               </AnimatePresence>
             </motion.div>
-          </div>
-          
-          {/* Buttons at the bottom of the hero banner */}
-          <div className="container mx-auto px-4 pb-5 md:pb-8">
-            <div className="max-w-3xl">
-              <div className="flex flex-row gap-3 md:gap-5">
-                <Button 
-                  size="default" 
-                  className="text-sm md:text-base px-4 md:px-6 py-2 md:py-2.5 bg-primary hover:bg-primary/90 w-auto font-medium"
-                  asChild
-                >
-                  <Link href="/complaint">File a Complaint</Link>
-                </Button>
-                <a href="tel:+918630959445">
-                  <Button
-                    size="default"
-                    className="text-sm md:text-base px-4 md:px-6 py-2 md:py-2.5 bg-primary hover:bg-primary/90 w-auto whitespace-nowrap font-medium"
-                  >
-                    +91-8630959445
-                  </Button>
-                </a>
-              </div>
-            </div>
           </div>
         </div>
       </div>
