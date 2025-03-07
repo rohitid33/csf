@@ -1,0 +1,266 @@
+// Service Page Template
+// This template can be used as a foundation for creating dynamic service pages
+
+import React from "react";
+import { useParams } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
+// Interface for service data
+interface ServiceData {
+  id: string;
+  title: string;
+  icon: string;
+  description: string;
+  features: string[];
+  eligibility?: string[];
+  process?: {
+    title: string;
+    steps: string[];
+  }[];
+  documents?: string[];
+  faqs?: {
+    question: string;
+    answer: string;
+  }[];
+  contactInfo?: {
+    phone?: string;
+    email?: string;
+  };
+}
+
+interface ServiceTemplateProps {
+  service: ServiceData;
+}
+
+export function ServiceTemplate({ service }: ServiceTemplateProps) {
+  return (
+    <div className="container mx-auto px-4 py-8">
+      {/* Hero Section */}
+      <div className="mb-10 text-center">
+        <div className="text-6xl mb-4">{service.icon}</div>
+        <h1 className="text-3xl font-bold mb-4">{service.title}</h1>
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+          {service.description}
+        </p>
+      </div>
+
+      {/* Main Content */}
+      <Tabs defaultValue="overview" className="mb-10">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="process">Process</TabsTrigger>
+          <TabsTrigger value="documents">Documents</TabsTrigger>
+          <TabsTrigger value="faqs">FAQs</TabsTrigger>
+        </TabsList>
+
+        {/* Overview Tab */}
+        <TabsContent value="overview" className="mt-6">
+          <Card>
+            <CardContent className="pt-6">
+              <h2 className="text-2xl font-semibold mb-4">Features & Benefits</h2>
+              <ul className="list-disc list-inside space-y-2 mb-6">
+                {service.features.map((feature, index) => (
+                  <li key={index} className="text-lg">{feature}</li>
+                ))}
+              </ul>
+
+              {service.eligibility && (
+                <>
+                  <h2 className="text-2xl font-semibold mb-4 mt-8">Eligibility</h2>
+                  <ul className="list-disc list-inside space-y-2">
+                    {service.eligibility.map((item, index) => (
+                      <li key={index} className="text-lg">{item}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Process Tab */}
+        <TabsContent value="process" className="mt-6">
+          <Card>
+            <CardContent className="pt-6">
+              {service.process ? (
+                <div className="space-y-8">
+                  {service.process.map((phase, index) => (
+                    <div key={index} className="mb-6">
+                      <h3 className="text-xl font-semibold mb-3">{phase.title}</h3>
+                      <ol className="list-decimal list-inside space-y-2">
+                        {phase.steps.map((step, stepIndex) => (
+                          <li key={stepIndex} className="text-lg">{step}</li>
+                        ))}
+                      </ol>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-lg">Process information is not available for this service.</p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Documents Tab */}
+        <TabsContent value="documents" className="mt-6">
+          <Card>
+            <CardContent className="pt-6">
+              {service.documents ? (
+                <>
+                  <h2 className="text-2xl font-semibold mb-4">Required Documents</h2>
+                  <ul className="list-disc list-inside space-y-2">
+                    {service.documents.map((doc, index) => (
+                      <li key={index} className="text-lg">{doc}</li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <p className="text-lg">Document information is not available for this service.</p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* FAQs Tab */}
+        <TabsContent value="faqs" className="mt-6">
+          <Card>
+            <CardContent className="pt-6">
+              {service.faqs ? (
+                <Accordion type="single" collapsible className="w-full">
+                  {service.faqs.map((faq, index) => (
+                    <AccordionItem key={index} value={`faq-${index}`}>
+                      <AccordionTrigger className="text-lg font-medium">
+                        {faq.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-base">
+                        {faq.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              ) : (
+                <p className="text-lg">FAQs are not available for this service.</p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      {/* Contact Information */}
+      {service.contactInfo && (
+        <Card className="mb-10">
+          <CardContent className="pt-6">
+            <h2 className="text-2xl font-semibold mb-4">Contact Information</h2>
+            {service.contactInfo.phone && (
+              <p className="text-lg mb-2">Phone: {service.contactInfo.phone}</p>
+            )}
+            {service.contactInfo.email && (
+              <p className="text-lg">Email: {service.contactInfo.email}</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* CTA Section */}
+      <div className="text-center mt-10">
+        <h2 className="text-2xl font-semibold mb-4">Ready to Get Started?</h2>
+        <p className="text-lg mb-6">Our experts are ready to assist you with your {service.title.toLowerCase()}.</p>
+        <div className="flex justify-center gap-4">
+          <Button size="lg">Apply Now</Button>
+          <Button size="lg" variant="outline">Contact Us</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Dynamic Service Page Component
+export default function DynamicServicePage() {
+  // In a real implementation, you would:
+  // 1. Get the service ID from the URL params
+  // 2. Fetch the service data from your data source
+  // 3. Render the ServiceTemplate with the data
+  
+  // Example implementation:
+  // const params = useParams();
+  // const serviceId = params.id;
+  // const service = getServiceById(serviceId);
+  
+  // For demonstration, using mock data:
+  const mockService: ServiceData = {
+    id: "health-claim",
+    title: "Health Insurance Claim",
+    icon: "🏥",
+    description: "Our health insurance claim service provides comprehensive assistance in processing and managing your medical insurance claims. We help you navigate through the complex healthcare system, ensuring you receive the coverage you deserve.",
+    features: [
+      "Claim processing assistance",
+      "Documentation support",
+      "Medical bill review",
+      "Insurance coverage verification",
+      "Appeals handling"
+    ],
+    eligibility: [
+      "Valid health insurance policy",
+      "Policy must be active at the time of treatment",
+      "Claim must be filed within policy timeframe",
+      "Treatment must be covered under policy terms"
+    ],
+    process: [
+      {
+        title: "Initial Assessment",
+        steps: [
+          "Submit your claim request",
+          "Provide basic policy information",
+          "Schedule initial consultation"
+        ]
+      },
+      {
+        title: "Documentation",
+        steps: [
+          "Gather all required medical documents",
+          "Complete claim forms",
+          "Submit supporting evidence"
+        ]
+      },
+      {
+        title: "Processing",
+        steps: [
+          "Claim review by our experts",
+          "Communication with insurance provider",
+          "Resolution and settlement"
+        ]
+      }
+    ],
+    documents: [
+      "Insurance policy document",
+      "Medical reports and records",
+      "Hospital bills and receipts",
+      "Prescription details",
+      "Identity proof"
+    ],
+    faqs: [
+      {
+        question: "How long does the claim process take?",
+        answer: "The typical processing time is 7-14 business days, depending on the complexity of the claim and the responsiveness of the insurance provider."
+      },
+      {
+        question: "What if my claim is rejected?",
+        answer: "If your claim is rejected, our experts will analyze the reason for rejection and assist you in filing an appeal with additional documentation if necessary."
+      },
+      {
+        question: "Do I need to pay upfront for your services?",
+        answer: "No, our service fee is typically a percentage of the successful claim amount. You don't pay if the claim is not successful."
+      }
+    ],
+    contactInfo: {
+      phone: "+1 (800) 123-4567",
+      email: "health-claims@example.com"
+    }
+  };
+
+  return <ServiceTemplate service={mockService} />;
+}
