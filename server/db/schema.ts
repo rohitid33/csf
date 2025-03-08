@@ -1,4 +1,4 @@
-import { pgTable, serial, text, varchar, timestamp, boolean } from 'drizzle-orm/pg-core';
+  import { pgTable, serial, text, varchar, timestamp, boolean, integer } from 'drizzle-orm/pg-core';
 
 // Users table
 export const users = pgTable('users', {
@@ -37,6 +37,9 @@ export const categories = pgTable('categories', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 255 }).notNull().unique(),
   description: text('description'),
+  icon: varchar('icon', { length: 50 }),
+  number: integer('number').default(0),
+  tags: text('tags').array(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

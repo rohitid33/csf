@@ -30,6 +30,9 @@ export default function ServicesSection({ selectedCategory }: ServicesSectionPro
         // Filter services that belong to the selected category
         // This includes services that directly have the category or are linked through subcategories
         const categoryServices = allServices.filter(service => {
+          console.log("Checking service:", service);
+          console.log("Selected category:", selectedCategory);
+          
           // Check if service directly belongs to the category
           if (service.category === selectedCategory) {
             console.log(`Service ${service.id} directly belongs to category ${selectedCategory}`);
@@ -154,12 +157,12 @@ export default function ServicesSection({ selectedCategory }: ServicesSectionPro
   return (
     <section className="pt-2 pb-8 bg-background">
       <div className="container mx-auto px-4">
-        <div className="bg-blue-50/80 rounded-xl p-6 md:p-8 shadow-sm">
+        <div className="bg-blue-100/90 rounded-2xl p-6 md:p-8 shadow-lg border border-blue-200">
           <div className="space-y-8">
             {/* Services grouped by subcategory */}
             {subcategories.map(subcategory => (
               <div key={subcategory.id} className="pt-4 first:pt-0">
-                <h3 className="text-xl font-medium mb-4 text-blue-900">{subcategory.name}</h3>
+                <h3 className="text-xl font-medium mb-4 text-blue-950">{subcategory.name}</h3>
                 {servicesBySubcategory[subcategory.id].length > 0 ? (
                   <div className="overflow-x-auto scrolling-touch">
                     <div className="flex gap-8 py-2 min-w-max">
@@ -173,7 +176,7 @@ export default function ServicesSection({ selectedCategory }: ServicesSectionPro
                     </div>
                   </div>
                 ) : (
-                  <p className="text-blue-600/70">No services available in this subcategory.</p>
+                  <p className="text-blue-700/70">No services available in this subcategory.</p>
                 )}
               </div>
             ))}
@@ -181,7 +184,7 @@ export default function ServicesSection({ selectedCategory }: ServicesSectionPro
             {/* Services without subcategory */}
             {servicesBySubcategory["none"].length > 0 && (
               <div className="pt-4">
-                <h3 className="text-xl font-medium mb-4 text-blue-900">Other Services</h3>
+                <h3 className="text-xl font-medium mb-4 text-blue-950">Other Services</h3>
                 <div className="overflow-x-auto scrolling-touch">
                   <div className="flex gap-8 py-2 min-w-max">
                     {servicesBySubcategory["none"].map(service => (
@@ -214,10 +217,10 @@ function ServiceCard({ service, onClick }: ServiceCardProps) {
       className="flex flex-col items-center text-center cursor-pointer group" 
       onClick={onClick}
     >
-      <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-2 transition-all duration-200 group-hover:bg-blue-100 group-hover:scale-110 shadow-sm">
-        <div className="text-2xl text-blue-600">{service.icon}</div>
+      <div className="w-14 h-14 rounded-xl bg-white flex items-center justify-center mb-3 transition-all duration-200 group-hover:bg-blue-50 group-hover:scale-110 shadow-md group-hover:shadow-xl border border-blue-100">
+        <div className="text-2xl text-blue-700">{service.icon}</div>
       </div>
-      <h3 className="font-medium text-blue-900 line-clamp-2 group-hover:text-blue-700 transition-colors duration-200 max-w-[120px] text-sm">
+      <h3 className="font-medium text-blue-950 line-clamp-2 group-hover:text-blue-800 transition-colors duration-200 max-w-[140px] text-sm">
         {service.title}
       </h3>
     </div>

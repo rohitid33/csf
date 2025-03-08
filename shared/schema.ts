@@ -37,9 +37,12 @@ export const blogPostSchema = z.object({
 export const categorySchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "Category name is required"),
+  icon: z.string().optional(),
+  description: z.string().optional(),
+  number: z.number().default(0),
+  tags: z.array(z.string()).optional().default([]),
   createdAt: z.date().or(z.string()).optional(),
   updatedAt: z.date().or(z.string()).optional(),
-  number: z.number().default(0), // Added number field with default value of 0
 });
 
 // Subcategory schema

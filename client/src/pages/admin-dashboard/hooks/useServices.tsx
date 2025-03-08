@@ -73,6 +73,7 @@ export function useServices() {
       description: serviceDescription,
       features: featuresArray,
       category: selectedCategory,
+      selectedCategory: selectedCategory,
       subcategoryIds: selectedSubcategoriesForService.length > 0 ? selectedSubcategoriesForService : undefined,
       popular: servicePopular,
       eligibility: eligibilityArray,
@@ -127,15 +128,42 @@ export function useServices() {
     setActiveServiceSection("basic");
   };
 
-  const handleDeleteService = (id: string) => {
+  const handleDeleteService = async (id: string) => {
     if (window.confirm(`Are you sure you want to delete this service?`)) {
-      setServices(services.filter(service => service.id !== id));
-      setHasChanges(true);
-      
-      toast({
-        title: "Service deleted",
-        description: "The service has been deleted from the local changes.",
-      });
+      try {
+        setIsLoading(true);
+        
+        // First update local state
+        setServices(services.filter(service => service.id !== id));
+        
+        // Then delete from database
+        await fetch(`/api/services/${id}`, {
+          method: 'DELETE',
+        });
+        
+        setHasChanges(true);
+        
+        toast({
+          title: "Service deleted",
+          description: "The service has been deleted successfully.",
+        });
+      } catch (error) {
+        console.error(`Error deleting service ${id}:`, error);
+        
+        // Restore the service in local state if deletion failed
+        const deletedService = services.find(service => service.id === id);
+        if (deletedService) {
+          setServices([...services]);
+        }
+        
+        toast({
+          title: "Error deleting service",
+          description: error instanceof Error ? error.message : "Failed to delete service",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 

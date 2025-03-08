@@ -70,6 +70,80 @@ export async function registerRoutes(app: Express) {
   // Protect admin dashboard API routes
   app.use('/api/admin', adminAuthMiddleware);
   
+  // Admin subcategory routes
+  app.post("/api/admin/subcategories", async (req, res) => {
+    try {
+      console.log("=== Creating subcategory via admin API ===");
+      console.log("Request body:", req.body);
+      console.log("User:", req.user ? `ID: ${req.user.id}, isAdmin: ${req.user.isAdmin}` : "No user");
+      
+      const subcategoryData = insertSubcategorySchema.parse(req.body);
+      console.log("Validated subcategory data:", subcategoryData);
+      
+      const subcategory = await storage.createSubcategory(subcategoryData);
+      console.log("Subcategory created successfully via admin API:", subcategory);
+      
+      res.status(201).json(subcategory);
+    } catch (error) {
+      console.error("Error creating subcategory via admin API:", error);
+      if (error instanceof Error) {
+        console.error("Error details:", {
+          message: error.message,
+          stack: error.stack,
+          name: error.name
+        });
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(400).json({ error: "Invalid subcategory data" });
+      }
+    }
+  });
+  
+  app.put("/api/admin/subcategories/:id", async (req, res) => {
+    try {
+      console.log(`=== Updating subcategory via admin API: ${req.params.id} ===`);
+      console.log("Update data:", req.body);
+      console.log("User:", req.user ? `ID: ${req.user.id}, isAdmin: ${req.user.isAdmin}` : "No user");
+      
+      const subcategoryData = updateSubcategorySchema.parse(req.body);
+      const subcategory = await storage.updateSubcategory(req.params.id, subcategoryData);
+      console.log("Subcategory updated successfully via admin API:", subcategory);
+      
+      res.json(subcategory);
+    } catch (error) {
+      console.error(`Error updating subcategory ${req.params.id} via admin API:`, error);
+      if (error instanceof Error) {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(400).json({ error: "Invalid subcategory data" });
+      }
+    }
+  });
+  
+  app.delete("/api/admin/subcategories/:id", async (req, res) => {
+    try {
+      console.log(`=== Deleting subcategory via admin API: ${req.params.id} ===`);
+      console.log("User:", req.user ? `ID: ${req.user.id}, isAdmin: ${req.user.isAdmin}` : "No user");
+      
+      const success = await storage.deleteSubcategory(req.params.id);
+      
+      if (success) {
+        console.log("Subcategory deleted successfully via admin API");
+        res.status(204).end();
+      } else {
+        console.log("Subcategory not found via admin API");
+        res.status(404).json({ error: "Subcategory not found" });
+      }
+    } catch (error) {
+      console.error(`Error deleting subcategory ${req.params.id} via admin API:`, error);
+      if (error instanceof Error) {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: "Failed to delete subcategory" });
+      }
+    }
+  });
+  
   app.post("/api/complaints", async (req, res) => {
     try {
       const complaintData = insertComplaintSchema.parse(req.body);
@@ -908,6 +982,50 @@ export async function registerRoutes(app: Express) {
       console.error(`Error updating service ${req.params.id}:`, error);
       res.status(500).json({ 
         error: "Failed to update service", 
+        message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+  
+  // Delete a service
+  app.delete("/api/services/:id", async (req, res) => {
+    try {
+      console.log(`Deleting service with ID: ${req.params.id}`);
+      
+      // Import the Service model
+      const { Service } = await import('./models/Service');
+      const { Subcategory } = await import('./models/Subcategory');
+      
+      // Find the service to delete
+      const service = await Service.findById(req.params.id);
+      
+      if (!service) {
+        return res.status(404).json({ error: "Service not found" });
+      }
+      
+      // Remove this service from any subcategories that reference it
+      if (service.subcategoryIds && service.subcategoryIds.length > 0) {
+        const serviceId = service._id.toString();
+        
+        for (const subcategoryId of service.subcategoryIds) {
+          const subcategory = await Subcategory.findById(subcategoryId);
+          if (subcategory) {
+            subcategory.serviceIds = subcategory.serviceIds.filter(id => id !== serviceId);
+            await subcategory.save();
+            console.log(`Removed service ID ${serviceId} from subcategory ${subcategoryId}`);
+          }
+        }
+      }
+      
+      // Delete the service
+      await Service.deleteOne({ _id: req.params.id });
+      console.log(`Service ${req.params.id} deleted successfully`);
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error(`Error deleting service ${req.params.id}:`, error);
+      res.status(500).json({ 
+        error: "Failed to delete service", 
         message: error instanceof Error ? error.message : "Unknown error"
       });
     }

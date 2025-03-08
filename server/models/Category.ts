@@ -14,9 +14,22 @@ const CategorySchema = new Schema({
     trim: true,
     unique: true
   },
+  icon: {
+    type: String,
+    required: false
+  },
+  description: {
+    type: String,
+    required: false
+  },
   number: {
     type: Number,
     default: 0,
+    required: false
+  },
+  tags: {
+    type: [String],
+    default: [],
     required: false
   }
 }, {

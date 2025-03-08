@@ -9,7 +9,7 @@
  * which has similar functionality but different implementation details.
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -42,6 +42,28 @@ export default function AdminDashboard() {
   
   // Check if there are any unsaved changes
   const hasUnsavedChanges = categories.hasChanges || subcategories.hasChanges || services.hasChanges;
+
+  // Fetch initial data when component mounts
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        await Promise.all([
+          categories.fetchCategories(),
+          subcategories.fetchSubcategories(),
+          services.fetchServices()
+        ]);
+      } catch (error) {
+        console.error('Error fetching initial data:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load initial data",
+          variant: "destructive"
+        });
+      }
+    };
+
+    fetchInitialData();
+  }, []); // Empty dependency array means this runs once on mount
   
   // Save changes to source code and database
   const handleSaveChanges = async () => {
@@ -134,6 +156,8 @@ export default function AdminDashboard() {
             setCategoryIcon={categories.setCategoryIcon}
             categoryNumber={categories.categoryNumber}
             setCategoryNumber={categories.setCategoryNumber}
+            categoryTags={categories.categoryTags}
+            setCategoryTags={categories.setCategoryTags}
             editCategoryId={categories.editCategoryId}
             setEditCategoryId={categories.setEditCategoryId}
             onAddCategory={categories.handleAddCategory}

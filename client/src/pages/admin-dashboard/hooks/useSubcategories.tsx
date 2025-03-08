@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { SubcategoryData } from "@/components/services/service-template";
 import { useToast } from "@/hooks/use-toast";
-import { getAllSubcategories, updateSubcategoriesData, createSubcategory } from "@/data/subcategories-data";
+import { 
+  getAllSubcategories, 
+  updateSubcategoriesData, 
+  createSubcategory, 
+  deleteSubcategory 
+} from "@/data/subcategories-data";
 
 export function useSubcategories() {
   const [subcategories, setSubcategories] = useState<SubcategoryData[]>([]);
@@ -148,15 +153,40 @@ export function useSubcategories() {
     }
   };
 
-  const handleDeleteSubcategory = (id: string) => {
+  const handleDeleteSubcategory = async (id: string) => {
     if (window.confirm(`Are you sure you want to delete this subcategory?`)) {
-      setSubcategories(subcategories.filter(subcat => subcat.id !== id));
-      setHasChanges(true);
-      
-      toast({
-        title: "Subcategory deleted",
-        description: "The subcategory has been deleted from the local changes.",
-      });
+      try {
+        setIsLoading(true);
+        
+        // First update local state
+        setSubcategories(subcategories.filter(subcat => subcat.id !== id));
+        
+        // Then delete from database
+        await deleteSubcategory(id);
+        
+        setHasChanges(true);
+        
+        toast({
+          title: "Subcategory deleted",
+          description: "The subcategory has been deleted successfully.",
+        });
+      } catch (error) {
+        console.error(`Error deleting subcategory ${id}:`, error);
+        
+        // Restore the subcategory in local state if deletion failed
+        const deletedSubcategory = subcategories.find(subcat => subcat.id === id);
+        if (deletedSubcategory) {
+          setSubcategories([...subcategories]);
+        }
+        
+        toast({
+          title: "Error deleting subcategory",
+          description: error instanceof Error ? error.message : "There was a problem deleting the subcategory.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 

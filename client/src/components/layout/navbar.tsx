@@ -212,7 +212,7 @@ export default function Navbar() {
           <span className="flex items-center justify-center bg-white rounded-full h-4 w-4">
             <span className="text-primary text-xs">✓</span>
           </span>
-          India's Legal Expert
+          India's Insurance Claim Expert
         </p>
       </div>
     </div>

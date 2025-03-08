@@ -14,7 +14,8 @@ const iconMap: Record<string, JSX.Element> = {
   "🛒": <Building2 size={24} />,
   "™️": <FileText size={24} />,
   "🏢": <Briefcase size={24} />,
-  "🏠": <Home size={24} />
+  "🏠": <Home size={24} />,
+  "📄": <CircleDot size={24} />
 };
 
 // Consistent background and text colors for all icons
@@ -22,6 +23,11 @@ const defaultIconBgColor = "bg-blue-100";
 const defaultIconTextColor = "text-blue-600";
 const selectedIconBgColor = "bg-primary";
 const selectedIconTextColor = "text-primary-foreground";
+
+// Function to render icon (either Lucide icon or emoji)
+const renderIcon = (icon: string) => {
+  return iconMap[icon] || <span className="text-2xl">{icon}</span>;
+};
 
 export default function Categories({ selected, onSelect }: CategoriesProps) {
   const [categories, setCategories] = useState<CategoryData[]>([]);
@@ -195,10 +201,8 @@ export default function Categories({ selected, onSelect }: CategoriesProps) {
           {/* Scrollable category container */}
           <div 
             ref={scrollContainerRef}
-            className="flex space-x-4 md:space-x-6 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
+            className="flex space-x-4 md:space-x-6 overflow-x-auto scrolling-touch pb-4 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             style={{ 
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
               WebkitOverflowScrolling: 'touch',
               paddingRight: '48px' // Add padding to show peek
             }}
@@ -222,7 +226,7 @@ export default function Categories({ selected, onSelect }: CategoriesProps) {
                       ? `${selectedIconBgColor} ${selectedIconTextColor}`
                       : `${defaultIconBgColor} ${defaultIconTextColor}`
                   }`}>
-                    {iconMap[category.icon] || <CircleDot size={24} />}
+                    {renderIcon(category.icon)}
                   </div>
                   <div className="text-sm md:text-lg font-bold text-center min-h-[45px] md:min-h-[55px] flex flex-col items-center justify-center">
                     {formatCategoryName(category.name)}
@@ -245,21 +249,6 @@ export default function Categories({ selected, onSelect }: CategoriesProps) {
           </div>
         </div>
       </div>
-      
-      {/* Add this style to hide scrollbars but keep scrolling functionality */}
-      <style global jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        
-        @media (max-width: 768px) {
-          .scrollbar-hide {
-            -webkit-overflow-scrolling: touch;
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-          }
-        }
-      `}</style>
     </section>
   );
 }

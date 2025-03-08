@@ -1,32 +1,40 @@
-import { useState, useEffect } from "react";
-import { CategoryData, getAllCategories } from "@/data/categories-data";
+import { useState } from "react";
+import { CategoryData } from "@/data/categories-data";
 import { useToast } from "@/hooks/use-toast";
 
 export function useCategories() {
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [categoryName, setCategoryName] = useState("");
   const [categoryIcon, setCategoryIcon] = useState("");
-  const [categoryNumber, setCategoryNumber] = useState<number>(0);
+  const [categoryNumber, setCategoryNumber] = useState(0);
+  const [categoryTags, setCategoryTags] = useState<string[]>([]);
   const [editCategoryId, setEditCategoryId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   
   const { toast } = useToast();
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
   const fetchCategories = async () => {
     setIsLoading(true);
     try {
-      const loadedCategories = await getAllCategories();
-      setCategories(loadedCategories || []);
+      const response = await fetch('/api/categories');
+      if (!response.ok) {
+        throw new Error('Failed to fetch categories');
+      }
+      const data = await response.json();
+      const mappedCategories = data.map((category: any) => ({
+        id: category.id,
+        name: category.name,
+        icon: category.icon || '📄',
+        number: category.number || 0,
+        tags: Array.isArray(category.tags) ? category.tags : []
+      }));
+      setCategories(mappedCategories);
     } catch (error) {
-      console.error('Error loading categories:', error);
+      console.error('Error fetching categories:', error);
       toast({
-        title: "Error loading categories",
-        description: "There was a problem loading the categories.",
+        title: "Error",
+        description: "Failed to load categories",
         variant: "destructive"
       });
     } finally {
@@ -34,7 +42,7 @@ export function useCategories() {
     }
   };
 
-  const handleAddCategory = () => {
+  const handleAddCategory = async () => {
     if (!categoryName.trim()) {
       toast({
         title: "Error",
@@ -44,29 +52,72 @@ export function useCategories() {
       return;
     }
 
-    const id = categoryName.toLowerCase().replace(/\s+/g, '-');
-    
-    if (editCategoryId) {
-      // Update existing category
-      setCategories(categories.map(cat => 
-        cat.id === editCategoryId ? { id, name: categoryName, icon: categoryIcon, number: categoryNumber } : cat
-      ));
-      setEditCategoryId(null);
-    } else {
-      // Add new category
-      setCategories([...categories, { id, name: categoryName, icon: categoryIcon, number: categoryNumber }]);
+    setIsLoading(true);
+    try {
+      const categoryData = {
+        name: categoryName,
+        icon: categoryIcon,
+        number: categoryNumber,
+        tags: categoryTags
+      };
+
+      let response;
+      if (editCategoryId) {
+        // Update existing category
+        response = await fetch(`/api/categories/${editCategoryId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(categoryData)
+        });
+      } else {
+        // Create new category
+        response = await fetch('/api/categories', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(categoryData)
+        });
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save category');
+      }
+
+      const savedCategory = await response.json();
+      
+      if (editCategoryId) {
+        setCategories(categories.map(cat => 
+          cat.id === editCategoryId ? savedCategory : cat
+        ));
+        setEditCategoryId(null);
+      } else {
+        setCategories([...categories, savedCategory]);
+      }
+
+      // Reset form
+      setCategoryName("");
+      setCategoryIcon("");
+      setCategoryNumber(0);
+      setCategoryTags([]);
+      
+      toast({
+        title: editCategoryId ? "Category updated" : "Category added",
+        description: `The category has been ${editCategoryId ? "updated" : "added"} successfully.`,
+      });
+    } catch (error) {
+      console.error('Error saving category:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to save category",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
     }
-    
-    // Reset form
-    setCategoryName("");
-    setCategoryIcon("");
-    setCategoryNumber(0);
-    setHasChanges(true);
-    
-    toast({
-      title: editCategoryId ? "Category updated" : "Category added",
-      description: `The category has been ${editCategoryId ? "updated" : "added"} to the local changes.`,
-    });
   };
 
   const handleDeleteCategory = (id: string) => {
@@ -89,6 +140,8 @@ export function useCategories() {
     setCategoryIcon,
     categoryNumber,
     setCategoryNumber,
+    categoryTags,
+    setCategoryTags,
     editCategoryId,
     setEditCategoryId,
     isLoading,

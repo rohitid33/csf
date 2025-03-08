@@ -4,6 +4,7 @@ export interface CategoryData {
   name: string;
   icon: string;
   number?: number; // Added number field as optional
+  tags?: string[]; // Optional array of tags
 }
 
 // Empty array for when no categories are available
@@ -20,25 +21,31 @@ let subscribers: (() => void)[] = [];
 
 // Function to map database categories to CategoryData
 function mapDbCategoryToUi(dbCategory: any): CategoryData {
-  // Default icon mapping based on category name
-  let icon = "🔒"; // Default icon
-  const name = dbCategory.name.toLowerCase();
+  // Use the icon from the database if it exists
+  let icon = dbCategory.icon;
   
-  if (name.includes("insurance")) icon = "🔒";
-  else if (name.includes("debt") || name.includes("loan")) icon = "💰";
-  else if (name.includes("consumer") || name.includes("dispute")) icon = "🛒";
-  else if (name.includes("trademark") || name.includes("ip")) icon = "™️";
-  else if (name.includes("business") || name.includes("ngo")) icon = "🏢";
-  else if (name.includes("property") || name.includes("personal")) icon = "🏠";
+  // Only apply default mapping if no icon is set
+  if (!icon) {
+    const name = dbCategory.name.toLowerCase();
+    
+    if (name.includes("insurance")) icon = "🔒";
+    else if (name.includes("debt") || name.includes("loan")) icon = "💰";
+    else if (name.includes("consumer") || name.includes("dispute")) icon = "🛒";
+    else if (name.includes("trademark") || name.includes("ip")) icon = "™️";
+    else if (name.includes("business") || name.includes("ngo")) icon = "🏢";
+    else if (name.includes("property") || name.includes("personal")) icon = "🏠";
+    else icon = "📄"; // Default icon if no mapping matches
+  }
   
   // Generate an ID from the name if none exists
-  const id = dbCategory.id || name.replace(/\s+/g, '-').toLowerCase();
+  const id = dbCategory.id || dbCategory.name.replace(/\s+/g, '-').toLowerCase();
   
   return {
     id,
     name: dbCategory.name,
     icon,
-    number: dbCategory.number !== undefined ? dbCategory.number : 0 // Include the number field, default to 0
+    number: dbCategory.number !== undefined ? dbCategory.number : 0,
+    tags: dbCategory.tags || []
   };
 }
 
@@ -137,8 +144,11 @@ export async function updateCategoriesData(updatedCategories: CategoryData[]): P
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
+          id: category.id,
           name: category.name,
-          number: category.number || 0 // Include the number field, default to 0
+          icon: category.icon,
+          number: category.number || 0,
+          tags: category.tags || []
         })
       });
       

@@ -149,7 +149,12 @@ export default function HeroBanner({ category }: HeroBannerProps) {
 
   return (
     <div className="px-6 py-2 md:px-6 md:py-6">
-      <div className="relative h-[25vh] md:h-[45vh] rounded-2xl overflow-hidden">
+      <div className="
+        relative h-[20vh] md:h-[45vh] rounded-2xl overflow-hidden max-w-5xl mx-auto
+        shadow-[0_8px_30px_rgb(0,0,0,0.12)]
+        border border-white/10
+        bg-gradient-to-r from-primary/5 via-background to-primary/5
+      ">
         {/* Background image with overlay - only changes with category */}
         <AnimatePresence mode="wait">
           <motion.div 
@@ -161,10 +166,13 @@ export default function HeroBanner({ category }: HeroBannerProps) {
             className="absolute inset-0 bg-cover bg-center"
             style={{ 
               backgroundImage: `url("${categoryBackgroundImage}")`,
-              filter: 'brightness(0.5)'
+              filter: 'brightness(0.4)'
             }}
           />
         </AnimatePresence>
+        
+        {/* Stylish overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 mix-blend-overlay" />
         
         {/* Content container */}
         <div className="relative h-full flex flex-col justify-center">
@@ -173,7 +181,7 @@ export default function HeroBanner({ category }: HeroBannerProps) {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="max-w-3xl text-white"
+              className="max-w-2xl text-white"
             >
               <AnimatePresence mode="wait">
                 <motion.div
@@ -182,18 +190,41 @@ export default function HeroBanner({ category }: HeroBannerProps) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5 }}
+                  className="backdrop-blur-sm bg-black/10 rounded-xl p-4 md:p-6 border border-white/10"
                 >
-                  <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-3">
-                    {currentBannerContent.title}
-                  </h1>
-                  <p className="text-base md:text-xl lg:text-2xl text-gray-200">
-                    {currentBannerContent.subtitle}
-                  </p>
+                  <div>
+                    <div className="flex items-center gap-3 mb-2 md:mb-3">
+                      <h1 className="text-2xl md:text-4xl font-bold text-white/90">
+                        {currentBannerContent.title}
+                      </h1>
+                      <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                        <svg 
+                          className="w-4 h-4 text-white" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            strokeWidth={2.5} 
+                            d="M5 13l4 4L19 7" 
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <p className="text-sm md:text-lg text-white/75">
+                      {currentBannerContent.subtitle}
+                    </p>
+                  </div>
                 </motion.div>
               </AnimatePresence>
             </motion.div>
           </div>
         </div>
+
+        {/* Bottom gradient fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/20 to-transparent" />
       </div>
     </div>
   );

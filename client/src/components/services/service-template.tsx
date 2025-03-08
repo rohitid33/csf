@@ -70,6 +70,7 @@ export interface ServiceData {
   description: string;
   features: string[];
   category?: string;
+  selectedCategory?: string; // For compatibility with admin dashboard
   subcategoryIds?: string[]; // IDs of subcategories this service belongs to
   popular?: boolean;
   eligibility?: string[];

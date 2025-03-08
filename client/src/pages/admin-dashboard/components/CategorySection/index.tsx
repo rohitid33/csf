@@ -13,6 +13,8 @@ interface CategorySectionProps {
   setCategoryIcon: (value: string) => void;
   categoryNumber: number;
   setCategoryNumber: (value: number) => void;
+  categoryTags: string[];
+  setCategoryTags: (value: string[]) => void;
   editCategoryId: string | null;
   setEditCategoryId: (value: string | null) => void;
   onAddCategory: () => void;
@@ -29,6 +31,8 @@ export function CategorySection({
   setCategoryIcon,
   categoryNumber,
   setCategoryNumber,
+  categoryTags,
+  setCategoryTags,
   editCategoryId,
   setEditCategoryId,
   onAddCategory,
@@ -40,6 +44,7 @@ export function CategorySection({
     setCategoryName(category.name);
     setCategoryIcon(category.icon);
     setCategoryNumber(category.number || 0);
+    setCategoryTags(category.tags || []);
     setEditCategoryId(category.id);
   };
 
@@ -48,6 +53,7 @@ export function CategorySection({
     setCategoryName("");
     setCategoryIcon("");
     setCategoryNumber(0);
+    setCategoryTags([]);
   };
 
   return (
@@ -60,6 +66,8 @@ export function CategorySection({
           setCategoryIcon={setCategoryIcon}
           categoryNumber={categoryNumber}
           setCategoryNumber={setCategoryNumber}
+          categoryTags={categoryTags}
+          setCategoryTags={setCategoryTags}
           editCategoryId={editCategoryId}
           onAddCategory={onAddCategory}
           onCancelEdit={handleCancelEdit}
