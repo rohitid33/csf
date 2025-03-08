@@ -16,27 +16,27 @@ export default function Process() {
     {
       id: 1,
       title: "Reach out to us",
-      description: "Fill out the form or call us at 95136-31312"
+      description: "You can reach out to us by raising a ticket here or calling us directly at 86309 59445. Our Claims expert will contact you within half an hour."
     },
     {
       id: 2,
       title: "Share documents",
-      description: "Share copies of case related documents"
+      description: "Share copies of case-related documents."
     },
     {
       id: 3,
       title: "Case Acceptance",
-      description: "We review your case particulars and merits"
+      description: "We review your case particulars and merits."
     },
     {
       id: 4,
       title: "Registration",
-      description: "One-time fee of ₹500 after case acceptance"
+      description: "Registration is absolutely free."
     },
     {
       id: 5,
       title: "Resolution",
-      description: "Success fee of 15% + GST upon resolution"
+      description: "Upon resolution of the complaint, you will need to pay a success fee of 10% + GST."
     }
   ];
 

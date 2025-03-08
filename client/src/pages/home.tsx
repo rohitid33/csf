@@ -36,12 +36,12 @@ export default function Home() {
   return (
     <>
       <HeroBanner category={selectedCategory} />
+      <ClaimBanners />
       <Categories 
         selected={selectedCategory} 
         onSelect={setSelectedCategory} 
       />
       <ServicesSection selectedCategory={selectedCategory} />
-      <ClaimBanners />
       <Process />
       <PopularServices />
       <Testimonials />

@@ -1,24 +1,42 @@
-import { motion, useAnimationControls } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-const questions = [
-  "Need professional support for your insurance disputes?",
-  "Frustrated by claim settlement delays?",
-  "Ready to challenge a rejected insurance claim?",
-  "Is your claim process too confusing?",
-  "Ready for a fair claim resolution?"
+// All statements
+const statements = [
+  "Need professional support for your insurance disputes",
+  "Frustrated by claim settlement delays",
+  "Ready to challenge a rejected insurance claim",
+  "Is your claim process too confusing",
+  "Ready for a fair claim resolution",
+  "Worried about unfair claim deductions",
+  "Need guidance to speed up your claim",
+  "Don't know where to start with your claim",
+  "Overwhelmed by endless back-and-forth communication"
 ];
 
-// Create a longer seamless loop by repeating questions multiple times
-const scrollingQuestions = [...questions, ...questions, ...questions, ...questions];
+// Group statements into sets of 3
+const groupedStatements = [];
+for (let i = 0; i < statements.length; i += 3) {
+  groupedStatements.push(statements.slice(i, i + 3));
+}
+
+// Add padding to last group if needed
+if (groupedStatements[groupedStatements.length - 1].length < 3) {
+  const lastGroup = groupedStatements[groupedStatements.length - 1];
+  while (lastGroup.length < 3) {
+    // Use statements from the beginning to fill the last group
+    lastGroup.push(statements[lastGroup.length - 3]);
+  }
+}
+
+// Create a continuous array for infinite scrolling by repeating groups
+const scrollGroups = [...groupedStatements, ...groupedStatements];
 
 export default function ClaimBanners() {
-  const controls = useAnimationControls();
-  const [isResetting, setIsResetting] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-  const animationRef = useRef<number>();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeGroupIndex, setActiveGroupIndex] = useState(0);
+  const mobileScrollContainerRef = useRef<HTMLDivElement>(null);
+  const desktopScrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Handle responsive behavior
   useEffect(() => {
@@ -32,127 +50,228 @@ export default function ClaimBanners() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Initialize animation after mount
+  // Auto-scrolling for mobile view (one banner at a time)
   useEffect(() => {
-    setIsReady(true);
-    return () => setIsReady(false);
-  }, []);
+    if (!isMobile || !mobileScrollContainerRef.current) return;
 
-  // Handle animation
-  useEffect(() => {
-    if (!isReady) return;
-
-    let isActive = true;
-
-    const animateScroll = async () => {
-      if (!isActive) return;
-
-      try {
-        setIsResetting(false);
+    const timer = setInterval(() => {
+      setActiveIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % statements.length;
         
-        // Scroll to the end - much slower on desktop
-        if (isActive) {
-          await controls.start({
-            x: -100 * questions.length + '%',
-            transition: {
-              duration: isMobile ? 25 : 60, // Increased desktop duration
-              ease: "linear"
-            }
-          });
+        // Scroll to the next banner
+        const container = mobileScrollContainerRef.current;
+        if (container) {
+          const nextItem = container.children[nextIndex] as HTMLElement;
+          
+          if (nextItem) {
+            container.scrollTo({
+              left: nextItem.offsetLeft,
+              behavior: 'smooth'
+            });
+          }
         }
+        
+        return nextIndex;
+      });
+    }, 2500); // Change every 2.5 seconds
 
-        if (!isActive) return;
-        setIsResetting(true);
+    return () => clearInterval(timer);
+  }, [isMobile]);
 
-        // Quick reset to start
-        if (isActive) {
-          await controls.start({
-            x: '0%',
-            transition: {
-              duration: 0
-            }
-          });
-        }
+  // Auto-scrolling for desktop view (groups of 3)
+  useEffect(() => {
+    if (isMobile || !desktopScrollContainerRef.current) return;
 
-        if (!isActive) return;
+    const container = desktopScrollContainerRef.current;
+    
+    const timer = setInterval(() => {
+      setActiveGroupIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % groupedStatements.length;
+        
+        // Calculate the scroll position (each group takes up 100% of container width)
+        const scrollPosition = nextIndex * container.clientWidth;
+        
+        // Scroll to the next group of 3
+        container.scrollTo({
+          left: scrollPosition,
+          behavior: 'smooth'
+        });
+        
+        return nextIndex;
+      });
+    }, 2500); // Change every 2.5 seconds
 
-        // No pause between cycles for continuous flow
-        if (isActive) {
-          requestAnimationFrame(animateScroll);
-        }
-      } catch (error) {
-        console.error('Animation error:', error);
-      }
-    };
+    return () => clearInterval(timer);
+  }, [isMobile]);
 
-    animateScroll();
-
-    return () => {
-      isActive = false;
-      if (animationRef.current) {
-        window.clearTimeout(animationRef.current);
-      }
-      controls.stop();
-    };
-  }, [isReady, isMobile, controls]);
-
-  if (!isReady) return null;
-
-  return (
-    <div className="w-full bg-gradient-to-b from-blue-50 to-white py-8 md:py-10">
-      <div className="container mx-auto px-4">
-        <div className="relative overflow-hidden">
-          <motion.div
-            className="flex gap-6"
-            animate={controls}
-            initial={{ x: 0 }}
+  // For mobile: show one banner at a time with auto-scroll
+  if (isMobile) {
+    return (
+      <div className="w-full bg-gradient-to-b from-blue-50 to-white py-8">
+        <div className="px-4">
+          <div 
+            className="relative overflow-hidden" 
+            style={{ height: '130px' }}
           >
-            {scrollingQuestions.map((question, index) => (
-              <div
-                key={index}
-                className={`
-                  group relative flex items-center
-                  min-w-[280px] md:min-w-[240px] h-20 px-5 md:px-6 rounded-xl
-                  bg-white/80 backdrop-blur-sm
-                  shadow-lg hover:shadow-xl
-                  transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 hover:z-10
-                  cursor-pointer overflow-hidden
-                  border border-blue-100/50
-                  ${isResetting ? 'transition-transform duration-500' : ''}
-                `}
-              >
-                {/* Animated gradient background */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-50 via-white to-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                
-                {/* Decorative elements */}
-                <div className="absolute top-0 right-0 w-32 h-32 -mr-16 -mt-16 bg-primary/5 rounded-full transform rotate-45" />
-                <div className="absolute bottom-0 left-0 w-24 h-24 -ml-12 -mb-12 bg-blue-500/5 rounded-full" />
-                
-                {/* Content container */}
-                <div className="relative flex items-center justify-between w-full gap-4 h-full py-3">
-                  <div className="flex-1 flex items-center min-h-[40px]">
-                    <p className="text-sm md:text-[13px] font-semibold text-gray-900 group-hover:text-primary transition-colors duration-300 leading-snug">
-                      {question}
+            <div 
+              ref={mobileScrollContainerRef}
+              className="flex snap-x snap-mandatory overflow-x-auto hide-scrollbar"
+              style={{ scrollBehavior: 'smooth', scrollSnapType: 'x mandatory' }}
+            >
+              {statements.map((statement, index) => (
+                <div
+                  key={index}
+                  className={`
+                    flex-shrink-0 w-full snap-center
+                    flex items-center justify-center
+                    h-28 px-5 mx-1 rounded-xl
+                    bg-white
+                    shadow-md
+                    border-2 border-blue-200
+                    transition-opacity duration-300
+                    ${activeIndex === index ? 'opacity-100' : 'opacity-70'}
+                  `}
+                >
+                  <div className="flex flex-col items-center justify-center gap-2 text-center px-2">
+                    <p className="text-lg font-semibold text-blue-800 leading-snug">
+                      {statement}
                     </p>
-                  </div>
-                  <div className="flex-shrink-0 flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-blue-600 flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300 opacity-0 group-hover:opacity-100">
-                      <ArrowRight className="w-4 h-4 text-white" />
+                    
+                    {/* Blue circle with white checkmark */}
+                    <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-700 flex items-center justify-center">
+                      <svg 
+                        className="w-4 h-4 text-white" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round" 
+                          strokeWidth={2.5} 
+                          d="M5 13l4 4L19 7" 
+                        />
+                      </svg>
                     </div>
                   </div>
                 </div>
+              ))}
+            </div>
+            
+            {/* Indicator dots */}
+            <div className="flex justify-center mt-3 gap-1.5">
+              {statements.map((_, index) => (
+                <div 
+                  key={index}
+                  className={`
+                    w-2 h-2 rounded-full transition-all duration-300
+                    ${activeIndex === index ? 'bg-blue-700 w-4' : 'bg-blue-300'}
+                  `}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-                {/* Bottom highlight effect */}
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary via-blue-500 to-primary transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+  // For desktop: show groups of 3 banners that scroll horizontally
+  return (
+    <div className="w-full bg-gradient-to-b from-blue-50 to-white py-8 md:py-12">
+      <div className="container mx-auto px-4">
+        <div className="relative overflow-hidden">
+          {/* Left and right fade effects */}
+          <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-blue-50 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-blue-50 to-transparent z-10 pointer-events-none"></div>
+          
+          {/* Scrolling container for groups of 3 */}
+          <div 
+            ref={desktopScrollContainerRef}
+            className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar"
+            style={{ scrollBehavior: 'smooth' }}
+          >
+            {/* Each group of 3 takes exactly 100% of the container width */}
+            {scrollGroups.map((group, groupIdx) => (
+              <div 
+                key={`group-${groupIdx}`} 
+                className="flex-shrink-0 w-full flex justify-center gap-4 snap-center"
+              >
+                {group.map((statement, itemIdx) => (
+                  <div
+                    key={`group-${groupIdx}-item-${itemIdx}`}
+                    className="
+                      flex-1 max-w-[350px]
+                      flex items-center justify-center
+                      h-28 px-5 rounded-xl
+                      bg-white
+                      shadow-md
+                      border-2 border-blue-200
+                      transition-all duration-300
+                    "
+                  >
+                    <div className="flex flex-col items-center justify-center gap-2 text-center">
+                      <p className="text-xl font-semibold text-blue-800 leading-snug">
+                        {statement}
+                      </p>
+                      
+                      {/* Blue circle with white checkmark */}
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center">
+                        <svg 
+                          className="w-5 h-5 text-white" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            strokeWidth={2.5} 
+                            d="M5 13l4 4L19 7" 
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             ))}
-          </motion.div>
-
-          {/* Side fade effects */}
-          <div className="absolute top-0 bottom-0 left-0 w-8 bg-gradient-to-r from-blue-50 to-transparent pointer-events-none" />
-          <div className="absolute top-0 bottom-0 right-0 w-8 bg-gradient-to-l from-blue-50 to-transparent pointer-events-none" />
+          </div>
+          
+          {/* Group indicators */}
+          <div className="flex justify-center mt-5 gap-1.5">
+            {groupedStatements.map((_, index) => (
+              <div 
+                key={index}
+                className={`
+                  w-2 h-2 rounded-full transition-all duration-300
+                  ${activeGroupIndex === index ? 'bg-blue-700 w-4' : 'bg-blue-300'}
+                `}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
-} 
+}
+
+// Add CSS for hiding scrollbars
+const style = `
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
+  }
+`;
+
+// Add style to the document
+if (typeof document !== 'undefined') {
+  const styleElement = document.createElement('style');
+  styleElement.innerHTML = style;
+  document.head.appendChild(styleElement);
+}

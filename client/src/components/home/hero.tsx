@@ -120,19 +120,13 @@ export default function HeroBanner({ category }: HeroBannerProps) {
   const activeBanners = categoryBanners[category as keyof typeof categoryBanners] || categoryBanners.insurance;
   const currentBannerContent = activeBanners[currentBanner];
   
-  // Select a fixed background image for each category
+  // Use the banner image from public directory for all categories
+  const bannerImage = "/banner.jpg";
+  
+  // This is kept for backwards compatibility but we'll use the bannerImage instead
   const categoryBackgroundImage = useMemo(() => {
-    // Use the first image of each category as the fixed background
-    const categoryImages = {
-      insurance: categoryBanners.insurance[0].image,
-      loan: categoryBanners.loan[0].image,
-      consumer: categoryBanners.consumer[0].image,
-      trademark: categoryBanners.trademark[0].image,
-      business: categoryBanners.business[0].image,
-      property: categoryBanners.property[0].image
-    };
-    return categoryImages[category as keyof typeof categoryImages] || categoryBanners.insurance[0].image;
-  }, [category]);
+    return bannerImage;
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -150,12 +144,12 @@ export default function HeroBanner({ category }: HeroBannerProps) {
   return (
     <div className="px-6 py-2 md:px-6 md:py-6">
       <div className="
-        relative h-[20vh] md:h-[45vh] rounded-2xl overflow-hidden max-w-5xl mx-auto
+        relative h-[15vh] md:h-[30vh] rounded-2xl overflow-hidden max-w-5xl mx-auto
         shadow-[0_8px_30px_rgb(0,0,0,0.12)]
         border border-white/10
         bg-gradient-to-r from-primary/5 via-background to-primary/5
       ">
-        {/* Background image with overlay - only changes with category */}
+        {/* Background image with overlay - using the banner from public directory */}
         <AnimatePresence mode="wait">
           <motion.div 
             key={`${category}-background`}
@@ -163,10 +157,11 @@ export default function HeroBanner({ category }: HeroBannerProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="absolute inset-0 bg-cover bg-center"
+            className="absolute inset-0 bg-cover"
             style={{ 
-              backgroundImage: `url("${categoryBackgroundImage}")`,
-              filter: 'brightness(0.4)'
+              backgroundImage: `url("${bannerImage}")`,
+              backgroundPosition: "center 40%", 
+              filter: 'brightness(0.85)'
             }}
           />
         </AnimatePresence>
@@ -190,28 +185,13 @@ export default function HeroBanner({ category }: HeroBannerProps) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5 }}
-                  className="backdrop-blur-sm bg-black/10 rounded-xl p-4 md:p-6 border border-white/10"
+                  className="p-4 md:p-6"
                 >
                   <div>
-                    <div className="flex items-center gap-3 mb-2 md:mb-3">
+                    <div className="mb-2 md:mb-3">
                       <h1 className="text-2xl md:text-4xl font-bold text-white/90">
                         {currentBannerContent.title}
                       </h1>
-                      <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                        <svg 
-                          className="w-4 h-4 text-white" 
-                          fill="none" 
-                          stroke="currentColor" 
-                          viewBox="0 0 24 24"
-                        >
-                          <path 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round" 
-                            strokeWidth={2.5} 
-                            d="M5 13l4 4L19 7" 
-                          />
-                        </svg>
-                      </div>
                     </div>
                     <p className="text-sm md:text-lg text-white/75">
                       {currentBannerContent.subtitle}
