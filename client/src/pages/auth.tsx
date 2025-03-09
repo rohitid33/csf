@@ -20,12 +20,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { insertUserSchema, type InsertUser } from "@shared/schema";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function AuthPage() {
   const [_, setLocation] = useLocation();
-  const { user, loginMutation, registerMutation } = useAuth();
+  const { user, loginMutation } = useAuth();
 
   useEffect(() => {
     if (user) {
@@ -33,17 +39,8 @@ export default function AuthPage() {
     }
   }, [user, setLocation]);
 
-  const loginForm = useForm<InsertUser>({
-    resolver: zodResolver(
-      insertUserSchema.pick({
-        username: true,
-        password: true,
-      }),
-    ),
-  });
-
-  const registerForm = useForm<InsertUser>({
-    resolver: zodResolver(insertUserSchema),
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
   });
 
   return (
@@ -61,162 +58,57 @@ export default function AuthPage() {
         <div>
           <Card className="border border-gray-300 shadow-lg">
             <CardHeader className="space-y-1 border-b border-gray-200">
-              <CardTitle className="text-2xl">Account Access</CardTitle>
+              <CardTitle className="text-2xl">Sign In</CardTitle>
               <CardDescription>
-                Login to your account or create a new one
+                Enter your credentials to sign in or create a new account
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
-              <Tabs defaultValue="login">
-                <TabsList className="grid w-full grid-cols-2 mb-6">
-                  <TabsTrigger value="login">Login</TabsTrigger>
-                  <TabsTrigger value="register">Register</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="login">
-                  <Form {...loginForm}>
-                    <form
-                      onSubmit={loginForm.handleSubmit((data) =>
-                        loginMutation.mutate(data),
-                      )}
-                      className="space-y-6"
-                    >
-                      <FormField
-                        control={loginForm.control}
-                        name="username"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base font-semibold">Username</FormLabel>
-                            <FormControl>
-                              <Input {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={loginForm.control}
-                        name="password"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base font-semibold">Password</FormLabel>
-                            <FormControl>
-                              <Input type="password" {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button
-                        type="submit"
-                        className="w-full border border-gray-300 rounded-lg h-12 text-lg font-semibold hover:bg-gray-100"
-                        disabled={loginMutation.isPending}
-                      >
-                        {loginMutation.isPending ? "Logging in..." : "Login"}
-                      </Button>
-                    </form>
-                  </Form>
-                </TabsContent>
-
-                <TabsContent value="register">
-                  <Form {...registerForm}>
-                    <form
-                      onSubmit={registerForm.handleSubmit((data) =>
-                        registerMutation.mutate(data),
-                      )}
-                      className="space-y-6"
-                    >
-                      <FormField
-                        control={registerForm.control}
-                        name="username"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base font-semibold">Username</FormLabel>
-                            <FormControl>
-                              <Input {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={registerForm.control}
-                        name="firstName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base font-semibold">First Name</FormLabel>
-                            <FormControl>
-                              <Input {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={registerForm.control}
-                        name="lastName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base font-semibold">Last Name</FormLabel>
-                            <FormControl>
-                              <Input {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={registerForm.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base font-semibold">Email</FormLabel>
-                            <FormControl>
-                              <Input type="email" {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={registerForm.control}
-                        name="phoneNumber"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base font-semibold">Phone Number</FormLabel>
-                            <FormControl>
-                              <Input type="tel" placeholder="Enter your phone number" {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={registerForm.control}
-                        name="password"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base font-semibold">Password</FormLabel>
-                            <FormControl>
-                              <Input type="password" {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button
-                        type="submit"
-                        className="w-full border border-gray-300 rounded-lg h-12 text-lg font-semibold hover:bg-gray-100"
-                        disabled={registerMutation.isPending}
-                      >
-                        {registerMutation.isPending
-                          ? "Creating account..."
-                          : "Create Account"}
-                      </Button>
-                    </form>
-                  </Form>
-                </TabsContent>
-              </Tabs>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit((data) =>
+                    loginMutation.mutate(data),
+                  )}
+                  className="space-y-6"
+                >
+                  <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-base font-semibold">Username</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-base font-semibold">Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" {...field} className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button
+                    type="submit"
+                    className="w-full border border-gray-300 rounded-lg h-12 text-lg font-semibold hover:bg-gray-100"
+                    disabled={loginMutation.isPending}
+                  >
+                    {loginMutation.isPending ? "Signing in..." : "Sign In"}
+                  </Button>
+                  <p className="text-center text-sm text-gray-600">
+                    Don't have an account? Just enter your desired username and password to create one automatically.
+                  </p>
+                </form>
+              </Form>
             </CardContent>
           </Card>
         </div>

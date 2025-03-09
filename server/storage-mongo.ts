@@ -91,10 +91,21 @@ export class MongoStorage implements IStorage {
 
   async getUser(id: string | number): Promise<User> {
     try {
+      // Validate MongoDB connection
+      this.validateConnection();
+
+      // Validate ID format
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        console.error('Invalid MongoDB ID format:', id);
+        throw new Error("Invalid user ID format");
+      }
+
       const user = await UserModel.findById(id);
       if (!user) {
+        console.error('User not found for ID:', id);
         throw new Error("User not found");
       }
+
       return user.toJSON() as User;
     } catch (error) {
       console.error('Error fetching user by ID:', error);

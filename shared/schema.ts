@@ -5,11 +5,6 @@ export const userSchema = z.object({
   id: z.string().optional(), // MongoDB ObjectId is a string
   username: z.string().min(1, "Username is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  phoneNumber: z.string().min(10, "Phone number must be at least 10 digits").max(15, "Phone number must not exceed 15 digits"),
-  isAdmin: z.boolean().optional().default(false),
   createdAt: z.date().or(z.string()).optional(), // MongoDB might return date as string
 });
 

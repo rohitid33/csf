@@ -2,10 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 import { User as UserType } from '@shared/schema';
 
 // Define the User document interface extending both Document and UserType
-export interface UserDocument extends Document, Omit<UserType, 'id'> {
-  // The id field is handled by MongoDB's _id
-  isAdmin?: boolean;
-}
+export interface UserDocument extends Document, Omit<UserType, 'id'> {}
 
 // Create the User schema
 const UserSchema = new Schema({
@@ -18,32 +15,6 @@ const UserSchema = new Schema({
   password: {
     type: String,
     required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    lowercase: true,
-  },
-  firstName: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  lastName: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  phoneNumber: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  isAdmin: {
-    type: Boolean,
-    default: false,
   },
   createdAt: {
     type: Date,

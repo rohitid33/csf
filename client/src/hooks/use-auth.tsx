@@ -14,7 +14,6 @@ type AuthContextType = {
   error: Error | null;
   loginMutation: UseMutationResult<User, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
-  registerMutation: UseMutationResult<User, Error, InsertUser>;
 };
 
 type LoginData = Pick<InsertUser, "username" | "password">;
@@ -38,46 +37,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const res = await apiRequest("POST", "/api/login", credentials);
         if (!res.ok) {
           const errorData = await res.json();
-          throw new Error(errorData.message || "Login failed");
+          throw new Error(errorData.message || "Authentication failed");
         }
         return await res.json();
       } catch (error) {
-        console.error("Login error:", error);
+        console.error("Authentication error:", error);
         throw error;
       }
     },
     onSuccess: (user: User) => {
       queryClient.setQueryData(["/api/user"], user);
       toast({
-        title: "Welcome back!",
-        description: "You have successfully logged in.",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Login failed",
-        description: error.message || "An error occurred during login",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const registerMutation = useMutation({
-    mutationFn: async (credentials: InsertUser) => {
-      const res = await apiRequest("POST", "/api/register", credentials);
-      return await res.json();
-    },
-    onSuccess: (user: User) => {
-      queryClient.setQueryData(["/api/user"], user);
-      toast({
         title: "Welcome!",
-        description: "Your account has been created successfully.",
+        description: "You have successfully signed in.",
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Registration failed",
-        description: error.message,
+        title: "Authentication failed",
+        description: error.message || "An error occurred during authentication",
         variant: "destructive",
       });
     },
@@ -111,7 +89,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         error,
         loginMutation,
         logoutMutation,
-        registerMutation,
       }}
     >
       {children}
