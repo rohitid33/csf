@@ -4,7 +4,7 @@ import {
   useMutation,
   UseMutationResult,
 } from "@tanstack/react-query";
-import { type User } from "@shared/schema";
+import { insertUserSchema, type User, type InsertUser } from "@shared/schema";
 import { getQueryFn, apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,20 +12,13 @@ type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   error: Error | null;
-  requestOTPMutation: UseMutationResult<{ userId: string }, Error, { username: string }>;
-  verifyOTPMutation: UseMutationResult<User, Error, { userId: string; otp: string }>;
+  loginMutation: UseMutationResult<User, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
 };
 
-const AuthContext = createContext<AuthContextType | null>(null);
+type LoginData = Pick<InsertUser, "username" | "password">;
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-}
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
@@ -38,38 +31,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
-  const requestOTPMutation = useMutation({
-    mutationFn: async (credentials: { username: string }) => {
-      const res = await apiRequest("POST", "/api/auth/request-otp", credentials);
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "Failed to send OTP");
+  const loginMutation = useMutation({
+    mutationFn: async (credentials: LoginData) => {
+      try {
+        const res = await apiRequest("POST", "/api/login", credentials);
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || "Authentication failed");
+        }
+        return await res.json();
+      } catch (error) {
+        console.error("Authentication error:", error);
+        throw error;
       }
-      return res.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "OTP Sent!",
-        description: "Please check the console for the OTP (in production this would be sent via SMS)",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Failed to send OTP",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const verifyOTPMutation = useMutation({
-    mutationFn: async (data: { userId: string; otp: string }) => {
-      const res = await apiRequest("POST", "/api/auth/verify-otp", data);
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "OTP verification failed");
-      }
-      return res.json();
     },
     onSuccess: (user: User) => {
       queryClient.setQueryData(["/api/user"], user);
@@ -80,8 +54,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onError: (error: Error) => {
       toast({
-        title: "Verification failed",
-        description: error.message,
+        title: "Authentication failed",
+        description: error.message || "An error occurred during authentication",
         variant: "destructive",
       });
     },
@@ -113,12 +87,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user: user ?? null,
         isLoading,
         error,
-        requestOTPMutation,
-        verifyOTPMutation,
+        loginMutation,
         logoutMutation,
       }}
     >
       {children}
     </AuthContext.Provider>
   );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 }

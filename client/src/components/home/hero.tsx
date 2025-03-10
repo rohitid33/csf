@@ -144,7 +144,7 @@ export default function HeroBanner({ category }: HeroBannerProps) {
   return (
     <div className="px-6 py-2 md:px-6 md:py-6">
       <div className="
-        relative h-[25vh] md:h-[30vh] rounded-2xl overflow-hidden max-w-5xl mx-auto
+        relative h-[15vh] md:h-[30vh] rounded-2xl overflow-hidden max-w-5xl mx-auto
         shadow-[0_8px_30px_rgb(0,0,0,0.12)]
         border border-white/10
         bg-gradient-to-r from-primary/5 via-background to-primary/5

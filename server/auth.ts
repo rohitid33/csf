@@ -6,15 +6,6 @@ import { IStorage } from "./storage";
 import { User as SelectUser } from "@shared/schema";
 import { env } from './config/env';
 
-// Extend express-session types to include passport
-declare module 'express-session' {
-  interface Session {
-    passport: {
-      user: string;
-    };
-  }
-}
-
 declare global {
   namespace Express {
     interface User extends SelectUser {}
@@ -24,44 +15,19 @@ declare global {
 export function setupAuth(app: Express, storage: IStorage) {
   const sessionSettings: session.SessionOptions = {
     secret: env.auth.sessionSecret,
-    resave: true,
+    resave: false,
     saveUninitialized: false,
-    rolling: true,
-    name: 'sessionId',
-    proxy: true,
     cookie: {
       secure: env.auth.cookieSecure,
       httpOnly: true,
       maxAge: env.auth.sessionDuration,
-      path: '/',
-      sameSite: env.isProduction ? 'strict' : 'lax',
-      domain: env.isDevelopment ? undefined : env.server.host
     },
     store: storage.sessionStore,
   };
 
-  if (env.isProduction) {
-    app.set('trust proxy', 1);
-  }
-
   app.use(session(sessionSettings));
   app.use(passport.initialize());
   app.use(passport.session());
-
-  // Add session debug middleware in development
-  if (env.isDevelopment) {
-    app.use((req, res, next) => {
-      console.log('Session ID:', req.sessionID);
-      console.log('Is Authenticated:', req.isAuthenticated());
-      console.log('Session Data:', {
-        id: req.sessionID,
-        cookie: req.session.cookie,
-        passport: req.session.passport,
-        user: req.user
-      });
-      next();
-    });
-  }
 
   passport.use(
     new LocalStrategy(async (username, password, done) => {
@@ -78,25 +44,28 @@ export function setupAuth(app: Express, storage: IStorage) {
   );
 
   passport.serializeUser((user, done) => {
-    console.log('Serializing user:', user.id);
     done(null, user.id);
   });
 
-  passport.deserializeUser(async (id: string, done) => {
+  passport.deserializeUser(async (id, done) => {
     try {
-      console.log('Deserializing user:', id);
-      if (!id) {
+      // Validate the ID format first
+      if (!id || typeof id !== 'string') {
         console.error('Invalid user ID format:', id);
         return done(null, false);
       }
 
-      const user = await storage.getUser(id);
-      if (!user) {
-        console.error('User not found for ID:', id);
-        return done(null, false);
+      try {
+        const user = await storage.getUser(id);
+        if (!user) {
+          console.error('User not found for ID:', id);
+          return done(null, false);
+        }
+        done(null, user);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        done(null, false);
       }
-      console.log('User deserialized successfully:', user.id);
-      done(null, user);
     } catch (error) {
       console.error('Deserialize user error:', error);
       done(error);
@@ -126,12 +95,7 @@ export function setupAuth(app: Express, storage: IStorage) {
       } else {
         // New user - create account
         try {
-          user = await storage.createUser({
-            username,
-            password,
-            isAdmin: false,
-            preferredAuthMethod: 'otp'
-          });
+          user = await storage.createUser({ username, password });
           console.log('New user created:', username);
         } catch (error) {
           console.error('User creation error:', error);
@@ -173,26 +137,9 @@ export function setupAuth(app: Express, storage: IStorage) {
     });
   });
 
-  app.get("/api/auth/me", (req, res) => {
-    console.log('GET /api/auth/me - Session:', {
-      id: req.sessionID,
-      isAuthenticated: req.isAuthenticated(),
-      session: req.session
-    });
-
+  app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) {
-      // Check if session exists but user is not loaded
-      if (req.session?.passport?.user && !req.user) {
-        console.log('Session exists but user not loaded, attempting to reload');
-        return passport.authenticate('session')(req, res, () => {
-          if (req.user) {
-            res.json(req.user);
-          } else {
-            res.status(401).json({ error: "session_expired" });
-          }
-        });
-      }
-      return res.status(401).json({ error: "not_authenticated" });
+      return res.sendStatus(401);
     }
     res.json(req.user);
   });

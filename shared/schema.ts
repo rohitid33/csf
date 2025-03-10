@@ -4,10 +4,8 @@ import { z } from "zod";
 export const userSchema = z.object({
   id: z.string().optional(), // MongoDB ObjectId is a string
   username: z.string().min(1, "Username is required"),
-  password: z.string().min(6, "Password must be at least 6 characters").optional(),
+  password: z.string().min(6, "Password must be at least 6 characters"),
   createdAt: z.date().or(z.string()).optional(), // MongoDB might return date as string
-  isAdmin: z.boolean().optional().default(false),
-  preferredAuthMethod: z.enum(['otp', 'password']).optional().default('otp')
 });
 
 export const complaintSchema = z.object({
