@@ -1,23 +1,10 @@
 import { createServer } from 'http';
-import express, { type Express } from 'express';
+import express from 'express';
 import { createApp, startServer } from './config/server-config';
 import { connectToMongoDB, closeMongoDB } from './db/mongodb-connection';
 import { registerRoutes } from './routes';
 import { setupVite, serveStatic } from './vite';
 import { env, validateEnv } from './config/env';
-import { setupWebSocketServer } from './websocket';
-import { WebSocketServer } from 'ws';
-
-let wss: WebSocketServer;
-
-async function shutdown() {
-  console.log('Shutting down server...');
-  if (wss) {
-    wss.close();
-  }
-  await closeMongoDB();
-  process.exit(0);
-}
 
 async function bootstrap() {
   try {
@@ -28,17 +15,10 @@ async function bootstrap() {
     await connectToMongoDB();
     
     // Create and configure Express app with basic middleware
-    const app = createApp() as Express;
+    const app = createApp();
     
     // Create HTTP server
     const server = createServer(app);
-    
-    // Set up WebSocket server
-    const wsServer = setupWebSocketServer(server);
-    wss = wsServer.wss;
-    
-    // Add broadcastNotification to app locals for use in routes
-    app.locals.broadcastNotification = wsServer.broadcastNotification;
     
     // Register all API routes
     await registerRoutes(app);
@@ -63,6 +43,12 @@ async function bootstrap() {
     // Handle graceful shutdown
     process.on('SIGINT', shutdown);
     process.on('SIGTERM', shutdown);
+    
+    async function shutdown() {
+      console.log('Shutting down server...');
+      await closeMongoDB();
+      process.exit(0);
+    }
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);

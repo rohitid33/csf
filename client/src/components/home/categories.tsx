@@ -169,7 +169,7 @@ export default function Categories({ selected, onSelect }: CategoriesProps) {
   };
 
   return (
-    <section id="categories-section" className="py-8 bg-background relative">
+    <section className="py-8 bg-background relative">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-semibold mb-6 text-left">Select your category</h2>
         

@@ -1,12 +1,12 @@
 import { Switch, Route } from "wouter";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "@/providers/AuthProvider";
+import { AuthProvider } from "@/hooks/use-auth";
 import { AdminAuthProvider } from "@/hooks/use-admin-auth";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/hooks/use-theme";
 import { TicketsProvider } from "@/hooks/use-tickets";
-import { NotificationProvider } from "@/providers/NotificationProvider";
+import { NotificationProvider } from "@/hooks/use-notifications";
 import { ProtectedRoute } from "@/lib/protected-route";
 import AdminProtectedRoute from "@/lib/admin-protected-route";
 import Navbar from "@/components/layout/navbar";
@@ -281,17 +281,17 @@ export default function App() {
   return (
     <LoadingProvider>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-          <AuthProvider>
-            <AdminAuthProvider>
+        <ThemeProvider>
+          <AdminAuthProvider>
+            <AuthProvider>
               <TicketsProvider>
                 <NotificationProvider>
                   <AppContent />
                   <Toaster />
                 </NotificationProvider>
               </TicketsProvider>
-            </AdminAuthProvider>
-          </AuthProvider>
+            </AuthProvider>
+          </AdminAuthProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </LoadingProvider>

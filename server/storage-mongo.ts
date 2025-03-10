@@ -20,8 +20,8 @@ import {
 } from "@shared/schema";
 import session from "express-session";
 import { IStorage } from "./storage";
-import mongoose, { Document } from 'mongoose'; // Add mongoose import
-import { User as UserModel, IUser } from "./models/User";
+import mongoose from 'mongoose'; // Add mongoose import
+import { User as UserModel } from "./models/User";
 import { Complaint as ComplaintModel } from "./models/Complaint";
 import { BlogPost as BlogPostModel } from "./models/BlogPost";
 import { Category as CategoryModel } from "./models/Category";
@@ -31,10 +31,6 @@ import { Task as TaskModel } from "./models/Task";
 import { connectToMongoDB } from "./db/mongodb-connection";
 import MongoStore from "connect-mongo";
 import { env } from './config/env';
-
-interface MongoDocument extends Document {
-  _id: mongoose.Types.ObjectId;
-}
 
 export class MongoStorage implements IStorage {
   sessionStore: session.Store;
@@ -49,45 +45,12 @@ export class MongoStorage implements IStorage {
         console.error('Failed to connect to MongoDB in MongoStorage:', err);
       });
 
-    // Create MongoDB session store with improved configuration
+    // Create MongoDB session store
     this.sessionStore = MongoStore.create({
       mongoUrl: env.database.mongodb.uri,
       collectionName: 'sessions',
       ttl: env.auth.sessionDuration / 1000, // Convert from ms to seconds
-      autoRemove: 'disabled', // Disable automatic removal to prevent premature session deletion
-      touchAfter: 60, // Update session every minute if there are changes
-      crypto: {
-        secret: env.auth.sessionSecret
-      },
-      mongoOptions: {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        serverSelectionTimeoutMS: 10000,
-        socketTimeoutMS: 45000,
-        family: 4
-      },
-      stringify: false, // Don't stringify session data
-      autoReconnect: true,
-      fallbackMemory: true // Use memory as fallback if DB connection fails
     });
-
-    // Handle session store errors
-    this.sessionStore.on('error', (error) => {
-      console.error('Session store error:', error);
-    });
-
-    // Log session store events in development
-    if (env.isDevelopment) {
-      this.sessionStore.on('create', (sessionId) => {
-        console.log('Session created:', sessionId);
-      });
-      this.sessionStore.on('touch', (sessionId) => {
-        console.log('Session touched:', sessionId);
-      });
-      this.sessionStore.on('destroy', (sessionId) => {
-        console.log('Session destroyed:', sessionId);
-      });
-    }
   }
 
   // Helper method to validate MongoDB connection
@@ -123,13 +86,7 @@ export class MongoStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const user = new UserModel(insertUser);
     await user.save();
-    const userDoc = user.toObject();
-    return {
-      id: user._id.toString(),
-      username: userDoc.username,
-      createdAt: userDoc.createdAt,
-      preferredAuthMethod: userDoc.preferredAuthMethod
-    };
+    return user.toJSON() as User;
   }
 
   async getUser(id: string | number): Promise<User> {
@@ -149,13 +106,7 @@ export class MongoStorage implements IStorage {
         throw new Error("User not found");
       }
 
-      const userDoc = user.toObject();
-      return {
-        id: user._id.toString(),
-        username: userDoc.username,
-        createdAt: userDoc.createdAt,
-        preferredAuthMethod: userDoc.preferredAuthMethod
-      };
+      return user.toJSON() as User;
     } catch (error) {
       console.error('Error fetching user by ID:', error);
       throw new Error("User not found or invalid ID format");
@@ -164,15 +115,7 @@ export class MongoStorage implements IStorage {
 
   async getUserByUsername(username: string): Promise<User | null> {
     const user = await UserModel.findOne({ username });
-    if (!user) return null;
-    
-    const userDoc = user.toObject();
-    return {
-      id: user._id.toString(),
-      username: userDoc.username,
-      createdAt: userDoc.createdAt,
-      preferredAuthMethod: userDoc.preferredAuthMethod
-    };
+    return user ? (user.toJSON() as User) : null;
   }
 
   // Category methods
