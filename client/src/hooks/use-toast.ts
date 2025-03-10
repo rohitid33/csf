@@ -5,8 +5,8 @@ import type {
   ToastProps,
 } from "@/components/ui/toast"
 
-const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+const TOAST_LIMIT = 5 // Allow multiple notifications
+const TOAST_REMOVE_DELAY = 2000 // 2 seconds auto-dismiss
 
 type ToasterToast = ToastProps & {
   id: string
@@ -149,6 +149,7 @@ function toast({ ...props }: Toast) {
     })
   const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
 
+  // Add toast with auto-dismiss
   dispatch({
     type: "ADD_TOAST",
     toast: {
@@ -157,9 +158,15 @@ function toast({ ...props }: Toast) {
       open: true,
       onOpenChange: (open) => {
         if (!open) dismiss()
+        props.onOpenChange?.(open)
       },
     },
   })
+
+  // Auto-dismiss after TOAST_REMOVE_DELAY
+  setTimeout(() => {
+    dismiss()
+  }, TOAST_REMOVE_DELAY - 200) // Dismiss slightly earlier to account for animation
 
   return {
     id: id,

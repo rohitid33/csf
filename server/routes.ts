@@ -17,6 +17,9 @@ import { setupAuth } from "./auth";
 import { Category } from './models/Category';
 import adminAuthRoutes from './admin-auth';
 import adminAuthMiddleware from './middleware/admin-auth';
+import { otpService } from './services/otp-service';
+import { otpLimiter, otpVerificationLimiter } from './middleware/rate-limit';
+import passwordAuthRoutes from './routes/password-auth';
 
 // Use the storage implementation from storage.ts
 console.log("Using storage implementation:", storage.constructor.name);
@@ -57,9 +60,22 @@ const isAdmin = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+// Helper function to get device info from request
+function getDeviceInfo(req: Request): { ipAddress: string; deviceInfo: string } {
+  const ipAddress = req.ip || req.socket.remoteAddress || 'unknown';
+  const userAgent = req.headers['user-agent'] || 'unknown';
+  return {
+    ipAddress,
+    deviceInfo: userAgent
+  };
+}
+
 export async function registerRoutes(app: Express) {
   // Setup authentication routes and middleware
   setupAuth(app, storage);
+
+  // Add password authentication routes
+  app.use('/api/auth/password', passwordAuthRoutes);
 
   // Set the port for the server
   const PORT = process.env.PORT || 3000;
@@ -1077,6 +1093,16 @@ export async function registerRoutes(app: Express) {
       await newTicket.save();
       console.log("Ticket created successfully:", newTicket.toJSON());
       
+      // Broadcast notification to all connected clients
+      if (req.app.locals.broadcastNotification) {
+        req.app.locals.broadcastNotification({
+          type: 'notification',
+          message: `New ticket created: ${newTicket.title}`,
+          notificationType: 'info',
+          taskId: newTicket._id.toString()
+        });
+      }
+      
       res.status(201).json(newTicket.toJSON());
     } catch (error: unknown) {
       console.error("Error creating ticket:", error);
@@ -1516,6 +1542,131 @@ export async function registerRoutes(app: Express) {
       res.status(500).json({ 
         error: "Failed to delete user", 
         message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // Request OTP
+  app.post("/api/auth/request-otp", otpLimiter, async (req, res) => {
+    try {
+      const { username } = req.body;
+      const deviceInfo = getDeviceInfo(req);
+
+      if (!username) {
+        return res.status(400).json({ 
+          message: "Username is required" 
+        });
+      }
+
+      // Check if user exists
+      let user = await storage.getUserByUsername(username);
+      
+      if (!user) {
+        // For new users, create an account
+        try {
+          user = await storage.createUser({ username });
+          console.log('New user created:', username);
+        } catch (error) {
+          console.error('User creation error:', error);
+          return res.status(500).json({ 
+            message: error instanceof Error ? error.message : "Error creating user"
+          });
+        }
+      }
+
+      // Generate OTP
+      try {
+        const otp = await otpService.createOTP(user.id, deviceInfo);
+        
+        // In production, you would send this OTP via SMS
+        // For now, it's logged to console in otpService
+
+        res.json({ 
+          message: "OTP sent successfully",
+          userId: user.id 
+        });
+      } catch (error) {
+        console.error("OTP generation error:", error);
+        return res.status(500).json({ 
+          message: error instanceof Error ? error.message : "Failed to generate OTP"
+        });
+      }
+    } catch (error) {
+      console.error("OTP request error:", error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to send OTP" 
+      });
+    }
+  });
+
+  // Verify OTP and login
+  app.post("/api/auth/verify-otp", otpVerificationLimiter, async (req, res) => {
+    try {
+      const { userId, otp } = req.body;
+      const deviceInfo = getDeviceInfo(req);
+
+      if (!userId || !otp) {
+        return res.status(400).json({ 
+          message: "User ID and OTP are required" 
+        });
+      }
+
+      try {
+        // Verify OTP
+        const isValid = await otpService.verifyOTP(userId, otp, deviceInfo);
+
+        if (!isValid) {
+          return res.status(401).json({ 
+            message: "Invalid OTP" 
+          });
+        }
+
+        // Get user
+        const user = await storage.getUser(userId);
+        
+        if (!user) {
+          return res.status(404).json({ 
+            message: "User not found" 
+          });
+        }
+
+        // Login the user
+        req.login(user, (loginErr) => {
+          if (loginErr) {
+            console.error("Session creation error:", loginErr);
+            return res.status(500).json({ 
+              message: "Error creating session" 
+            });
+          }
+          
+          // Return user without sensitive data
+          const safeUser = {
+            id: user.id,
+            username: user.username,
+            createdAt: user.createdAt
+          };
+          
+          return res.json(safeUser);
+        });
+      } catch (error) {
+        if (error instanceof Error && error.message === 'OTP has expired') {
+          return res.status(401).json({ 
+            message: "OTP has expired" 
+          });
+        }
+        if (error instanceof Error && 
+           (error.message.includes('Account is locked') || 
+            error.message.includes('Maximum attempts exceeded'))) {
+          return res.status(429).json({ 
+            message: error.message 
+          });
+        }
+        throw error;
+      }
+    } catch (error) {
+      console.error("OTP verification error:", error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to verify OTP" 
       });
     }
   });

@@ -107,11 +107,11 @@ export default function ClaimBanners() {
   // For mobile: show one banner at a time with auto-scroll
   if (isMobile) {
     return (
-      <div className="w-full bg-gradient-to-b from-blue-50 to-white py-8">
-        <div className="px-4">
+      <div className="w-full bg-white py-8">
+        <div className="px-4 max-w-3xl mx-auto">
           <div 
             className="relative overflow-hidden" 
-            style={{ height: '130px' }}
+            style={{ height: '120px' }}
           >
             <div 
               ref={mobileScrollContainerRef}
@@ -122,51 +122,46 @@ export default function ClaimBanners() {
                 <div
                   key={index}
                   className={`
-                    flex-shrink-0 w-full snap-center
-                    flex items-center justify-center
-                    h-28 px-5 mx-1 rounded-xl
-                    bg-white
-                    shadow-md
-                    border-2 border-blue-200
-                    transition-opacity duration-300
-                    ${activeIndex === index ? 'opacity-100' : 'opacity-70'}
+                    flex-shrink-0 w-[90%] snap-center mx-auto
+                    flex items-center
+                    h-24 px-5 rounded-lg
+                    bg-blue-50
+                    transition-all duration-300
+                    ${activeIndex === index ? 'opacity-100' : 'opacity-50'}
                   `}
                 >
-                  <div className="flex flex-col items-center justify-center gap-2 text-center px-2">
-                    <p className="text-lg font-semibold text-blue-800 leading-snug">
-                      {statement}
-                    </p>
-                    
-                    {/* Blue circle with white checkmark */}
-                    <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-700 flex items-center justify-center">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
                       <svg 
-                        className="w-4 h-4 text-white" 
+                        className="w-5 h-5 text-white" 
                         fill="none" 
                         stroke="currentColor" 
                         viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
                       >
                         <path 
                           strokeLinecap="round" 
                           strokeLinejoin="round" 
-                          strokeWidth={2.5} 
+                          strokeWidth={2} 
                           d="M5 13l4 4L19 7" 
                         />
                       </svg>
                     </div>
+                    <p className="text-base md:text-lg font-medium text-gray-800 leading-snug">
+                      {statement}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
             
             {/* Indicator dots */}
-            <div className="flex justify-center mt-3 gap-1.5">
+            <div className="flex justify-center mt-4 gap-1">
               {statements.map((_, index) => (
                 <div 
                   key={index}
                   className={`
-                    w-2 h-2 rounded-full transition-all duration-300
-                    ${activeIndex === index ? 'bg-blue-700 w-4' : 'bg-blue-300'}
+                    w-1.5 h-1.5 rounded-full transition-all duration-300
+                    ${activeIndex === index ? 'bg-blue-600' : 'bg-blue-200'}
                   `}
                 />
               ))}
@@ -179,12 +174,12 @@ export default function ClaimBanners() {
 
   // For desktop: show groups of 3 banners that scroll horizontally
   return (
-    <div className="w-full bg-gradient-to-b from-blue-50 to-white py-8 md:py-12">
-      <div className="container mx-auto px-4">
+    <div className="w-full bg-white py-10">
+      <div className="container mx-auto px-4 max-w-5xl">
         <div className="relative overflow-hidden">
           {/* Left and right fade effects */}
-          <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-blue-50 to-transparent z-10 pointer-events-none"></div>
-          <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-blue-50 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
           
           {/* Scrolling container for groups of 3 */}
           <div 
@@ -196,43 +191,38 @@ export default function ClaimBanners() {
             {scrollGroups.map((group, groupIdx) => (
               <div 
                 key={`group-${groupIdx}`} 
-                className="flex-shrink-0 w-full flex justify-center gap-4 snap-center"
+                className="flex-shrink-0 w-full flex justify-between gap-4 snap-center"
               >
                 {group.map((statement, itemIdx) => (
                   <div
                     key={`group-${groupIdx}-item-${itemIdx}`}
                     className="
-                      flex-1 max-w-[350px]
-                      flex items-center justify-center
-                      h-28 px-5 rounded-xl
-                      bg-white
-                      shadow-md
-                      border-2 border-blue-200
+                      flex-1
+                      flex items-center
+                      h-24 px-5 rounded-lg
+                      bg-blue-50
                       transition-all duration-300
                     "
                   >
-                    <div className="flex flex-col items-center justify-center gap-2 text-center">
-                      <p className="text-xl font-semibold text-blue-800 leading-snug">
-                        {statement}
-                      </p>
-                      
-                      {/* Blue circle with white checkmark */}
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
                         <svg 
                           className="w-5 h-5 text-white" 
                           fill="none" 
                           stroke="currentColor" 
                           viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
                         >
                           <path 
                             strokeLinecap="round" 
                             strokeLinejoin="round" 
-                            strokeWidth={2.5} 
+                            strokeWidth={2} 
                             d="M5 13l4 4L19 7" 
                           />
                         </svg>
                       </div>
+                      <p className="text-base md:text-lg font-medium text-gray-800 leading-snug">
+                        {statement}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -241,13 +231,13 @@ export default function ClaimBanners() {
           </div>
           
           {/* Group indicators */}
-          <div className="flex justify-center mt-5 gap-1.5">
+          <div className="flex justify-center mt-6 gap-1">
             {groupedStatements.map((_, index) => (
               <div 
                 key={index}
                 className={`
-                  w-2 h-2 rounded-full transition-all duration-300
-                  ${activeGroupIndex === index ? 'bg-blue-700 w-4' : 'bg-blue-300'}
+                  w-1.5 h-1.5 rounded-full transition-all duration-300
+                  ${activeGroupIndex === index ? 'bg-blue-600' : 'bg-blue-200'}
                 `}
               />
             ))}

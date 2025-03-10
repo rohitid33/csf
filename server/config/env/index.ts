@@ -48,7 +48,7 @@ export const env = {
     sessionSecret: process.env.SESSION_SECRET || 'dev-session-secret-replace-in-production',
     jwtSecret: process.env.JWT_SECRET || 'dev-jwt-secret-replace-in-production',
     cookieSecure: process.env.NODE_ENV === 'production',
-    sessionDuration: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+    sessionDuration: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
   },
   
   // API configuration
