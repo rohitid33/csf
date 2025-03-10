@@ -97,7 +97,10 @@ export default function Navbar() {
             <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center">
               <span className="text-white text-lg">✓</span>
             </div>
-            <span className="font-bold text-lg text-primary">Claimsutra</span>
+            <div className="relative">
+              <span className="font-bold text-xl text-primary">Claimsutra</span>
+              <span className="absolute -top-1 -right-3 text-[10px] text-primary font-medium">TM</span>
+            </div>
           </Link>
           
           <div className="flex items-center h-10 gap-3">
@@ -131,14 +134,18 @@ export default function Navbar() {
                     <DropdownMenuLabel>
                       <div className="flex flex-col">
                         <span className="font-medium">
-                          {user.username}
-                        </span>
-                        <span className="text-xs text-muted-foreground mt-0.5">
-                          User ID: {user.id}
+                          {/* Format phone number with spaces */}
+                          {user.username.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3')}
                         </span>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="cursor-pointer">
+                        <UserIcon className="mr-2 h-4 w-4" />
+                        <span>Profile</span>
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Log out</span>
@@ -153,7 +160,7 @@ export default function Navbar() {
             )}
             <Sheet>
               <SheetTrigger asChild>
-                <button className="md:hidden flex items-center justify-center h-9 w-9 rounded-full bg-primary/10 border border-primary/20">
+                <button className="hidden md:hidden flex items-center justify-center h-9 w-9 rounded-full bg-primary/10 border border-primary/20">
                   <Menu className="h-5 w-5 text-primary" />
                 </button>
               </SheetTrigger>

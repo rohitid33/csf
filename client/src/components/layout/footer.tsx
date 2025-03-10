@@ -1,4 +1,3 @@
-
 import { Link } from "wouter";
 
 const menuItems = [
@@ -25,7 +24,10 @@ export default function Footer() {
               <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
                 <span className="text-white text-xl">✓</span>
               </div>
-              <span className="text-xl font-bold">Claimsutra</span>
+              <div className="relative">
+                <span className="text-xl font-bold">Claimsutra</span>
+                <span className="absolute -top-1 -right-3 text-[10px] text-white font-medium">TM</span>
+              </div>
             </a>
           </Link>
           <p className="mt-4 text-sm opacity-80">
@@ -48,7 +50,8 @@ export default function Footer() {
 
         {/* Company Info */}
         <div className="text-sm opacity-80 mb-8">
-          <p>© {new Date().getFullYear()} Claimsutra. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Claimsutra, A Product of Vakilsutra Pvt Ltd, All rights reserved.</p>
+          <p className="mt-1">Developed in India by Bitburger technologies.</p>
         </div>
 
         {/* Legal Links and Copyright */}

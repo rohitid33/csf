@@ -42,11 +42,13 @@ export default function Tickets() {
         return (ticket.status === "new" || ticket.status === "processing") && matchesSearch;
       } else if (status === "completed") {
         return ticket.status === "completed" && matchesSearch;
-      } else if (status === "closed") {
-        return ticket.status === "rejected" && matchesSearch;
       }
       return matchesSearch;
     })
+    .map(ticket => ({
+      ...ticket,
+      description: ticket.description?.replace(/^Request for .* service\./i, '').trim()
+    }))
     .sort((a, b) => {
       // Sort by creation date
       const dateA = new Date(a.createdAt).getTime();
@@ -60,7 +62,6 @@ export default function Tickets() {
   const ongoingCount = !isLoading ? tickets.filter(ticket => 
     ticket.status === "new" || ticket.status === "processing").length : 0;
   const completedCount = !isLoading ? tickets.filter(ticket => ticket.status === "completed").length : 0;
-  const closedCount = !isLoading ? tickets.filter(ticket => ticket.status === "rejected").length : 0;
 
   // Get status badge with icon
   const getStatusBadge = (status: string) => {
@@ -179,16 +180,6 @@ export default function Tickets() {
         >
           Completed {completedCount > 0 && `(${completedCount})`}
         </button>
-        <button
-          onClick={() => setStatus("closed")}
-          className={`pb-4 px-1 capitalize whitespace-nowrap transition-all ${
-            status === "closed"
-              ? "border-b-3 border-primary font-semibold text-primary"
-              : "text-muted-foreground hover:text-gray-700"
-          }`}
-        >
-          Closed {closedCount > 0 && `(${closedCount})`}
-        </button>
       </div>
 
       {/* Loading state */}
@@ -261,10 +252,9 @@ export default function Tickets() {
                         {ticket.title || ticket.serviceName}
                       </h3>
                       <div className="text-sm text-muted-foreground">
-                        {!ticket.title && `Service: ${ticket.serviceName}`}
+                        {!ticket.title && ticket.serviceName}
                       </div>
                       <div className="text-sm text-muted-foreground flex gap-3 mt-1">
-                        <span>ID: {ticket.id.substring(0, 8)}...</span>
                         <span>Created: {formatDate(ticket.createdAt)}</span>
                       </div>
                       {ticket.description && (

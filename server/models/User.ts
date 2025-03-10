@@ -91,7 +91,6 @@ const UserSchema = new Schema<IUser>({
 });
 
 // Index for faster queries
-UserSchema.index({ username: 1 });
 UserSchema.index({ 'deviceInfo.lastDevices.ipAddress': 1 });
 UserSchema.index({ 'migrationStatus.scheduledDeletionDate': 1 });
 

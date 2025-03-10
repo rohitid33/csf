@@ -60,8 +60,6 @@ export class MongoStorage implements IStorage {
         secret: env.auth.sessionSecret
       },
       mongoOptions: {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
         serverSelectionTimeoutMS: 10000,
         socketTimeoutMS: 45000,
         family: 4

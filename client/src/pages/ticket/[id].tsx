@@ -150,28 +150,20 @@ export default function TicketDetail() {
                 <div className="flex justify-between items-start">
                   <div>
                     <h1 className="text-2xl font-semibold">{ticket.title || ticket.serviceName}</h1>
-                    <p className="text-muted-foreground">Ticket #{id}</p>
                   </div>
                   <div className="flex flex-col gap-2 items-end">
                     <div className="flex gap-2">
                       {getStatusBadge(ticket.status)}
                       {getPriorityBadge(ticket.priority)}
                     </div>
-                    <DeleteTicketDialog 
-                      ticketId={ticket.id} 
-                      ticketTitle={ticket.title || ticket.serviceName} 
-                    />
                   </div>
                 </div>
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-muted-foreground">Created:</span> {formatDate(ticket.createdAt)}
                   </div>
                   <div>
                     <span className="text-muted-foreground">Updated:</span> {formatDate(ticket.updatedAt)}
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Service:</span> {ticket.serviceName}
                   </div>
                 </div>
                 
@@ -183,9 +175,8 @@ export default function TicketDetail() {
               </div>
 
               <Tabs defaultValue="tasks" onValueChange={setActiveTab}>
-                <TabsList className="grid grid-cols-3 mt-4">
+                <TabsList className="grid grid-cols-2 mt-4">
                   <TabsTrigger value="tasks">Tasks</TabsTrigger>
-                  <TabsTrigger value="details">Details</TabsTrigger>
                   <TabsTrigger value="chat">Chat</TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -195,19 +186,6 @@ export default function TicketDetail() {
           <div className="mb-8">
             {activeTab === "tasks" && (
               <TaskList ticketId={id!} />
-            )}
-
-            {activeTab === "details" && (
-              <Card>
-                <CardContent className="p-6">
-                  <h2 className="text-xl font-semibold mb-4">Ticket Description</h2>
-                  {ticket.description ? (
-                    <p className="whitespace-pre-line">{ticket.description}</p>
-                  ) : (
-                    <p className="text-muted-foreground italic">No description provided.</p>
-                  )}
-                </CardContent>
-              </Card>
             )}
 
             {activeTab === "chat" && (

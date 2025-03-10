@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -6,7 +5,7 @@ const testimonials = [
   {
     name: "Sarah Johnson",
     role: "Life Insurance Claim",
-    content: "Insurance Samadhan helped me get my life insurance claim settled within weeks.",
+    content: "ClaimSutra helped me get my life insurance claim settled within weeks.",
     image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644",
   },
   {

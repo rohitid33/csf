@@ -1450,6 +1450,17 @@ export async function registerRoutes(app: Express) {
       });
       
       const task = await storage.createTask(taskData);
+
+      // Broadcast notification to all connected clients
+      if (req.app.locals.broadcastNotification) {
+        req.app.locals.broadcastNotification({
+          type: 'notification',
+          message: `New task assigned: ${task.title}`,
+          notificationType: 'info',
+          taskId: task.id
+        });
+      }
+      
       res.status(201).json(task);
     } catch (error: unknown) {
       console.error(`Error creating task for ticket ${req.params.id}:`, error);
