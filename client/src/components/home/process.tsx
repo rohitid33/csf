@@ -4,7 +4,7 @@ import { IndianRupee, Monitor, Scale, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Process() {
-  const [activeTab, setActiveTab] = useState('process');
+  const [activeTab, setActiveTab] = useState('why');
   const [activeStep, setActiveStep] = useState(0);
   const [lineWidth, setLineWidth] = useState("0%");
   const [mobileLineHeight, setMobileLineHeight] = useState("0%");
@@ -94,33 +94,52 @@ export default function Process() {
   const features = [
     {
       icon: <IndianRupee className="w-6 h-6" />,
-      title: "Affordable Services",
-      description: "Professional legal and financial solutions"
+      title: "No Win, No Fee",
+      description: "Pay only a 10% fee on successful claims"
     },
     {
       icon: <Monitor className="w-6 h-6" />,
-      title: "Expert Network",
-      description: "Access to lawyers, CAs, and CSs"
+      title: "Professional Legal Experts",
+      description: "Access a network of 1000+ legal experts"
     },
     {
       icon: <Scale className="w-6 h-6" />,
       title: "Easy Dashboard",
-      description: "Track service requests easily"
+      description: "Easily track your service requests"
     },
     {
       icon: <Clock className="w-6 h-6" />,
       title: "Quick Support",
-      description: "Responses within 24 hours*"
+      description: "Get responses within minutes with robust customer support"
     }
   ];
 
   // Stats for "Why Choose Us" tab
   const stats = [
-    { value: "1 lakh+", label: "TM Registered" },
-    { value: "500+", label: "Professionals" },
-    { value: "1L+", label: "Companies" },
-    { value: "5L+", label: "Businesses" }
+    { 
+      value: "1800+", 
+      label: "Resolved Insurance Claims" 
+    },
+    { 
+      value: "30Cr+", 
+      label: "Worth Claim Amount" 
+    },
+    { 
+      value: "1500+", 
+      label: "Happy Customers across India" 
+    },
+    { 
+      value: "1000+", 
+      label: "Strong Partner Network" 
+    }
   ];
+
+  const scrollToCategories = () => {
+    const categoriesSection = document.getElementById('categories-section');
+    if (categoriesSection) {
+      categoriesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <section className="py-10 md:py-16 bg-gradient-to-b from-background to-background/50">
@@ -128,18 +147,18 @@ export default function Process() {
         {/* Tab selection */}
         <div className="flex gap-1 p-1 bg-primary/5 rounded-lg max-w-fit mx-auto mb-6">
           <Button 
-            variant={activeTab === 'process' ? 'default' : 'ghost'}
-            onClick={() => setActiveTab('process')}
-            className="w-32 rounded-lg text-sm"
-          >
-            Our Process
-          </Button>
-          <Button 
             variant={activeTab === 'why' ? 'default' : 'ghost'}
             onClick={() => setActiveTab('why')}
             className="w-32 rounded-lg text-sm"
           >
             Why Choose Us
+          </Button>
+          <Button 
+            variant={activeTab === 'process' ? 'default' : 'ghost'}
+            onClick={() => setActiveTab('process')}
+            className="w-32 rounded-lg text-sm"
+          >
+            Our Process
           </Button>
         </div>
         
@@ -246,8 +265,6 @@ export default function Process() {
                       key={index}
                       className="bg-primary/5 p-3 rounded-lg"
                       style={{
-                        opacity: 0,
-                        transform: 'translateY(10px)',
                         animation: `fadeInUp 0.3s ease-out ${index * 0.1}s forwards`
                       }}
                     >
@@ -270,8 +287,6 @@ export default function Process() {
                         key={index}
                         className="text-center"
                         style={{
-                          opacity: 0,
-                          transform: 'scale(0.9)',
                           animation: `fadeInScale 0.3s ease-out ${index * 0.1}s forwards`
                         }}
                       >
@@ -283,7 +298,7 @@ export default function Process() {
                 </div>
                 
                 <div className="flex justify-center mt-6">
-                  <Button size="sm" className="px-6">
+                  <Button size="sm" className="px-6" onClick={scrollToCategories}>
                     Start Your Claim
                   </Button>
                 </div>
@@ -292,44 +307,6 @@ export default function Process() {
           </div>
         </div>
       </div>
-
-      {/* CSS Animations */}
-      <style jsx global>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes fadeInScale {
-          from {
-            opacity: 0;
-            transform: scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-      `}</style>
     </section>
   );
 }
