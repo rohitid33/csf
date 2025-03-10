@@ -64,16 +64,16 @@ export default function Categories({ selected, onSelect }: CategoriesProps) {
       try {
         const loadedCategories = await getAllCategories();
         
-        // Sort categories by their number field (ascending)
-        const sortedCategories = [...loadedCategories].sort((a, b) => {
-          return (a.number || 0) - (b.number || 0);
-        });
+        // Filter categories with claimsutra tag and sort by number
+        const claimsutraCategories = loadedCategories
+          .filter(category => category.tags?.includes('claimsutra'))
+          .sort((a, b) => (a.number || 0) - (b.number || 0));
         
-        setCategories(sortedCategories);
+        setCategories(claimsutraCategories);
         
         // If there are categories and none is selected, select the first one
-        if (sortedCategories.length > 0 && (!selected || !sortedCategories.find(cat => cat.id === selected))) {
-          onSelect(sortedCategories[0].id);
+        if (claimsutraCategories.length > 0 && (!selected || !claimsutraCategories.find(cat => cat.id === selected))) {
+          onSelect(claimsutraCategories[0].id);
         }
       } catch (error) {
         console.error('Error loading categories:', error);
