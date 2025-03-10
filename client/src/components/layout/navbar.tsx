@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { useNotifications } from "@/hooks/use-notifications"; 
+import { useNotificationStore } from "@/stores/notification-store";
+import { NotificationBell } from "@/components/NotificationBell";
 import { 
   Menu, 
   MessageCircle, 
@@ -51,8 +52,7 @@ const moreMenuItems = [
 
 export default function Navbar() {
   const { user, logoutMutation } = useAuth();
-  const { hasUnseenTasks, unseenTasksCount } = useNotifications();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const [services, setServices] = useState<ServiceData[]>([]);
   const sheetCloseRef = useRef<HTMLButtonElement>(null);
@@ -77,8 +77,16 @@ export default function Navbar() {
     }
   };
 
-  const handleLogout = () => {
-    logoutMutation.mutate();
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+      // Force a complete page reload and redirect to auth
+      window.location.replace('/auth');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Even if logout fails, force a reload to auth page
+      window.location.replace('/auth');
+    }
   };
 
   return (
@@ -105,56 +113,43 @@ export default function Navbar() {
               </Button>
             </Link>
             
-            {!user ? (
+            {user ? (
+              <>
+                <NotificationBell />
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="focus:outline-none">
+                    <div className="flex items-center cursor-pointer">
+                      <div className="relative">
+                        <div className="h-9 w-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                          <UserIcon className="h-5 w-5 text-primary" />
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-background"></div>
+                      </div>
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col">
+                        <span className="font-medium">
+                          {user.username}
+                        </span>
+                        <span className="text-xs text-muted-foreground mt-0.5">
+                          User ID: {user.id}
+                        </span>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
               <Link href="/auth" className="cursor-pointer flex items-center justify-center h-9 w-9 rounded-full bg-primary/10 border border-primary/20">
                 <UserIcon className="h-5 w-5 text-primary" />
               </Link>
-            ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger className="focus:outline-none">
-                  <div className="flex items-center cursor-pointer">
-                    <div className="relative">
-                      <div className="h-9 w-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                        <span className="text-primary font-medium text-sm">
-                          {user?.username ? 
-                            user.username.charAt(0).toUpperCase() : 
-                            user?.firstName ? 
-                              user.firstName.charAt(0).toUpperCase() : 
-                              'U'}
-                        </span>
-                      </div>
-                      <div className="absolute -bottom-1 -right-1 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-background"></div>
-                    </div>
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>
-                    <div className="flex flex-col">
-                      <span className="font-medium">
-                        {user?.username ? 
-                          user.username.charAt(0).toUpperCase() + user.username.slice(1) : 
-                          user?.firstName ? 
-                            user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1) : 
-                            'User'}
-                      </span>
-                      <span className="text-xs text-muted-foreground mt-0.5">
-                        {user?.email || 'No email provided'}
-                      </span>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <Link href="/profile">
-                    <DropdownMenuItem className="cursor-pointer">
-                      <UserIcon className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
-                    </DropdownMenuItem>
-                  </Link>
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             )}
             <Sheet>
               <SheetTrigger asChild>
