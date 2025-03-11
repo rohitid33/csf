@@ -27,7 +27,7 @@ export function NotificationBell() {
   const handleNotificationClick = (notification: Notification) => {
     markAsRead(notification.id);
     if (notification.taskId) {
-      setLocation(`/tasks/${notification.taskId}`);
+      setLocation(`/ticket/${notification.taskId}`);
     }
     setIsOpen(false);
   };

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useTickets } from "@/hooks/use-tickets";
 import { useAuth } from "@/hooks/use-auth";
+import { Phone } from "lucide-react";
 
 export default function BottomNav() {
   const [location] = useLocation();
@@ -100,10 +101,8 @@ export default function BottomNav() {
               <a className={`flex flex-col items-center justify-center py-3 px-1 transition-all duration-200 ${
                 location === '/consult' ? 'bg-white/10 text-white' : 'text-gray-300 hover:text-white'
               }`}>
-                <svg className="w-6 h-6 mb-2" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                </svg>
-                <span className="text-xs font-medium text-center leading-tight">Consult</span>
+                <Phone className="w-6 h-6 mb-2" />
+                <span className="text-xs font-medium text-center leading-tight">Call Now</span>
               </a>
             </Link>
           </div>

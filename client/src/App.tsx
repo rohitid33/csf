@@ -22,6 +22,8 @@ import AdminTopNav from "@/pages/admin-dashboard/components/AdminTopNav";
 import React, { useState, Suspense, lazy, useEffect } from "react";
 import Footer from "@/components/layout/footer";
 import { LoadingProvider, useLoading } from '@/providers/loading-provider';
+import NotificationContainer from './components/NotificationContainer';
+import PhoneWidget from './components/PhoneWidget';
 
 function AppContent() {
   const [location] = useLocation();
@@ -273,6 +275,8 @@ function AppContent() {
         {!location.startsWith('/admin-dashboard') && <Footer />}
         {!location.startsWith('/admin-dashboard') && <BottomNav />}
       </Suspense>
+      <NotificationContainer />
+      <PhoneWidget />
     </div>
   );
 }

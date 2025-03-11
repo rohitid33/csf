@@ -22,18 +22,11 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
   notifications: [],
   unreadCount: 0,
   addNotification: (notification) => {
-    set((state) => {
-      const newNotification: Notification = {
-        ...notification,
-        id: crypto.randomUUID(),
-        createdAt: new Date(),
-        read: false,
-      };
-      return {
-        notifications: [newNotification, ...state.notifications],
-        unreadCount: state.unreadCount + 1,
-      };
-    });
+    const id = Math.random().toString(36).substring(7);
+    set((state) => ({
+      notifications: [...state.notifications, { ...notification, id, createdAt: new Date(), read: false }],
+      unreadCount: state.unreadCount + 1,
+    }));
   },
   markAsRead: (id) => {
     set((state) => ({

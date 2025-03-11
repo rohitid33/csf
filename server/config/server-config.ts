@@ -1,6 +1,8 @@
 import express, { Application } from 'express';
 import http from 'http';
 import { AddressInfo } from 'net';
+import session from 'express-session';
+import { env } from './env';
 
 /**
  * Server configuration with dynamic port handling
@@ -111,6 +113,18 @@ export function createApp(): Application {
     // Serve static files from the React app build directory
     app.use(express.static('dist'));
   }
+  
+  // Configure session middleware
+  app.use(session({
+    secret: env.auth.sessionSecret,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: env.isProduction,
+      httpOnly: true,
+      maxAge: env.auth.sessionDuration
+    }
+  }));
   
   return app;
 }

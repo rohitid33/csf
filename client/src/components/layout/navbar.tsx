@@ -104,18 +104,6 @@ export default function Navbar() {
           </Link>
           
           <div className="flex items-center h-10 gap-3">
-            {/* Consult Button - visible only on desktop */}
-            <Link href="/consult" className="hidden md:flex items-center cursor-pointer">
-              <Button 
-                className={`bg-primary hover:bg-primary/90 text-white font-medium text-sm h-7 px-3 blink-animation ${
-                  location === '/consult' ? 'bg-primary/80' : ''
-                }`}
-                size="sm"
-              >
-                Consult Now
-              </Button>
-            </Link>
-            
             {user ? (
               <>
                 <NotificationBell />
@@ -140,12 +128,6 @@ export default function Navbar() {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/profile" className="cursor-pointer">
-                        <UserIcon className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
-                      </Link>
-                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Log out</span>

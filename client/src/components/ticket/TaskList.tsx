@@ -29,8 +29,8 @@ type SortOrder = 'asc' | 'desc';
 
 export function TaskList({ ticketId }: TaskListProps) {
   const { tasks, isLoading, error } = useTicketTasks(ticketId);
-  const [sortField, setSortField] = useState<SortField>('dueDate');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+  const [sortField, setSortField] = useState<SortField>('createdAt');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
   // Format date to readable format
   const formatDate = (dateString: string) => {
@@ -143,7 +143,14 @@ export function TaskList({ ticketId }: TaskListProps) {
       <Card className="border-2 border-gray-300">
         <CardContent className="pt-6 pb-6 text-center">
           <p className="text-muted-foreground">
-            No tasks have been created for this ticket yet.
+            Welcome to Claimsutra,<br />
+            <span className="flex items-center justify-center gap-2">
+              <div className="rounded-full bg-blue-600 p-1 flex items-center justify-center">
+                <Check className="h-3 w-3 text-white" />
+              </div>
+              India's No. 1 Platform for All Things Legal.
+            </span><br />
+            Please wait a moment while our legal expert connects with you shortly.
           </p>
         </CardContent>
       </Card>
