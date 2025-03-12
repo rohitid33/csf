@@ -60,6 +60,7 @@ export interface SubcategoryData {
   name: string;
   categoryId: string; // ID of the parent category this subcategory belongs to
   serviceIds: string[]; // IDs of services linked to this subcategory
+  order?: number; // Optional order for sorting subcategories
 }
 
 // Interface for service data
@@ -246,148 +247,171 @@ export function ServiceTemplate({ service }: ServiceTemplateProps) {
   }, []);
   
   return (
-    <div className="container mx-auto px-4 py-8 bg-white">
-      {/* Hero Section - Left aligned */}
-      <div className="mb-10">
-        <div className="text-6xl mb-4">{service.icon}</div>
-        <h1 className="text-3xl font-bold mb-4">
-          {service.title.charAt(0).toUpperCase() + service.title.slice(1)}
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-3xl">
-          {service.description}
-        </p>
-      </div>
+    <div className="container mx-auto px-4 py-8 bg-white relative">
+      {/* Add padding at bottom to prevent content from being hidden behind fixed buttons */}
+      <div className="pb-32">
+        {/* Hero Section - Left aligned */}
+        <div className="mb-10">
+          <div className="text-6xl mb-4">{service.icon}</div>
+          <h1 className="text-3xl font-bold mb-4">
+            {service.title.charAt(0).toUpperCase() + service.title.slice(1)}
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-3xl">
+            {service.description}
+          </p>
+        </div>
 
-      {/* Main Content */}
-      <Tabs defaultValue="overview" className="mb-10">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="process">Process</TabsTrigger>
-          <TabsTrigger value="documents">Documents</TabsTrigger>
-          <TabsTrigger value="faqs">FAQs</TabsTrigger>
-        </TabsList>
+        {/* Main Content */}
+        <Tabs defaultValue="overview" className="mb-10">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="process">Process</TabsTrigger>
+            <TabsTrigger value="documents">Documents</TabsTrigger>
+            <TabsTrigger value="faqs">FAQs</TabsTrigger>
+          </TabsList>
 
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="mt-6 space-y-6">
-          {/* Features & Benefits Card */}
-          <Card>
-            <CardContent className="pt-6">
-              <h2 className="text-2xl font-semibold mb-4">Features & Benefits</h2>
-              <ul className="list-disc list-inside space-y-2">
-                {service.features.map((feature, index) => (
-                  <li key={index} className="text-lg">{feature}</li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-
-          {/* Eligibility Card - Separate box */}
-          {service.eligibility && (
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="mt-6 space-y-6">
+            {/* Features & Benefits Card */}
             <Card>
               <CardContent className="pt-6">
-                <h2 className="text-2xl font-semibold mb-4">Eligibility</h2>
+                <h2 className="text-2xl font-semibold mb-4">Features & Benefits</h2>
                 <ul className="list-disc list-inside space-y-2">
-                  {service.eligibility.map((item, index) => (
-                    <li key={index} className="text-lg">{item}</li>
+                  {service.features.map((feature, index) => (
+                    <li key={index} className="text-lg">{feature}</li>
                   ))}
                 </ul>
               </CardContent>
             </Card>
-          )}
-        </TabsContent>
 
-        {/* Process Tab */}
-        <TabsContent value="process" className="mt-6">
-          <Card>
-            <CardContent className="pt-6">
-              {service.process ? (
-                <div className="space-y-8">
-                  {service.process.map((phase, index) => (
-                    <div key={index} className="mb-6">
-                      <h3 className="text-xl font-semibold mb-3">{phase.title}</h3>
-                      <ol className="list-decimal list-inside space-y-2">
-                        {phase.steps.map((step, stepIndex) => (
-                          <li key={stepIndex} className="text-lg">{step}</li>
-                        ))}
-                      </ol>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-lg">Process information is not available for this service.</p>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Documents Tab */}
-        <TabsContent value="documents" className="mt-6">
-          <Card>
-            <CardContent className="pt-6">
-              {service.documents ? (
-                <>
-                  <h2 className="text-2xl font-semibold mb-4">Required Documents</h2>
+            {/* Eligibility Card - Separate box */}
+            {service.eligibility && (
+              <Card>
+                <CardContent className="pt-6">
+                  <h2 className="text-2xl font-semibold mb-4">Eligibility</h2>
                   <ul className="list-disc list-inside space-y-2">
-                    {service.documents.map((doc, index) => (
-                      <li key={index} className="text-lg">{doc}</li>
+                    {service.eligibility.map((item, index) => (
+                      <li key={index} className="text-lg">{item}</li>
                     ))}
                   </ul>
-                </>
-              ) : (
-                <p className="text-lg">Document information is not available for this service.</p>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
 
-        {/* FAQs Tab */}
-        <TabsContent value="faqs" className="mt-6">
-          <Card>
-            <CardContent className="pt-6">
-              {service.faqs ? (
-                <Accordion type="single" collapsible className="w-full">
-                  {service.faqs.map((faq, index) => (
-                    <AccordionItem key={index} value={`faq-${index}`}>
-                      <AccordionTrigger className="text-lg font-medium">
-                        {faq.question}
-                      </AccordionTrigger>
-                      <AccordionContent className="text-base">
-                        {faq.answer}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              ) : (
-                <p className="text-lg">FAQs are not available for this service.</p>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+          {/* Process Tab */}
+          <TabsContent value="process" className="mt-6">
+            <Card>
+              <CardContent className="pt-6">
+                {service.process ? (
+                  <div className="space-y-8">
+                    {service.process.map((phase, index) => (
+                      <div key={index} className="mb-6">
+                        <h3 className="text-xl font-semibold mb-3">{phase.title}</h3>
+                        <ol className="list-decimal list-inside space-y-2">
+                          {phase.steps.map((step, stepIndex) => (
+                            <li key={stepIndex} className="text-lg">{step}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-lg">Process information is not available for this service.</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-      {/* CTA Section - Text part (left-aligned) */}
-      <div className="mt-10 mb-20">
-        <h2 className="text-2xl font-semibold mb-4">Ready to Get Started?</h2>
-        <p className="text-lg mb-6">Our experts are ready to assist you with your {service.title.charAt(0).toUpperCase() + service.title.slice(1).toLowerCase()}.</p>
+          {/* Documents Tab */}
+          <TabsContent value="documents" className="mt-6">
+            <Card>
+              <CardContent className="pt-6">
+                {service.documents ? (
+                  <>
+                    <h2 className="text-2xl font-semibold mb-4">Required Documents</h2>
+                    <ul className="list-disc list-inside space-y-2">
+                      {service.documents.map((doc, index) => (
+                        <li key={index} className="text-lg">{doc}</li>
+                      ))}
+                    </ul>
+                  </>
+                ) : (
+                  <p className="text-lg">Document information is not available for this service.</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* FAQs Tab */}
+          <TabsContent value="faqs" className="mt-6">
+            <Card>
+              <CardContent className="pt-6">
+                {service.faqs ? (
+                  <Accordion type="single" collapsible className="w-full">
+                    {service.faqs.map((faq, index) => (
+                      <AccordionItem key={index} value={`faq-${index}`}>
+                        <AccordionTrigger className="text-lg font-medium">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-base">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                ) : (
+                  <p className="text-lg">FAQs are not available for this service.</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {/* CTA Section */}
+        <div className="mt-10">
+          <h2 className="text-2xl font-semibold mb-4">Ready to Get Started?</h2>
+          <p className="text-lg mb-6">
+            Our experts are ready to assist you with your {service.title.charAt(0).toUpperCase() + service.title.slice(1).toLowerCase()}.
+          </p>
+        </div>
       </div>
-      
-      {/* Fixed CTA Buttons - Positioned above bottom nav bar without background */}
-      <div className="fixed left-0 right-0 z-10 p-3" style={buttonStyle}>
-        <div className="container mx-auto flex justify-center gap-3">
-          <Button 
-            size="sm" 
-            className="w-32 shadow-md" 
+
+      {/* Fixed button container */}
+      <div 
+        className="fixed inset-x-0 bottom-0 bg-white border-t border-gray-200 py-4 px-4 md:px-0"
+        style={{
+          boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06)',
+          zIndex: 1000
+        }}
+      >
+        <div className="container mx-auto max-w-lg flex gap-4">
+          <Button
+            className="flex-1 bg-primary hover:bg-primary/90 text-white font-semibold h-12"
             onClick={handleApplyNow}
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Submitting...' : 'Apply Now'}
+            {isSubmitting ? "Submitting..." : "Apply Now"}
           </Button>
-          <Button 
-            size="sm" 
-            className="w-32 shadow-md" 
+          <Button
+            className="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold h-12 flex items-center justify-center gap-2"
             onClick={handleContactUs}
           >
-            Contact Us
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              className="text-blue-700"
+            >
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            Consult
           </Button>
         </div>
       </div>
@@ -396,17 +420,23 @@ export function ServiceTemplate({ service }: ServiceTemplateProps) {
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirm Service Application</DialogTitle>
+            <DialogTitle>Confirm Application</DialogTitle>
             <DialogDescription>
-              Are you sure you want to apply for the {service.title} service? This will create a new ticket in your account.
+              Are you sure you want to apply for {service.title}?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
+          <DialogFooter className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowConfirmDialog(false)}
+            >
               Cancel
             </Button>
-            <Button onClick={handleConfirmApply} disabled={isSubmitting}>
-              {isSubmitting ? 'Submitting...' : 'Confirm Application'}
+            <Button
+              onClick={handleConfirmApply}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "Confirm"}
             </Button>
           </DialogFooter>
         </DialogContent>
