@@ -8,6 +8,12 @@ import { getSubcategoriesByCategoryId } from "@/data/subcategories-data";
 import { ServiceData } from "@/components/services/service-template";
 import { useLocation } from "wouter";
 
+// Add these constants at the top level of the file, after the imports
+const defaultIconBgColor = "bg-blue-100";
+const defaultIconTextColor = "text-blue-600";
+const selectedIconBgColor = "bg-primary";
+const selectedIconTextColor = "text-primary-foreground";
+
 export default function Services() {
   const [searchQuery, setSearchQuery] = useState("");
   const [categories, setCategories] = useState<CategoryData[]>([]);
@@ -114,9 +120,9 @@ export default function Services() {
           <div className="text-center py-8">Loading categories...</div>
         ) : categories.length > 0 ? (
           <div className="relative max-w-5xl mx-auto">
-            <div className="flex flex-col overflow-x-auto scrolling-touch pt-2 pb-6 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex flex-col md:justify-center overflow-x-auto scrolling-touch pt-2 pb-6 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {/* First row */}
-              <div className="flex space-x-2 mb-6">
+              <div className="flex space-x-4 md:space-x-8 mb-6 md:justify-center">
                 {categories.slice(0, Math.ceil(categories.length / 2)).map((category) => (
                   <div
                     key={category.id}
@@ -130,43 +136,28 @@ export default function Services() {
                     <div className="text-center py-1">
                       {category.name === 'Motor Insurance' ? (
                         <div 
-                          className={`w-12 h-12 md:w-14 md:h-14 mx-auto mb-4 rounded-xl bg-blue-100 flex items-center justify-center p-2 cursor-pointer transition-all duration-200 hover:scale-110 ${
-                            selectedCategory === category.id ? 'ring-2 ring-blue-500' : ''
+                          className={`w-12 h-12 md:w-14 md:h-14 mx-auto mb-4 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 ${
+                            selectedCategory === category.id 
+                              ? `${selectedIconBgColor} ${selectedIconTextColor}`
+                              : `${defaultIconBgColor} ${defaultIconTextColor}`
                           }`}
                           onClick={() => {
                             console.log('Motor Insurance clicked');
                             setSelectedCategory(category.id);
                           }}
                         >
-                          <img 
-                            src="/car_ins.png"
-                            alt="Motor Insurance"
-                            className="w-full h-full object-contain"
-                            onError={(e) => {
-                              console.error('Failed to load Motor Insurance icon from root');
-                              // Try the icons directory if root fails
-                              e.currentTarget.src = '/icons/car_ins.png';
-                              e.currentTarget.onerror = (e2) => {
-                                console.error('Failed to load Motor Insurance icon from icons directory');
-                                // If both fail, show a fallback icon
-                                e.currentTarget.style.display = 'none';
-                                const parent = e.currentTarget.parentElement;
-                                if (parent) {
-                                  parent.innerHTML = '<div class="text-2xl md:text-3xl text-blue-600">🚗</div>';
-                                }
-                              };
-                            }}
-                            onLoad={() => console.log('Motor Insurance icon loaded successfully')}
-                          />
+                          <div className="text-2xl md:text-3xl">{category.icon}</div>
                         </div>
                       ) : (
                         <div 
-                          className={`w-12 h-12 md:w-14 md:h-14 mx-auto mb-4 rounded-xl bg-blue-100 flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 ${
-                            selectedCategory === category.id ? 'ring-2 ring-blue-500' : ''
+                          className={`w-12 h-12 md:w-14 md:h-14 mx-auto mb-4 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 ${
+                            selectedCategory === category.id 
+                              ? `${selectedIconBgColor} ${selectedIconTextColor}`
+                              : `${defaultIconBgColor} ${defaultIconTextColor}`
                           }`}
                           onClick={() => setSelectedCategory(category.id)}
                         >
-                          <div className="text-2xl md:text-3xl text-blue-600">{category.icon}</div>
+                          <div className="text-2xl md:text-3xl">{category.icon}</div>
                         </div>
                       )}
                       <h3 className="text-sm md:text-base font-bold text-center min-h-[42px] md:min-h-[48px] flex flex-col items-center justify-center px-2">
@@ -178,7 +169,7 @@ export default function Services() {
               </div>
 
               {/* Second row */}
-              <div className="flex space-x-2">
+              <div className="flex space-x-4 md:space-x-8 md:justify-center">
                 {categories.slice(Math.ceil(categories.length / 2)).map((category) => (
                   <div
                     key={category.id}
@@ -192,43 +183,28 @@ export default function Services() {
                     <div className="text-center py-1">
                       {category.name === 'Motor Insurance' ? (
                         <div 
-                          className={`w-12 h-12 md:w-14 md:h-14 mx-auto mb-4 rounded-xl bg-blue-100 flex items-center justify-center p-2 cursor-pointer transition-all duration-200 hover:scale-110 ${
-                            selectedCategory === category.id ? 'ring-2 ring-blue-500' : ''
+                          className={`w-12 h-12 md:w-14 md:h-14 mx-auto mb-4 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 ${
+                            selectedCategory === category.id 
+                              ? `${selectedIconBgColor} ${selectedIconTextColor}`
+                              : `${defaultIconBgColor} ${defaultIconTextColor}`
                           }`}
                           onClick={() => {
                             console.log('Motor Insurance clicked');
                             setSelectedCategory(category.id);
                           }}
                         >
-                          <img 
-                            src="/car_ins.png"
-                            alt="Motor Insurance"
-                            className="w-full h-full object-contain"
-                            onError={(e) => {
-                              console.error('Failed to load Motor Insurance icon from root');
-                              // Try the icons directory if root fails
-                              e.currentTarget.src = '/icons/car_ins.png';
-                              e.currentTarget.onerror = (e2) => {
-                                console.error('Failed to load Motor Insurance icon from icons directory');
-                                // If both fail, show a fallback icon
-                                e.currentTarget.style.display = 'none';
-                                const parent = e.currentTarget.parentElement;
-                                if (parent) {
-                                  parent.innerHTML = '<div class="text-2xl md:text-3xl text-blue-600">🚗</div>';
-                                }
-                              };
-                            }}
-                            onLoad={() => console.log('Motor Insurance icon loaded successfully')}
-                          />
+                          <div className="text-2xl md:text-3xl">{category.icon}</div>
                         </div>
                       ) : (
                         <div 
-                          className={`w-12 h-12 md:w-14 md:h-14 mx-auto mb-4 rounded-xl bg-blue-100 flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 ${
-                            selectedCategory === category.id ? 'ring-2 ring-blue-500' : ''
+                          className={`w-12 h-12 md:w-14 md:h-14 mx-auto mb-4 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 ${
+                            selectedCategory === category.id 
+                              ? `${selectedIconBgColor} ${selectedIconTextColor}`
+                              : `${defaultIconBgColor} ${defaultIconTextColor}`
                           }`}
                           onClick={() => setSelectedCategory(category.id)}
                         >
-                          <div className="text-2xl md:text-3xl text-blue-600">{category.icon}</div>
+                          <div className="text-2xl md:text-3xl">{category.icon}</div>
                         </div>
                       )}
                       <h3 className="text-sm md:text-base font-bold text-center min-h-[42px] md:min-h-[48px] flex flex-col items-center justify-center px-2">

@@ -124,7 +124,7 @@ export default function ClaimBanners() {
                   className={`
                     flex-shrink-0 w-[90%] snap-center mx-auto
                     flex items-center
-                    h-24 px-5 rounded-lg
+                    h-24 px-5 rounded-2xl
                     bg-blue-50
                     transition-all duration-300
                     ${activeIndex === index ? 'opacity-100' : 'opacity-50'}
@@ -199,7 +199,7 @@ export default function ClaimBanners() {
                     className="
                       flex-1
                       flex items-center
-                      h-24 px-5 rounded-lg
+                      h-24 px-5 rounded-2xl
                       bg-blue-50
                       transition-all duration-300
                     "

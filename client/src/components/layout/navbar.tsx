@@ -191,13 +191,43 @@ export default function Navbar() {
           </div>
         </div>
       </header>
-      <div className="w-full bg-primary/90 backdrop-blur-sm py-1">
-        <p className="text-white text-center text-sm font-medium flex items-center justify-center gap-2">
-          <span className="flex items-center justify-center bg-white rounded-full h-4 w-4">
-            <span className="text-primary text-xs">✓</span>
-          </span>
-          India's Insurance Claim Expert
-        </p>
+      <div className="w-full bg-primary/90 backdrop-blur-sm py-2">
+        <div className="container mx-auto flex justify-between items-center">
+          <div className="flex-1">
+            <p className="text-white text-xs font-medium flex items-center gap-2 pl-4">
+              <span className="flex items-center justify-center bg-white rounded-full h-3 w-3 flex-shrink-0">
+                <span className="text-primary text-[10px]">✓</span>
+              </span>
+              <span className="md:inline">
+                India's Legal <span className="md:inline block">Expert</span>
+              </span>
+            </p>
+          </div>
+          
+          {/* Floating separator */}
+          <div className="h-5 w-[1px] bg-white/30 mx-2"></div>
+          
+          <div className="flex-1">
+            <p className="text-white text-xs font-medium flex items-center gap-2">
+              <span className="flex items-center justify-center bg-white rounded-full h-3 w-3 flex-shrink-0">
+                <span className="text-primary text-[10px]">✓</span>
+              </span>
+              Trusted by 5,000+ Clients
+            </p>
+          </div>
+          
+          {/* Floating separator */}
+          <div className="h-5 w-[1px] bg-white/30 mx-2"></div>
+          
+          <div className="flex-1">
+            <p className="text-white text-xs font-medium flex items-center gap-2">
+              <span className="flex items-center justify-center bg-white rounded-full h-3 w-3 flex-shrink-0">
+                <span className="text-primary text-[10px]">✓</span>
+              </span>
+              One App, Multiple Legal Services
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
