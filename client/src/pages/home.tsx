@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import HeroBanner from "@/components/home/hero";
 import Categories from "@/components/home/categories";
 import ServicesSection from "@/components/home/services-section";
-import PopularServices from "@/components/home/popular-services";
 import Testimonials from "@/components/home/testimonials";
 import CTA from "@/components/home/cta";
 import PartnerAndCareers from "@/components/home/partner-careers";
@@ -43,7 +42,6 @@ export default function Home() {
       />
       <ServicesSection selectedCategory={selectedCategory} />
       <Process />
-      <PopularServices />
       <Testimonials />
       <CTA />
       <PartnerAndCareers />

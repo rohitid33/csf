@@ -24,6 +24,7 @@ import Footer from "@/components/layout/footer";
 import { LoadingProvider, useLoading } from '@/providers/loading-provider';
 import NotificationContainer from './components/NotificationContainer';
 import PhoneWidget from './components/PhoneWidget';
+import { Redirect } from "wouter";
 
 function AppContent() {
   const [location] = useLocation();
@@ -50,16 +51,19 @@ function AppContent() {
             <Route path="/resources" component={Resources} />
             <Route path="/auth" component={AuthPage} />
             <Route path="/services">
-              {() => (
-                <React.Suspense fallback={null}>
-                  {React.createElement(React.lazy(() => import("@/pages/services")))}
-                </React.Suspense>
-              )}
+              <Redirect to="/gogo" />
             </Route>
             <Route path="/consult">
               {() => (
                 <React.Suspense fallback={null}>
                   {React.createElement(React.lazy(() => import("@/pages/consult")))}
+                </React.Suspense>
+              )}
+            </Route>
+            <Route path="/vakilsutra">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/vakilsutra")))}
                 </React.Suspense>
               )}
             </Route>

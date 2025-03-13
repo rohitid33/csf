@@ -237,15 +237,28 @@ export default function Categories({ selected, onSelect }: CategoriesProps) {
           </div>
           
           {/* Peek and sneak indicator for mobile */}
-          <div className="flex justify-center mt-4 space-x-1 md:hidden">
-            {categories.map((category, index) => (
-              <div 
-                key={`indicator-${category.id}`}
-                className={`h-1 rounded-full transition-all duration-300 ${
-                  selected === category.id ? 'w-4 bg-primary' : 'w-1 bg-gray-300'
-                }`}
-              />
-            ))}
+          <div className="flex justify-center mt-4 space-x-1.5 md:hidden">
+            {[0, 1, 2].map((index) => {
+              const scrollContainer = scrollContainerRef.current;
+              const scrollPercentage = scrollContainer 
+                ? scrollContainer.scrollLeft / (scrollContainer.scrollWidth - scrollContainer.clientWidth)
+                : 0;
+              const isActive = 
+                (index === 0 && scrollPercentage < 0.33) ||
+                (index === 1 && scrollPercentage >= 0.33 && scrollPercentage < 0.66) ||
+                (index === 2 && scrollPercentage >= 0.66);
+              
+              return (
+                <div 
+                  key={`indicator-${index}`}
+                  className={`h-1 rounded-full transition-all duration-300 ${
+                    isActive
+                    ? 'w-4 bg-primary' 
+                    : 'w-1 bg-gray-300'
+                  }`}
+                />
+              );
+            })}
           </div>
         </div>
       </div>

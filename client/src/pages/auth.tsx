@@ -93,7 +93,11 @@ export default function AuthPage() {
 
   useEffect(() => {
     if (user) {
-      setLocation("/");
+      // Get returnUrl from query parameters
+      const params = new URLSearchParams(window.location.search);
+      const returnUrl = params.get('returnUrl');
+      // Redirect to returnUrl if present, otherwise go to home
+      setLocation(returnUrl || "/");
     }
   }, [user, setLocation]);
 

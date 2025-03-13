@@ -220,8 +220,9 @@ export default function Tickets() {
             </p>
           )}
           <Button 
-            onClick={() => navigate("/services")}
-            className="font-medium border border-primary hover:bg-primary/10"
+            variant="outline" 
+            className="w-full"
+            onClick={() => navigate("/gogo")}
           >
             Browse Services
           </Button>
