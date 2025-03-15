@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from 'wouter';
 import { Task } from '@/hooks/use-ticket-tasks';
+import { useTaskNotifications } from '@/hooks/use-task-notifications';
 
 interface TaskNotificationProps {
   ticketId: string;
@@ -14,6 +15,7 @@ interface TaskNotificationProps {
 export function TaskNotification({ ticketId, task, onDismiss }: TaskNotificationProps) {
   const [, navigate] = useLocation();
   const [isVisible, setIsVisible] = useState(true);
+  const { markTaskSeen } = useTaskNotifications();
 
   // Auto-dismiss after 20 seconds
   useEffect(() => {
@@ -24,6 +26,21 @@ export function TaskNotification({ ticketId, task, onDismiss }: TaskNotification
 
     return () => clearTimeout(timer);
   }, [onDismiss]);
+
+  const handleViewTask = () => {
+    // First mark the task as seen
+    markTaskSeen(task.id);
+    // Then navigate and dismiss
+    setTimeout(() => {
+      navigate(`/ticket/${ticketId}`);
+      onDismiss();
+    }, 100); // Small delay to ensure state updates
+  };
+
+  const handleDismiss = () => {
+    setIsVisible(false);
+    setTimeout(onDismiss, 300);
+  };
 
   // Get status color
   const getStatusColor = () => {
@@ -77,10 +94,7 @@ export function TaskNotification({ ticketId, task, onDismiss }: TaskNotification
               <Button 
                 variant="ghost" 
                 size="sm" 
-                onClick={() => {
-                  setIsVisible(false);
-                  setTimeout(onDismiss, 300);
-                }}
+                onClick={handleDismiss}
                 className="text-gray-500 h-8 px-2"
               >
                 Dismiss
@@ -88,20 +102,14 @@ export function TaskNotification({ ticketId, task, onDismiss }: TaskNotification
               <Button 
                 size="sm" 
                 className="h-8" 
-                onClick={() => {
-                  navigate(`/ticket/${ticketId}`);
-                  onDismiss();
-                }}
+                onClick={handleViewTask}
               >
                 View Task
               </Button>
             </div>
           </div>
           <button 
-            onClick={() => {
-              setIsVisible(false);
-              setTimeout(onDismiss, 300);
-            }}
+            onClick={handleDismiss}
             className="text-gray-400 hover:text-gray-500"
           >
             <X size={18} />

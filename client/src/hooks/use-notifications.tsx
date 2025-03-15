@@ -4,13 +4,13 @@ import { useTickets } from './use-tickets';
 import { useAuth } from './use-auth';
 import { TaskNotification } from '../components/ticket/TaskNotification';
 
-interface NotificationContextType {
+export interface TaskNotificationContextType {
   markTaskSeen: (taskId: string) => void;
   hasUnseenTasks: boolean;
   unseenTasksCount: number;
 }
 
-const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
+export const TaskNotificationContext = createContext<TaskNotificationContextType | undefined>(undefined);
 
 // Function to get seen task IDs from localStorage
 const getStoredSeenTaskIds = (): Set<string> => {
@@ -28,13 +28,13 @@ const getStoredSeenTaskIds = (): Set<string> => {
 // Function to store seen task IDs in localStorage
 const storeSeenTaskIds = (ids: Set<string>) => {
   try {
-    localStorage.setItem('seenTaskIds', JSON.stringify([...ids]));
+    localStorage.setItem('seenTaskIds', JSON.stringify(Array.from(ids)));
   } catch (error) {
     console.error('Error storing seen tasks in localStorage:', error);
   }
 };
 
-export function NotificationProvider({ children }: { children: ReactNode }) {
+export function TaskNotificationProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const { tickets } = useTickets();
   const [seenTaskIds, setSeenTaskIds] = useState<Set<string>>(() => getStoredSeenTaskIds());
@@ -71,7 +71,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(intervalId);
   }, [user, tickets]);
   
-// Process tasks and check for new ones
+  // Process tasks and check for new ones
   useEffect(() => {
     if (!user || Object.keys(latestTasks).length === 0) return;
     
@@ -170,7 +170,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   };
   
   return (
-    <NotificationContext.Provider
+    <TaskNotificationContext.Provider
       value={{
         markTaskSeen,
         hasUnseenTasks,
@@ -185,14 +185,14 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
           onDismiss={handleDismissNotification}
         />
       )}
-    </NotificationContext.Provider>
+    </TaskNotificationContext.Provider>
   );
 }
 
-export function useNotifications() {
-  const context = useContext(NotificationContext);
+export function useTaskNotifications(): TaskNotificationContextType {
+  const context = useContext(TaskNotificationContext);
   if (context === undefined) {
-    throw new Error('useNotifications must be used within a NotificationProvider');
+    throw new Error('useTaskNotifications must be used within a TaskNotificationProvider');
   }
   return context;
 }

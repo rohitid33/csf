@@ -25,10 +25,13 @@ import { LoadingProvider, useLoading } from '@/providers/loading-provider';
 import NotificationContainer from './components/NotificationContainer';
 import PhoneWidget from './components/PhoneWidget';
 import { Redirect } from "wouter";
+import { TaskNotificationProvider } from "@/hooks/use-task-notifications";
 
 function AppContent() {
   const [location] = useLocation();
   const { showLoading, hideLoading } = useLoading();
+
+  console.log('AppContent rendering:', { location, isAdmin: location.startsWith('/admin-dashboard') });
 
   useEffect(() => {
     showLoading();
@@ -39,31 +42,30 @@ function AppContent() {
     return () => clearTimeout(timer);
   }, [location, showLoading, hideLoading]);
 
+  const isAdminRoute = location.startsWith('/admin-dashboard');
+
   return (
-    <div className="flex min-h-screen flex-col pb-16">
+    <div className="flex min-h-screen flex-col">
       <Suspense fallback={null}>
         {/* Show appropriate navigation based on route */}
-        {location.startsWith('/admin-dashboard') ? <AdminTopNav /> : <Navbar />}
+        {isAdminRoute ? <AdminTopNav /> : <Navbar />}
         <main className="flex-1">
           <Switch>
             <Route path="/" component={Home} />
             <ProtectedRoute path="/complaint" component={Complaint} />
             <Route path="/resources" component={Resources} />
             <Route path="/auth" component={AuthPage} />
-            <Route path="/services">
-              <Redirect to="/gogo" />
+            <Route path="/vakilsutra">
+              {() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/vakilsutra")))}
+                </React.Suspense>
+              )}
             </Route>
             <Route path="/consult">
               {() => (
                 <React.Suspense fallback={null}>
                   {React.createElement(React.lazy(() => import("@/pages/consult")))}
-                </React.Suspense>
-              )}
-            </Route>
-            <Route path="/vakilsutra">
-              {() => (
-                <React.Suspense fallback={null}>
-                  {React.createElement(React.lazy(() => import("@/pages/vakilsutra")))}
                 </React.Suspense>
               )}
             </Route>
@@ -276,8 +278,8 @@ function AppContent() {
             <Route component={NotFound} />
           </Switch>
         </main>
-        {!location.startsWith('/admin-dashboard') && <Footer />}
-        {!location.startsWith('/admin-dashboard') && <BottomNav />}
+        {!isAdminRoute && <Footer />}
+        {!isAdminRoute && <BottomNav />}
       </Suspense>
       <NotificationContainer />
       <PhoneWidget />
@@ -294,8 +296,10 @@ export default function App() {
             <AdminAuthProvider>
               <TicketsProvider>
                 <NotificationProvider>
-                  <AppContent />
-                  <Toaster />
+                  <TaskNotificationProvider>
+                    <AppContent />
+                    <Toaster />
+                  </TaskNotificationProvider>
                 </NotificationProvider>
               </TicketsProvider>
             </AdminAuthProvider>

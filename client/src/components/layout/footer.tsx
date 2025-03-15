@@ -51,7 +51,6 @@ export default function Footer() {
         {/* Company Info */}
         <div className="text-sm opacity-80 mb-8">
           <p>© {new Date().getFullYear()} Claimsutra, A Product of Vakilsutra Pvt Ltd, All rights reserved.</p>
-          <p className="mt-1">Developed in India by Bitburger technologies.</p>
         </div>
 
         {/* Legal Links and Copyright */}

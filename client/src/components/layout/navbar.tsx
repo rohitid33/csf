@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useNotificationStore } from "@/stores/notification-store";
-import { NotificationBell } from "@/components/NotificationBell";
 import { 
   Menu, 
   MessageCircle, 
@@ -106,7 +105,6 @@ export default function Navbar() {
           <div className="flex items-center h-10 gap-3">
             {user ? (
               <>
-                <NotificationBell />
                 <DropdownMenu>
                   <DropdownMenuTrigger className="focus:outline-none">
                     <div className="flex items-center cursor-pointer">

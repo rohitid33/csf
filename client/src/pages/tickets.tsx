@@ -13,16 +13,19 @@ import {
   ArrowUp,
   ArrowUpRight,
   ArrowUpDown,
-  ArrowDown
+  ArrowDown,
+  Bell
 } from "lucide-react";
 import { useTickets } from "@/hooks/use-tickets";
 import { useAuth } from "@/hooks/use-auth";
+import { useTaskNotifications } from "@/hooks/use-task-notifications";
 
 export default function Tickets() {
   const [status, setStatus] = useState("ongoing");
   const [, navigate] = useLocation();
   const { tickets, isLoading, error } = useTickets();
   const { user } = useAuth();
+  const { getUnseenTaskCountForTicket } = useTaskNotifications();
   const [searchText, setSearchText] = useState("");
   const [sortOrder, setSortOrder] = useState("desc"); // "asc" or "desc"
 
@@ -239,51 +242,63 @@ export default function Tickets() {
             </span>
           </div>
           
-          {filteredTickets.map((ticket) => (
-            <div key={ticket.id} onClick={() => navigate(`/ticket/${ticket.id}`)} className="block mb-4 transform transition-all duration-200 hover:translate-y-[-2px]">
-              <Card className={`cursor-pointer hover:shadow-lg transition-all border ${
-                ticket.priority === 'urgent' ? 'border-red-400' : 
-                ticket.priority === 'high' ? 'border-orange-400' : 
-                'border-gray-300 hover:border-primary/60'
-              }`}>
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h3 className="font-semibold text-lg">
-                        {ticket.title || ticket.serviceName}
-                      </h3>
-                      <div className="text-sm text-muted-foreground">
-                        {!ticket.title && ticket.serviceName}
+          {filteredTickets.map((ticket) => {
+            const unseenTaskCount = getUnseenTaskCountForTicket(ticket.id);
+            
+            return (
+              <div key={ticket.id} onClick={() => navigate(`/ticket/${ticket.id}`)} className="block mb-4 transform transition-all duration-200 hover:translate-y-[-2px]">
+                <Card className={`cursor-pointer hover:shadow-lg transition-all border ${
+                  ticket.priority === 'urgent' ? 'border-red-400' : 
+                  ticket.priority === 'high' ? 'border-orange-400' : 
+                  'border-gray-300 hover:border-primary/60'
+                }`}>
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-lg">
+                            {ticket.title || ticket.serviceName}
+                          </h3>
+                          {unseenTaskCount > 0 && (
+                            <Badge variant="secondary" className="bg-primary/10 text-primary flex items-center gap-1">
+                              <Bell className="h-3 w-3" />
+                              {unseenTaskCount} new {unseenTaskCount === 1 ? 'task' : 'tasks'}
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {!ticket.title && ticket.serviceName}
+                        </div>
+                        <div className="text-sm text-muted-foreground flex gap-3 mt-1">
+                          <span>Created: {formatDate(ticket.createdAt)}</span>
+                        </div>
+                        {ticket.description && (
+                          <p className="text-sm mt-2 line-clamp-2">
+                            {ticket.description}
+                          </p>
+                        )}
                       </div>
-                      <div className="text-sm text-muted-foreground flex gap-3 mt-1">
-                        <span>Created: {formatDate(ticket.createdAt)}</span>
+                      <ChevronRight className="w-5 h-5" />
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="flex flex-wrap gap-2 items-center">
+                        {getStatusBadge(ticket.status)}
+                        {getPriorityIndicator(ticket.priority)}
                       </div>
-                      {ticket.description && (
-                        <p className="text-sm mt-2 line-clamp-2">
-                          {ticket.description}
-                        </p>
-                      )}
+                      <div>
+                        {(ticket.status === "new" || ticket.status === "processing") && (
+                          <Button size="sm" className="min-w-[110px]">View Details</Button>
+                        )}
+                        {(ticket.status === "completed" || ticket.status === "rejected") && (
+                          <Button size="sm" variant="outline" className="min-w-[110px]">View Details</Button>
+                        )}
+                      </div>
                     </div>
-                    <ChevronRight className="w-5 h-5" />
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex flex-wrap gap-2 items-center">
-                      {getStatusBadge(ticket.status)}
-                      {getPriorityIndicator(ticket.priority)}
-                    </div>
-                    <div>
-                      {(ticket.status === "new" || ticket.status === "processing") && (
-                        <Button size="sm" className="min-w-[110px]">View Details</Button>
-                      )}
-                      {(ticket.status === "completed" || ticket.status === "rejected") && (
-                        <Button size="sm" variant="outline" className="min-w-[110px]">View Details</Button>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          ))}
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

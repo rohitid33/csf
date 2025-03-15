@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Card, 
   CardContent, 
@@ -9,6 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Check, Clock, AlertCircle, ArrowUpDown } from "lucide-react";
 import { useTicketTasks, Task } from '@/hooks/use-ticket-tasks';
+import { useTaskNotifications } from '@/hooks/use-task-notifications';
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
@@ -29,8 +30,18 @@ type SortOrder = 'asc' | 'desc';
 
 export function TaskList({ ticketId }: TaskListProps) {
   const { tasks, isLoading, error } = useTicketTasks(ticketId);
+  const { markTaskSeen } = useTaskNotifications();
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+
+  // Mark tasks as seen when they are rendered
+  useEffect(() => {
+    if (tasks && tasks.length > 0) {
+      tasks.forEach(task => {
+        markTaskSeen(task.id);
+      });
+    }
+  }, [tasks, markTaskSeen]);
 
   // Format date to readable format
   const formatDate = (dateString: string) => {
