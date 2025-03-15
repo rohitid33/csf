@@ -49,7 +49,7 @@ function AppContent() {
       <Suspense fallback={null}>
         {/* Show appropriate navigation based on route */}
         {isAdminRoute ? <AdminTopNav /> : <Navbar />}
-        <main className="flex-1">
+        <main className="flex-1 pb-16">
           <Switch>
             <Route path="/" component={Home} />
             <ProtectedRoute path="/complaint" component={Complaint} />
