@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode, useContext, useState, useCallback } from "react";
 import {
   useQuery,
   useMutation,
@@ -106,6 +106,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     },
   });
+
+  const logout = useCallback(async () => {
+    if (!user) return;
+
+    const userSpecificKeys = [
+      `seenTaskIds_${user.id}`,
+      `notification_session_${user.id}`
+    ];
+
+    try {
+      // Make logout API call first
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Logout failed');
+      }
+
+      // Only clear storage after successful logout
+      userSpecificKeys.forEach(key => {
+        try {
+          localStorage.removeItem(key);
+          sessionStorage.removeItem(key);
+        } catch (storageError) {
+          console.error(`Error clearing storage key ${key}:`, storageError);
+        }
+      });
+
+      // Clear user state
+      queryClient.setQueryData(["/api/user"], null);
+    } catch (error) {
+      console.error('Error during logout:', error);
+      throw error; // Propagate error to caller
+    }
+  }, [user, queryClient]);
 
   return (
     <AuthContext.Provider

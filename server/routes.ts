@@ -1222,9 +1222,10 @@ export async function registerRoutes(app: Express) {
         return res.status(401).json({ error: "Unauthorized" });
       }
 
-      // Import the Ticket and Task model
+      // Import the models
       const { Ticket } = await import('./models/Ticket');
       const { Task } = await import('./models/Task');
+      const { TaskView } = await import('./models/TaskView');
       
       // Find the ticket by ID and verify it belongs to the user
       const ticket = await Ticket.findOne({
@@ -1239,7 +1240,15 @@ export async function registerRoutes(app: Express) {
       // Find tasks for this ticket
       const tasks = await Task.find({ ticketId: req.params.id }).lean();
       
-      // Get assignee information for each task
+      // Get viewed tasks for this user
+      const viewedTasks = await TaskView.find({
+        userId: req.user.id,
+        taskId: { $in: tasks.map(task => task._id) }
+      }).lean();
+
+      const viewedTaskIds = new Set(viewedTasks.map(view => view.taskId.toString()));
+      
+      // Get assignee information for each task and add viewed status
       const { User } = await import('./models/User');
       const tasksWithAssigneeInfo = await Promise.all(
         tasks.map(async (task) => {
@@ -1250,18 +1259,21 @@ export async function registerRoutes(app: Express) {
                 return {
                   ...task,
                   id: task._id.toString(),
-                  assigneeName: `${assignee.firstName} ${assignee.lastName}`
+                  assigneeName: `${assignee.firstName} ${assignee.lastName}`,
+                  viewed: viewedTaskIds.has(task._id.toString())
                 };
               }
             }
             return {
               ...task,
-              id: task._id.toString()
+              id: task._id.toString(),
+              viewed: viewedTaskIds.has(task._id.toString())
             };
           } catch (err) {
             return {
               ...task,
-              id: task._id.toString()
+              id: task._id.toString(),
+              viewed: viewedTaskIds.has(task._id.toString())
             };
           }
         })
@@ -1274,6 +1286,116 @@ export async function registerRoutes(app: Express) {
     }
   });
   
+  // Mark a task as viewed
+  app.post("/api/tasks/:taskId/view", async (req, res) => {
+    try {
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const { TaskView } = await import('./models/TaskView');
+      const { Task } = await import('./models/Task');
+
+      // Verify task exists
+      const task = await Task.findById(req.params.taskId);
+      if (!task) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+
+      // Create or update task view
+      await TaskView.findOneAndUpdate(
+        { 
+          userId: req.user.id,
+          taskId: req.params.taskId
+        },
+        { 
+          $set: { viewedAt: new Date() }
+        },
+        { 
+          upsert: true,
+          new: true
+        }
+      );
+
+      res.json({ success: true });
+    } catch (error: unknown) {
+      console.error('Error marking task as viewed:', error);
+      res.status(500).json({ error: "Failed to mark task as viewed" });
+    }
+  });
+
+  // Get viewed status for multiple tasks
+  app.post("/api/tasks/viewed-status", async (req, res) => {
+    try {
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const taskIds = req.body.taskIds;
+      if (!Array.isArray(taskIds)) {
+        return res.status(400).json({ error: "taskIds must be an array" });
+      }
+
+      const { TaskView } = await import('./models/TaskView');
+
+      const viewedTasks = await TaskView.find({
+        userId: req.user.id,
+        taskId: { $in: taskIds }
+      }).lean();
+
+      const viewedTaskIds = viewedTasks.map(view => view.taskId.toString());
+
+      res.json({
+        viewedTasks: taskIds.reduce((acc: Record<string, boolean>, taskId: string) => {
+          acc[taskId] = viewedTaskIds.includes(taskId);
+          return acc;
+        }, {})
+      });
+    } catch (error: unknown) {
+      console.error('Error fetching viewed status:', error);
+      res.status(500).json({ error: "Failed to fetch viewed status" });
+    }
+  });
+
+  // Mark multiple tasks as viewed in batch
+  app.post("/api/tasks/viewed-status/batch", async (req, res) => {
+    try {
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const { taskIds } = req.body;
+      if (!Array.isArray(taskIds)) {
+        return res.status(400).json({ error: "taskIds must be an array" });
+      }
+
+      const { TaskView } = await import('./models/TaskView');
+      const { Task } = await import('./models/Task');
+
+      // Verify all tasks exist
+      const tasks = await Task.find({ _id: { $in: taskIds } });
+      if (tasks.length !== taskIds.length) {
+        return res.status(404).json({ error: "Some tasks not found" });
+      }
+
+      // Create task views in bulk
+      const operations = taskIds.map(taskId => ({
+        updateOne: {
+          filter: { userId: req.user.id, taskId },
+          update: { $set: { viewedAt: new Date() } },
+          upsert: true
+        }
+      }));
+
+      await TaskView.bulkWrite(operations);
+
+      res.json({ success: true });
+    } catch (error: unknown) {
+      console.error('Error marking tasks as viewed in batch:', error);
+      res.status(500).json({ error: "Failed to mark tasks as viewed" });
+    }
+  });
+
   // Admin Ticket Management API Endpoints
 
   // Get all tickets with pagination and filtering

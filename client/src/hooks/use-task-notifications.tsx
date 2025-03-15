@@ -5,18 +5,21 @@ import { useAuth } from './use-auth';
 import { TaskNotification } from '../components/ticket/TaskNotification';
 
 export interface TaskNotificationContextType {
-  markTaskSeen: (taskId: string) => void;
+  markTaskSeen: (taskId: string) => Promise<void>;
+  markTasksSeenBatch: (taskIds: string[]) => Promise<void>;
   hasUnseenTasks: boolean;
   unseenTasksCount: number;
   getUnseenTaskCountForTicket: (ticketId: string) => number;
+  isLoading: boolean;
+  error: Error | null;
 }
 
 export const TaskNotificationContext = createContext<TaskNotificationContextType | undefined>(undefined);
 
-// Function to get seen task IDs from localStorage
-const getStoredSeenTaskIds = (): Set<string> => {
+// Function to get seen task IDs from localStorage for a specific user
+const getStoredSeenTaskIds = (userId: string): Set<string> => {
   try {
-    const stored = localStorage.getItem('seenTaskIds');
+    const stored = localStorage.getItem(`seenTaskIds_${userId}`);
     if (stored) {
       return new Set(JSON.parse(stored));
     }
@@ -26,49 +29,79 @@ const getStoredSeenTaskIds = (): Set<string> => {
   return new Set();
 };
 
-// Function to store seen task IDs in localStorage
-const storeSeenTaskIds = (ids: Set<string>) => {
+// Function to store seen task IDs in localStorage for a specific user
+const storeSeenTaskIds = (userId: string, ids: Set<string>) => {
   try {
-    localStorage.setItem('seenTaskIds', JSON.stringify(Array.from(ids)));
+    localStorage.setItem(`seenTaskIds_${userId}`, JSON.stringify(Array.from(ids)));
   } catch (error) {
     console.error('Error storing seen tasks in localStorage:', error);
+  }
+};
+
+// Function to clear seen task IDs for a user
+const clearUserSeenTasks = (userId: string) => {
+  try {
+    localStorage.removeItem(`seenTaskIds_${userId}`);
+  } catch (error) {
+    console.error('Error clearing seen tasks from localStorage:', error);
   }
 };
 
 export function TaskNotificationProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const { tickets } = useTickets();
-  const [seenTaskIds, setSeenTaskIds] = useState<Set<string>>(() => getStoredSeenTaskIds());
+  const [seenTaskIds, setSeenTaskIds] = useState<Set<string>>(() => 
+    user ? getStoredSeenTaskIds(user.id) : new Set()
+  );
   const [latestTasks, setLatestTasks] = useState<Record<string, Task[]>>({});
   const [currentNotification, setCurrentNotification] = useState<{ticketId: string, task: Task} | null>(null);
   const [hasShownNotificationsThisSession, setHasShownNotificationsThisSession] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   
-  // Fetch tasks for all user tickets
+  // Fetch tasks for all user tickets with error handling
   useEffect(() => {
     if (!user || !tickets.length) return;
     
     const fetchTasksForTickets = async () => {
-      const fetchedTasks: Record<string, Task[]> = {};
+      setIsLoading(true);
+      setError(null);
       
-      for (const ticket of tickets) {
-        try {
-          const response = await fetch(`/api/tickets/${ticket.id}/tasks`);
-          if (response.ok) {
+      try {
+        const fetchedTasks: Record<string, Task[]> = {};
+        
+        for (const ticket of tickets) {
+          try {
+            const response = await fetch(`/api/tickets/${ticket.id}/tasks`);
+            if (!response.ok) {
+              throw new Error(`Failed to fetch tasks for ticket ${ticket.id}`);
+            }
             const tasks = await response.json();
             fetchedTasks[ticket.id] = tasks;
+          } catch (error) {
+            console.error(`Error fetching tasks for ticket ${ticket.id}:`, error);
+            // Continue with other tickets even if one fails
           }
-        } catch (error) {
-          console.error(`Error fetching tasks for ticket ${ticket.id}:`, error);
         }
+        
+        setLatestTasks(fetchedTasks);
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+        setError(error instanceof Error ? error : new Error('Failed to fetch tasks'));
+      } finally {
+        setIsLoading(false);
       }
-      
-      setLatestTasks(fetchedTasks);
     };
     
     fetchTasksForTickets();
     
-    // Set up polling to check for new tasks every 2 minutes
-    const intervalId = setInterval(fetchTasksForTickets, 2 * 60 * 1000);
+    // Set up polling with error handling
+    const intervalId = setInterval(() => {
+      fetchTasksForTickets().catch(error => {
+        console.error('Error in polling interval:', error);
+      });
+    }, 2 * 60 * 1000);
+    
     return () => clearInterval(intervalId);
   }, [user, tickets]);
   
@@ -119,10 +152,28 @@ export function TaskNotificationProvider({ children }: { children: ReactNode }) 
     }
   }, [latestTasks, seenTaskIds, currentNotification, hasShownNotificationsThisSession, user]);
   
+  // Reset seen tasks when user changes
+  useEffect(() => {
+    if (user) {
+      setSeenTaskIds(getStoredSeenTaskIds(user.id));
+    } else {
+      setSeenTaskIds(new Set());
+    }
+  }, [user]);
+  
   // Update localStorage when seenTaskIds changes
   useEffect(() => {
-    storeSeenTaskIds(seenTaskIds);
-  }, [seenTaskIds]);
+    if (user) {
+      storeSeenTaskIds(user.id, seenTaskIds);
+    }
+  }, [seenTaskIds, user]);
+  
+  // Clear user data on logout
+  useEffect(() => {
+    if (!user && seenTaskIds.size > 0) {
+      setSeenTaskIds(new Set());
+    }
+  }, [user]);
   
   // Handle notification dismissal - now just closes the notification without marking as seen
   const handleDismissNotification = () => {
@@ -131,14 +182,111 @@ export function TaskNotificationProvider({ children }: { children: ReactNode }) 
     }
   };
   
-  // Mark a task as seen - now only used when explicitly viewing a task
-  const markTaskSeen = (taskId: string) => {
-    setSeenTaskIds(prev => {
-      const updatedSet = new Set(prev);
-      updatedSet.add(taskId);
-      return updatedSet;
-    });
+  // Mark a task as seen - now syncs with both localStorage and database
+  const markTaskSeen = async (taskId: string) => {
+    if (!user) return;
+
+    try {
+      // Sync with database first
+      const response = await fetch(`/api/tasks/${taskId}/view`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to sync task view status');
+      }
+
+      // Update local state only after successful database sync
+      setSeenTaskIds(prev => {
+        const updatedSet = new Set(prev);
+        updatedSet.add(taskId);
+        return updatedSet;
+      });
+    } catch (error) {
+      console.error('Error syncing task view status:', error);
+      // No need to revert local state as it wasn't updated yet
+      throw error; // Propagate error to caller
+    }
   };
+
+  // Add batch processing for multiple tasks
+  const markTasksSeenBatch = async (taskIds: string[]) => {
+    if (!user || !taskIds.length) return;
+
+    try {
+      // Sync with database first
+      const response = await fetch('/api/tasks/viewed-status/batch', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ taskIds })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to sync batch task view status');
+      }
+
+      // Update local state only after successful database sync
+      setSeenTaskIds(prev => {
+        const updatedSet = new Set(prev);
+        taskIds.forEach(id => updatedSet.add(id));
+        return updatedSet;
+      });
+    } catch (error) {
+      console.error('Error syncing batch task view status:', error);
+      throw error;
+    }
+  };
+
+  // Fetch initial viewed status from database
+  useEffect(() => {
+    if (!user || !Object.keys(latestTasks).length) return;
+
+    const fetchViewedStatus = async () => {
+      try {
+        const allTaskIds = Object.values(latestTasks)
+          .flat()
+          .map(task => task?.id)
+          .filter(Boolean) as string[];
+
+        const response = await fetch('/api/tasks/viewed-status', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ taskIds: allTaskIds })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch viewed status');
+        }
+
+        const { viewedTasks } = await response.json();
+        
+        // Update local state with database state
+        setSeenTaskIds(prev => {
+          const updatedSet = new Set(prev);
+          Object.entries(viewedTasks).forEach(([taskId, viewed]) => {
+            if (viewed) {
+              updatedSet.add(taskId);
+            }
+          });
+          return updatedSet;
+        });
+      } catch (error) {
+        console.error('Error fetching viewed status:', error);
+      }
+    };
+
+    fetchViewedStatus();
+  }, [user, latestTasks]);
   
   // Reset session flag when user changes
   useEffect(() => {
@@ -170,13 +318,31 @@ export function TaskNotificationProvider({ children }: { children: ReactNode }) 
     return ticketTasks.filter(task => !seenTaskIds.has(task.id)).length;
   };
   
+  // Error boundary fallback
+  if (error) {
+    return (
+      <div role="alert" className="text-red-600">
+        <p>Error loading notifications: {error.message}</p>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="text-blue-600 underline mt-2"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
     <TaskNotificationContext.Provider
       value={{
         markTaskSeen,
+        markTasksSeenBatch,
         hasUnseenTasks,
         unseenTasksCount,
-        getUnseenTaskCountForTicket
+        getUnseenTaskCountForTicket,
+        isLoading,
+        error
       }}
     >
       {children}
