@@ -41,19 +41,26 @@ export default function Categories({ selected, onSelect }: CategoriesProps) {
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
 
-    // Only run on mobile devices
+    // Only run on mobile devices and if not already scrolled
     if (window.innerWidth <= 768) {
-      // Initial scroll to show full scroll capability
-      setTimeout(() => {
-        // First scroll to the end
-        const scrollToEnd = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-        scrollContainer.scrollBy({ left: scrollToEnd, behavior: 'smooth' });
-        
-        // Then scroll back to start after a delay
+      // Store scroll state in localStorage to persist across page reloads
+      const hasScrolled = localStorage.getItem('categoryScrolled') === 'true';
+      
+      if (!hasScrolled) {
+        // Initial scroll to show full scroll capability
         setTimeout(() => {
-          scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+          // First scroll to the end
+          const scrollToEnd = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+          scrollContainer.scrollBy({ left: scrollToEnd, behavior: 'smooth' });
+          
+          // Then scroll back to start after a delay
+          setTimeout(() => {
+            scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+            // Mark as scrolled in localStorage
+            localStorage.setItem('categoryScrolled', 'true');
+          }, 1000);
         }, 1000);
-      }, 1000);
+      }
     }
   }, [categories]);
 

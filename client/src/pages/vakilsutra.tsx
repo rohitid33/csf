@@ -15,7 +15,6 @@ export default function VakilsutraPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showLeftScroll, setShowLeftScroll] = useState(false);
   const [showRightScroll, setShowRightScroll] = useState(true);
-  const [hasAutoScrolled, setHasAutoScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const servicesContainerRef = useRef<HTMLDivElement>(null);
   const categoriesContainerRef = useRef<HTMLDivElement>(null);
@@ -60,44 +59,45 @@ export default function VakilsutraPage() {
   // Auto-scroll effect for categories
   useEffect(() => {
     const initializeAutoScroll = () => {
-      if (!categoriesContainerRef.current || hasAutoScrolled || isLoading || categories.length === 0) return;
+      if (!categoriesContainerRef.current || isLoading || categories.length === 0) return;
 
       const container = categoriesContainerRef.current;
-      const totalWidth = container.scrollWidth;
-      const viewportWidth = container.clientWidth;
-      const maxScroll = totalWidth - viewportWidth;
+      
+      // Only run on mobile devices
+      if (window.innerWidth <= 768) {
+        // Store scroll state in localStorage to persist across page reloads
+        const hasScrolled = localStorage.getItem('legalCategoryScrolled') === 'true';
+        
+        if (!hasScrolled) {
+          // Start from beginning
+          container.scrollLeft = 0;
 
-      if (maxScroll <= 0) return; // Don't scroll if content fits in viewport
-
-      // Start from beginning
-      container.scrollLeft = 0;
-
-      // First timeout - start scrolling after initial delay
-      setTimeout(() => {
-        // Scroll to end
-        container.scrollTo({
-          left: maxScroll,
-          behavior: 'smooth'
-        });
-
-        // Second timeout - scroll back to start after reaching end
-        setTimeout(() => {
-          container.scrollTo({
-            left: 0,
-            behavior: 'smooth'
-          });
-          setHasAutoScrolled(true);
-        }, 2000); // Wait 2 seconds at the end
-      }, 1000); // Wait 1 second before starting
+          // First timeout - start scrolling after initial delay
+          setTimeout(() => {
+            // Scroll to end
+            const scrollToEnd = container.scrollWidth - container.clientWidth;
+            container.scrollBy({ left: scrollToEnd, behavior: 'smooth' });
+            
+            // Second timeout - scroll back to start after reaching end
+            setTimeout(() => {
+              container.scrollTo({ left: 0, behavior: 'smooth' });
+              // Mark as scrolled in localStorage
+              localStorage.setItem('legalCategoryScrolled', 'true');
+            }, 1000);
+          }, 1000);
+        }
+      }
     };
 
     initializeAutoScroll();
-  }, [hasAutoScrolled, isLoading, categories]);
+  }, [isLoading, categories]);
 
-  // Reset auto-scroll when category changes or search query changes
+  // Set first category as default when component mounts
   useEffect(() => {
-    setHasAutoScrolled(false);
-  }, [selectedCategory, searchQuery]);
+    if (!selectedCategory && categories.length > 0) {
+      setSelectedCategory(categories[0].id);
+    }
+  }, [categories, selectedCategory]);
 
   // Reset services scroll position when category changes
   useEffect(() => {
