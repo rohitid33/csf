@@ -69,17 +69,17 @@ export interface ServiceData {
   title: string;
   icon: string;
   description: string;
-  features: string[];
+  features: string;
   category?: string;
-  selectedCategory?: string; // For compatibility with admin dashboard
-  subcategoryIds?: string[]; // IDs of subcategories this service belongs to
+  selectedCategory?: string;
+  subcategoryIds?: string[];
   popular?: boolean;
-  eligibility?: string[];
+  eligibility?: string;
   process?: {
     title: string;
-    steps: string[];
+    steps: string;
   }[];
-  documents?: string[];
+  documents?: string;
   faqs?: {
     question: string;
     answer: string;
@@ -276,11 +276,9 @@ export function ServiceTemplate({ service }: ServiceTemplateProps) {
             <Card>
               <CardContent className="pt-6">
                 <h2 className="text-2xl font-semibold mb-4">Features & Benefits</h2>
-                <ul className="list-disc list-inside space-y-2">
-                  {service.features.map((feature, index) => (
-                    <li key={index} className="text-lg">{feature}</li>
-                  ))}
-                </ul>
+                <div className="text-lg whitespace-pre-wrap">
+                  {service.features}
+                </div>
               </CardContent>
             </Card>
 
@@ -289,11 +287,9 @@ export function ServiceTemplate({ service }: ServiceTemplateProps) {
               <Card>
                 <CardContent className="pt-6">
                   <h2 className="text-2xl font-semibold mb-4">Eligibility</h2>
-                  <ul className="list-disc list-inside space-y-2">
-                    {service.eligibility.map((item, index) => (
-                      <li key={index} className="text-lg">{item}</li>
-                    ))}
-                  </ul>
+                  <div className="text-lg whitespace-pre-wrap">
+                    {service.eligibility}
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -308,11 +304,9 @@ export function ServiceTemplate({ service }: ServiceTemplateProps) {
                     {service.process.map((phase, index) => (
                       <div key={index} className="mb-6">
                         <h3 className="text-xl font-semibold mb-3">{phase.title}</h3>
-                        <ol className="list-decimal list-inside space-y-2">
-                          {phase.steps.map((step, stepIndex) => (
-                            <li key={stepIndex} className="text-lg">{step}</li>
-                          ))}
-                        </ol>
+                        <div className="text-lg whitespace-pre-wrap">
+                          {phase.steps}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -330,11 +324,9 @@ export function ServiceTemplate({ service }: ServiceTemplateProps) {
                 {service.documents ? (
                   <>
                     <h2 className="text-2xl font-semibold mb-4">Required Documents</h2>
-                    <ul className="list-disc list-inside space-y-2">
-                      {service.documents.map((doc, index) => (
-                        <li key={index} className="text-lg">{doc}</li>
-                      ))}
-                    </ul>
+                    <div className="text-lg whitespace-pre-wrap">
+                      {service.documents}
+                    </div>
                   </>
                 ) : (
                   <p className="text-lg">Document information is not available for this service.</p>
@@ -351,7 +343,7 @@ export function ServiceTemplate({ service }: ServiceTemplateProps) {
                   <Accordion type="single" collapsible className="w-full">
                     {service.faqs.map((faq, index) => (
                       <AccordionItem key={index} value={`faq-${index}`}>
-                        <AccordionTrigger className="text-lg font-medium">
+                        <AccordionTrigger className="text-lg font-medium text-left justify-start">
                           {faq.question}
                         </AccordionTrigger>
                         <AccordionContent className="text-base">

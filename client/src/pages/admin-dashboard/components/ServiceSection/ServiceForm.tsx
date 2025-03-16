@@ -269,25 +269,31 @@ export function ServiceForm({
           <TabsContent value="eligibility">
             <div className="grid gap-4">
               <div>
-                <Label htmlFor="serviceEligibility">Eligibility Criteria (comma-separated)</Label>
+                <Label htmlFor="serviceEligibility">Eligibility Criteria</Label>
                 <Textarea 
                   id="serviceEligibility"
                   value={serviceEligibility}
                   onChange={(e) => setServiceEligibility(e.target.value)}
-                  placeholder="Criterion 1, Criterion 2, Criterion 3..."
+                  placeholder="Enter eligibility criteria..."
                   rows={3}
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Enter the eligibility criteria as you want it to appear on the service page.
+                </p>
               </div>
               
               <div>
-                <Label htmlFor="serviceDocuments">Required Documents (comma-separated)</Label>
+                <Label htmlFor="serviceDocuments">Required Documents</Label>
                 <Textarea 
                   id="serviceDocuments"
                   value={serviceDocuments}
                   onChange={(e) => setServiceDocuments(e.target.value)}
-                  placeholder="Document 1, Document 2, Document 3..."
+                  placeholder="Enter required documents..."
                   rows={3}
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Enter the required documents as you want them to appear on the service page.
+                </p>
               </div>
             </div>
           </TabsContent>
