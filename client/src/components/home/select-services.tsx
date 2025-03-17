@@ -19,11 +19,6 @@ const motorInsuranceServices = [
     name: "Third Party Accident Claims",
     icon: "/icons/car_ins.png",
     url: "/service/67d7d0b9ba8af0c60c60b7a0"
-  },
-  {
-    name: "Motor Test",
-    icon: "/icons/car_ins.png",
-    url: "/service/67d7d0b9ba8af0c60c60b7a1"
   }
 ];
 
