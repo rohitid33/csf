@@ -90,13 +90,6 @@ function AppContent() {
                 </React.Suspense>
               )}
             </Route>
-            <Route path="/gogo">
-              {() => (
-                <React.Suspense fallback={null}>
-                  {React.createElement(React.lazy(() => import("@/pages/gogo")))}
-                </React.Suspense>
-              )}
-            </Route>
             <Route path="/about-us">
               {() => (
                 <React.Suspense fallback={null}>

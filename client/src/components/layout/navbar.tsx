@@ -36,7 +36,6 @@ import { ServiceData } from "@/components/services/service-template";
 // More menu items
 const moreMenuItems = [
   { title: "Home", link: "/" },
-  { title: "Services", link: "/gogo" },
   { title: "About Us", link: "/about-us" },
   { title: "Events", link: "/events" },
   { title: "Products", link: "/products" },

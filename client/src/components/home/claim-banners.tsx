@@ -14,7 +14,7 @@ const statements = [
 ];
 
 // Group statements into sets of 3
-const groupedStatements = [];
+const groupedStatements: string[][] = [];
 for (let i = 0; i < statements.length; i += 3) {
   groupedStatements.push(statements.slice(i, i + 3));
 }

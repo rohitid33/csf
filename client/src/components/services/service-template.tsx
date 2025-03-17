@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft } from "lucide-react";
 
   // Ticket creation function
 const createTicket = async (ticketData: any) => {
@@ -97,12 +98,16 @@ interface ServiceTemplateProps {
 export function ServiceTemplate({ service }: ServiceTemplateProps) {
   const [buttonStyle, setButtonStyle] = useState<React.CSSProperties>({});
   const { user, isLoading } = useAuth();
-  const [, setLocation] = useLocation();
+  const [_, setLocation] = useLocation();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const queryClient = useQueryClient();
   
+  const handleBack = () => {
+    setLocation("/");
+  };
+
   const handleApplyNow = () => {
     if (user) {
       setShowConfirmDialog(true);
@@ -248,15 +253,24 @@ export function ServiceTemplate({ service }: ServiceTemplateProps) {
   
   return (
     <div className="container mx-auto px-4 py-8 bg-white relative">
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        className="absolute top-4 left-4 flex items-center gap-2"
+        onClick={handleBack}
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back
+      </Button>
+
       {/* Add padding at bottom to prevent content from being hidden behind fixed buttons */}
       <div className="pb-32">
-        {/* Hero Section - Left aligned */}
-        <div className="mb-10">
-          <div className="text-6xl mb-4">{service.icon}</div>
-          <h1 className="text-3xl font-bold mb-4">
+        {/* Hero Section - Left aligned with top padding to avoid back button */}
+        <div className="mb-10 pt-12">
+          <h1 className="text-4xl font-bold mb-6">
             {service.title.charAt(0).toUpperCase() + service.title.slice(1)}
           </h1>
-          <p className="text-lg text-muted-foreground max-w-3xl">
+          <p className="text-xl text-muted-foreground max-w-3xl leading-relaxed">
             {service.description}
           </p>
         </div>
