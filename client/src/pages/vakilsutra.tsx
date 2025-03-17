@@ -23,7 +23,7 @@ export default function VakilsutraPage() {
       {/* Content Section */}
       <section className="container mx-auto px-4">
         <VakilsutraSelectCategory searchQuery={searchQuery} />
-      </section>
+          </section>
     </div>
   );
 } 

@@ -7,17 +7,17 @@ interface SelectServicesProps {
 const motorInsuranceServices = [
   {
     name: "Motor Theft Claim",
-    icon: "/icons/car_ins.png",
+    icon: "/icons/cartheft.png",
     url: "/service/67d7d0b9ba8af0c60c60b79e"
   },
   {
     name: "Motor Accident Insurance Claim",
-    icon: "/icons/car_ins.png",
+    icon: "/icons/accident.png",
     url: "/service/67d7f548aee5a4ad962514e0"
   },
   {
     name: "Third Party Accident Claims",
-    icon: "/icons/car_ins.png",
+    icon: "/icons/thirdparty.png",
     url: "/service/67d7d0b9ba8af0c60c60b7a0"
   }
 ];
@@ -49,24 +49,22 @@ export default function SelectServices({ category }: SelectServicesProps) {
           <div 
             key={index}
             onClick={() => handleServiceClick(service.name, service.url)}
-            className={`flex flex-col items-center gap-3 p-4 bg-white rounded-xl border transition-all duration-200 cursor-pointer group ${
-              selectedService === service.name 
-                ? 'border-blue-500 shadow-lg bg-blue-50' 
-                : 'border-blue-100 hover:shadow-md'
+            className={`flex flex-col items-center gap-2 sm:gap-3 p-2 sm:p-4 cursor-pointer group ${
+              selectedService === service.name ? 'bg-blue-50 rounded-xl' : ''
             }`}
           >
-            <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-200 ${
-              selectedService === service.name 
-                ? 'bg-blue-100 shadow-inner' 
-                : 'bg-blue-50 group-hover:bg-blue-100'
+            <div className={`w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center transition-all duration-200 group-hover:shadow-xl rounded-xl sm:rounded-2xl ${
+              selectedService === service.name ? 'bg-blue-600' : ''
             }`}>
               <img
                 src={service.icon}
                 alt={service.name}
-                className="w-10 h-10 object-contain"
+                className={`w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-xl sm:rounded-2xl transition-all duration-200 group-hover:shadow-lg ${
+                  selectedService === service.name ? 'brightness-0 invert' : ''
+                }`}
               />
             </div>
-            <span className={`text-sm font-medium text-center transition-colors duration-200 ${
+            <span className={`text-sm sm:text-base font-medium text-center transition-colors duration-200 ${
               selectedService === service.name 
                 ? 'text-blue-800' 
                 : 'text-blue-950 group-hover:text-blue-800'

@@ -5,7 +5,7 @@ const categories = [
   { name: "Motor Insurance", icon: "/icons/motor.png" },
   { name: "Life Insurance", icon: "/icons/life.png" },
   { name: "Health Insurance", icon: "/icons/health.png" },
-  { name: "Travel Insurance", icon: "/icons/car_ins.png" },
+  { name: "Travel Insurance", icon: "/icons/travel.png" },
   { name: "General Insurance", icon: "/icons/general.png" }
 ];
 
