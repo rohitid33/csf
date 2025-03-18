@@ -352,11 +352,26 @@ export function ServiceForm({
         </Tabs>
         
         <div className="flex gap-2 mt-6">
-          <Button onClick={onAddService} disabled={isLoading}>
-            {isLoading ? "Processing..." : (editServiceId ? "Update Service" : "Add Service")}
+          <Button 
+            onClick={onAddService} 
+            disabled={isLoading}
+            className="min-w-[120px]"
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                {editServiceId ? "Updating..." : "Adding..."}
+              </div>
+            ) : (
+              editServiceId ? "Update Service" : "Add Service"
+            )}
           </Button>
           {editServiceId && (
-            <Button variant="outline" onClick={onCancelEdit}>
+            <Button 
+              variant="outline" 
+              onClick={onCancelEdit}
+              disabled={isLoading}
+            >
               Cancel
             </Button>
           )}

@@ -52,62 +52,156 @@ export function useServices() {
     }
   };
 
-  const handleAddService = () => {
-    if (!serviceId.trim() || !serviceTitle.trim() || !serviceDescription.trim() || !selectedCategory) {
+  const handleAddService = async () => {
+    // Enhanced validation
+    const validationErrors = [];
+    
+    if (!serviceId.trim()) {
+      validationErrors.push("Service ID is required");
+    } else {
+      // Validate service ID format (URL-friendly)
+      const idRegex = /^[a-z0-9-]+$/;
+      if (!idRegex.test(serviceId)) {
+        validationErrors.push("Service ID must contain only lowercase letters, numbers, and hyphens");
+      } else {
+        // Check for duplicate service ID (excluding current service when editing)
+        const isDuplicate = services.some(service => 
+          service.id === serviceId && service.id !== editServiceId
+        );
+        if (isDuplicate) {
+          validationErrors.push("A service with this ID already exists");
+        }
+      }
+    }
+    
+    if (!serviceTitle.trim()) {
+      validationErrors.push("Service title is required");
+    }
+    if (!serviceDescription.trim()) {
+      validationErrors.push("Service description is required");
+    }
+    if (!selectedCategory) {
+      validationErrors.push("Please select a category");
+    }
+    if (!serviceIcon.trim()) {
+      validationErrors.push("Service icon (emoji) is required");
+    }
+    if (serviceProcess.length === 0) {
+      validationErrors.push("At least one process is required");
+    }
+    if (serviceFaqs.length === 0) {
+      validationErrors.push("At least one FAQ is required");
+    }
+    if (!contactPhone.trim() || !contactEmail.trim()) {
+      validationErrors.push("Both phone and email contact information are required");
+    }
+
+    if (validationErrors.length > 0) {
       toast({
-        title: "Missing information",
-        description: "Please fill in all required fields including selecting a category.",
+        title: "Missing Information",
+        description: validationErrors.join("\n"),
         variant: "destructive"
       });
       return;
     }
 
-    const featuresArray = serviceFeatures.split(',').map(item => item.trim()).filter(Boolean);
-    const eligibilityArray = serviceEligibility.split(',').map(item => item.trim()).filter(Boolean);
-    const documentsArray = serviceDocuments.split(',').map(item => item.trim()).filter(Boolean);
-    
-    const serviceData: ServiceData = {
-      id: serviceId,
-      title: serviceTitle,
-      icon: serviceIcon,
-      description: serviceDescription,
-      features: featuresArray,
-      category: selectedCategory,
-      selectedCategory: selectedCategory,
-      subcategoryIds: selectedSubcategoriesForService.length > 0 ? selectedSubcategoriesForService : undefined,
-      popular: servicePopular,
-      eligibility: eligibilityArray,
-      process: serviceProcess,
-      documents: documentsArray,
-      faqs: serviceFaqs,
-      contactInfo: { 
-        phone: contactPhone, 
-        email: contactEmail 
-      }
-    };
-    
-    console.log("Creating/Updating service with data:", serviceData);
-    console.log("Selected subcategories:", selectedSubcategoriesForService);
-    
-    if (editServiceId) {
-      // Update existing service
-      setServices(services.map(service => 
-        service.id === editServiceId ? serviceData : service
-      ));
-      setEditServiceId(null);
-    } else {
-      // Add new service
-      setServices([...services, serviceData]);
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(contactEmail)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address",
+        variant: "destructive"
+      });
+      return;
     }
-    
-    // Reset form
-    resetServiceForm();
-    setHasChanges(true);
-    
-    toast({
-      title: editServiceId ? "Service updated" : "Service added",
-      description: `The service has been ${editServiceId ? "updated" : "added"} to the local changes.`,
-    });
+
+    setIsLoading(true);
+    try {
+      const featuresArray = serviceFeatures.split(',').map(item => item.trim()).filter(Boolean);
+      const eligibilityArray = serviceEligibility.split(',').map(item => item.trim()).filter(Boolean);
+      const documentsArray = serviceDocuments.split(',').map(item => item.trim()).filter(Boolean);
+      
+      const serviceData: ServiceData = {
+        id: editServiceId || serviceId,
+        title: serviceTitle.trim(),
+        icon: serviceIcon.trim(),
+        description: serviceDescription.trim(),
+        features: featuresArray,
+        category: selectedCategory,
+        selectedCategory: selectedCategory,
+        subcategoryIds: selectedSubcategoriesForService.length > 0 ? selectedSubcategoriesForService : undefined,
+        popular: servicePopular,
+        eligibility: eligibilityArray,
+        process: serviceProcess,
+        documents: documentsArray,
+        faqs: serviceFaqs,
+        contactInfo: { 
+          phone: contactPhone.trim(), 
+          email: contactEmail.trim() 
+        }
+      };
+
+      if (editServiceId) {
+        // Update existing service
+        const response = await fetch(`/api/services/${editServiceId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(serviceData),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to update service');
+        }
+
+        const updatedService = await response.json();
+        setServices(services.map(service => 
+          service.id === editServiceId ? updatedService : service
+        ));
+        
+        toast({
+          title: "Service updated",
+          description: "The service has been updated successfully.",
+        });
+      } else {
+        // Add new service
+        const response = await fetch('/api/services', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(serviceData),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to add service');
+        }
+
+        const newService = await response.json();
+        setServices([...services, newService]);
+        
+        toast({
+          title: "Service added",
+          description: "The service has been added successfully.",
+        });
+      }
+
+      // Reset form only after successful API call
+      resetServiceForm();
+      setHasChanges(true);
+      setEditServiceId(null);
+    } catch (error) {
+      console.error('Error saving service:', error);
+      toast({
+        title: "Error saving service",
+        description: error instanceof Error ? error.message : "Failed to save service",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const resetServiceForm = () => {

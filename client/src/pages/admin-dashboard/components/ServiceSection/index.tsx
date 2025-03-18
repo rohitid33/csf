@@ -113,19 +113,18 @@ export function ServiceSection({
     setServiceTitle(service.title);
     setServiceIcon(service.icon);
     setServiceDescription(service.description);
-    setServiceFeatures(service.features || "");
+    setServiceFeatures(Array.isArray(service.features) ? service.features.join(', ') : "");
     setServicePopular(service.popular || false);
     setSelectedCategory(service.category || "");
     setSelectedSubcategories(service.subcategoryIds || []);
-    setServiceEligibility(service.eligibility || "");
-    setServiceDocuments(service.documents || "");
+    setServiceEligibility(Array.isArray(service.eligibility) ? service.eligibility.join(', ') : "");
+    setServiceDocuments(Array.isArray(service.documents) ? service.documents.join(', ') : "");
     
     // Update process handling
     if (service.process && service.process.length > 0) {
       const firstProcess = service.process[0];
       setProcessTitle(firstProcess.title || "");
-      // Get the first step if it exists
-      setProcessSteps(Array.isArray(firstProcess.steps) && firstProcess.steps.length > 0 ? firstProcess.steps[0] : "");
+      setProcessSteps(Array.isArray(firstProcess.steps) ? firstProcess.steps.join(', ') : "");
     }
     
     setServiceFaqs(service.faqs || []);
@@ -168,9 +167,10 @@ export function ServiceSection({
 
   const handleAddProcess = () => {
     if (processTitle && processSteps) {
+      const stepsArray = processSteps.split(',').map(step => step.trim()).filter(Boolean);
       const newProcess = {
         title: processTitle,
-        steps: [processSteps]
+        steps: stepsArray
       };
       setServiceProcess([...serviceProcess, newProcess]);
       setProcessTitle("");

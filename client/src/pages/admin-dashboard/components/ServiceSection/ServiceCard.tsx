@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CategoryData } from "@/data/categories-data";
 import { ServiceData, SubcategoryData } from "@/components/services/service-template";
 
@@ -10,16 +10,66 @@ interface ServiceCardProps {
   subcategories: SubcategoryData[];
   onEdit: (service: ServiceData) => void;
   onDelete: (id: string) => void;
+  isLoading?: boolean;
 }
 
-export function ServiceCard({ service, categories, subcategories, onEdit, onDelete }: ServiceCardProps) {
+export function ServiceCard({
+  service,
+  categories,
+  subcategories,
+  onEdit,
+  onDelete,
+  isLoading = false
+}: ServiceCardProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (window.confirm(`Are you sure you want to delete this service?`)) {
+      setIsDeleting(true);
+      try {
+        await onDelete(service.id);
+      } finally {
+        setIsDeleting(false);
+      }
+    }
+  };
+
   return (
     <Card key={service.id}>
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <span className="flex items-center gap-2">
+            <span>{service.icon}</span>
+            {service.title}
+          </span>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onEdit(service)}
+              disabled={isLoading || isDeleting}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleDelete}
+              disabled={isLoading || isDeleting}
+            >
+              {isDeleting ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Deleting...
+                </div>
+              ) : (
+                "Delete"
+              )}
+            </Button>
+          </div>
+        </CardTitle>
+      </CardHeader>
       <CardContent className="p-6">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-2xl">{service.icon}</span>
-          <h3 className="text-xl font-semibold">{service.title}</h3>
-        </div>
         <div className="flex items-center gap-2 mb-2">
           <span className="text-sm text-muted-foreground">ID: {service.id}</span>
           {service.category && (
@@ -74,21 +124,6 @@ export function ServiceCard({ service, categories, subcategories, onEdit, onDele
               {service.faqs.length} FAQs
             </span>
           )}
-        </div>
-        
-        <div className="flex gap-2 mt-4">
-          <Button 
-            variant="outline" 
-            onClick={() => onEdit(service)}
-          >
-            Edit
-          </Button>
-          <Button 
-            variant="destructive" 
-            onClick={() => onDelete(service.id)}
-          >
-            Delete
-          </Button>
         </div>
       </CardContent>
     </Card>
