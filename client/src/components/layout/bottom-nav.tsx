@@ -41,13 +41,13 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#002B4E] border-t border-[#002B4E]">
-      <div className="h-16 grid grid-cols-4 text-white">
+      <div className="h-20 grid grid-cols-4 text-white">
         {navItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
             className={cn(
-              "flex flex-col items-center justify-center gap-1",
+              "flex flex-col items-center justify-center gap-2",
               item.active ? "text-primary" : "text-white"
             )}
           >

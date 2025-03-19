@@ -8,17 +8,17 @@ const banners = [
   {
     title: "Expert Insurance Support",
     subtitle: "We help you navigate through complex insurance claims",
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1920&q=80"
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1920&q=100"
   },
   {
     title: "Fast Claim Resolution",
     subtitle: "Quick and efficient resolution for your insurance disputes",
-    image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=1920&q=80"
+    image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=1920&q=100"
   },
   {
     title: "Professional Assistance",
     subtitle: "Expert team ready to support your insurance needs",
-    image: "https://images.unsplash.com/photo-1521791055366-0d553872125f?auto=format&fit=crop&w=1920&q=80"
+    image: "https://images.unsplash.com/photo-1521791055366-0d553872125f?auto=format&fit=crop&w=1920&q=100"
   }
 ];
 
@@ -38,9 +38,9 @@ export default function HeroBanner() {
   }, []);
 
   return (
-    <div className="px-6 py-2 md:px-6 md:py-6">
+    <div className="px-6 py-2 md:px-6 md:py-4">
       <div className="
-        relative h-[25vh] md:h-[30vh] rounded-2xl overflow-hidden max-w-5xl mx-auto
+        relative h-[20vh] md:h-[30vh] lg:h-[35vh] rounded-2xl overflow-hidden max-w-5xl mx-auto
         shadow-[0_8px_30px_rgb(0,0,0,0.12)]
         border border-white/10
         bg-gradient-to-r from-primary/5 via-background to-primary/5
@@ -70,15 +70,15 @@ export default function HeroBanner() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5 }}
-                  className="p-4 md:p-6"
+                  className="p-3 md:p-4 lg:p-6"
                 >
                   <div>
-                    <div className="mb-2 md:mb-3">
-                      <h1 className="text-2xl md:text-4xl font-bold text-white/90">
+                    <div className="mb-1 md:mb-2">
+                      <h1 className="text-xl md:text-3xl lg:text-4xl font-bold text-white/90">
                         {currentBannerContent.title}
                       </h1>
                     </div>
-                    <p className="text-sm md:text-lg text-white/75">
+                    <p className="text-sm md:text-base lg:text-lg text-white/75">
                       {currentBannerContent.subtitle}
                     </p>
                   </div>

@@ -7,12 +7,12 @@ interface VakilsutraSelectCategoryProps {
 
 const legalCategories = [
   {
-    name: "Criminal Law",
+    name: "Trademark & IP",
     icon: "/icons/car_ins.png",
-    url: "/vakilsutra/criminal-law"
+    url: "/vakilsutra/trademarkip"
   },
   {
-    name: "Civil Law",
+    name: "Consumer Claim",
     icon: "/icons/car_ins.png",
     url: "/vakilsutra/civil-law"
   },

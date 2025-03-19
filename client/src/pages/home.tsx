@@ -10,19 +10,86 @@ import SelectCategory from "@/components/home/select-category";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-white via-blue-50/30 to-white">
+      {/* Decorative background elements */}
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-pink-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+
       <Hero />
+      
+      {/* Decorative divider */}
+      <div className="relative h-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-blue-600/10 to-blue-800/10"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-24 h-1 bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 rounded-full"></div>
+        </div>
+      </div>
+
       <ClaimBanners />
-      <div className="container mx-auto px-4 py-8">
-        <h2 className="text-2xl font-semibold text-blue-950 mb-6">Select your category</h2>
-        <SelectCategory />
+
+      {/* Services Section with enhanced styling */}
+      <div className="relative py-16">
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-blue-50/50 to-white"></div>
+        <div className="container mx-auto px-4 relative">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-blue-950 mb-4">
+              Select your category
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Choose from our comprehensive range of insurance services tailored to your needs
+            </p>
+          </div>
+          <SelectCategory />
+        </div>
       </div>
-      <div className="container mx-auto px-4 py-8">
-        <KnowYourPolicy />
+
+      {/* Decorative divider */}
+      <div className="relative h-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-blue-600/10 to-blue-800/10"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-24 h-1 bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 rounded-full"></div>
+        </div>
       </div>
-      <Process />
+
+      <KnowYourPolicy />
+
+      {/* Process Section with enhanced styling */}
+      <div className="relative py-16">
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-blue-50/50 to-white"></div>
+        <div className="container mx-auto px-4 relative">
+          <Process />
+        </div>
+      </div>
+
+      {/* Decorative divider */}
+      <div className="relative h-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-blue-600/10 to-blue-800/10"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-24 h-1 bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 rounded-full"></div>
+        </div>
+      </div>
+
       <Testimonials />
-      <PartnerCareers />
+
+      {/* Partner Careers Section with enhanced styling */}
+      <div className="relative py-16">
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-blue-50/50 to-white"></div>
+        <div className="container mx-auto px-4 relative">
+          <PartnerCareers />
+        </div>
+      </div>
+
+      {/* Decorative divider */}
+      <div className="relative h-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-blue-600/10 to-blue-800/10"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-24 h-1 bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 rounded-full"></div>
+        </div>
+      </div>
+
       <div className="-mt-8">
         <CTA />
       </div>
