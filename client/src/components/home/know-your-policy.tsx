@@ -5,33 +5,49 @@ export default function KnowYourPolicy() {
   const [_, setLocation] = useLocation();
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const hasScrolledRef = useRef(false);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container || hasScrolledRef.current) return;
+    const section = sectionRef.current;
+    if (!container || !section || hasScrolledRef.current) return;
 
-    const scrollWidth = container.scrollWidth;
-    const clientWidth = container.clientWidth;
-    const maxScroll = scrollWidth - clientWidth;
-    
-    let currentScroll = 0;
-    const scrollInterval = setInterval(() => {
-      if (currentScroll >= maxScroll) {
-        clearInterval(scrollInterval);
-        // Reset to start with smooth animation
-        container.scrollTo({
-          left: 0,
-          behavior: 'smooth'
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Start scrolling when section comes into view
+            const scrollWidth = container.scrollWidth;
+            const clientWidth = container.clientWidth;
+            const maxScroll = scrollWidth - clientWidth;
+            
+            let currentScroll = 0;
+            const scrollInterval = setInterval(() => {
+              if (currentScroll >= maxScroll) {
+                clearInterval(scrollInterval);
+                // Reset to start with smooth animation
+                container.scrollTo({
+                  left: 0,
+                  behavior: 'smooth'
+                });
+                currentScroll = 0;
+                setActiveIndex(0);
+                hasScrolledRef.current = true;
+                // Unobserve after scrolling is complete
+                observer.unobserve(entry.target);
+              } else {
+                currentScroll += 8;
+                container.scrollLeft = currentScroll;
+              }
+            }, 10);
+          }
         });
-        currentScroll = 0;
-        setActiveIndex(0);
-        hasScrolledRef.current = true;
-      } else {
-        currentScroll += 8; // Increased speed
-        container.scrollLeft = currentScroll;
-      }
-    }, 10);
+      },
+      { threshold: 0.1 } // Trigger when 10% of the section is visible
+    );
+
+    observer.observe(section);
 
     // Update active index based on scroll position
     const handleScroll = () => {
@@ -44,7 +60,7 @@ export default function KnowYourPolicy() {
     container.addEventListener('scroll', handleScroll);
 
     return () => {
-      clearInterval(scrollInterval);
+      observer.disconnect();
       container.removeEventListener('scroll', handleScroll);
     };
   }, []);
@@ -84,19 +100,19 @@ export default function KnowYourPolicy() {
   ];
 
   return (
-    <section className="py-12 bg-gradient-to-b from-white to-blue-50">
+    <section ref={sectionRef} className="py-12 bg-gradient-to-b from-white to-blue-50">
       <div className="container mx-auto px-4">
         <div className="relative">
           <div 
             ref={scrollContainerRef}
             className="overflow-x-auto md:overflow-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           >
-            <div className="flex gap-8 min-w-max pb-4 md:min-w-0 md:justify-center">
+            <div className="flex gap-2 md:gap-4 pb-4 md:justify-center">
               {services.map((service) => (
                 <div 
                   key={service.id}
                   onClick={() => handleClick(service.url)}
-                  className="flex flex-col items-center justify-center cursor-pointer group transition-all duration-300 hover:scale-105 min-w-[280px] md:min-w-0 md:w-[280px]"
+                  className="flex flex-col items-center justify-center cursor-pointer group transition-all duration-300 hover:scale-105 w-[calc(100vw-2rem)] md:w-[280px] flex-shrink-0"
                 >
                   <div className={`relative w-16 h-16 rounded-2xl ${service.bgColor} flex items-center justify-center mb-6 transition-all duration-300 group-hover:shadow-2xl border-2 border-white shadow-lg`}>
                     <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />

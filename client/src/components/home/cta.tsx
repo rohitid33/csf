@@ -4,13 +4,16 @@ export default function CTA() {
   const scrollToCategories = () => {
     const categoriesSection = document.getElementById('categories-section');
     if (categoriesSection) {
-      categoriesSection.scrollIntoView({ behavior: 'smooth' });
+      categoriesSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
     }
   };
 
   return (
-    <section className="bg-primary py-24 text-white">
-      <div className="container mx-auto px-4 text-center">
+    <section className="bg-primary text-white">
+      <div className="container mx-auto px-4 py-12 text-center">
         <h2 className="text-3xl font-bold sm:text-4xl">
           Ready to Resolve Your Insurance Issues?
         </h2>

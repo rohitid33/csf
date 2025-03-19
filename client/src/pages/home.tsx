@@ -10,7 +10,7 @@ import SelectCategory from "@/components/home/select-category";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-blue-50/30 to-white">
+    <div className="min-h-screen">
       {/* Decorative background elements */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute top-0 left-0 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
@@ -19,20 +19,10 @@ export default function Home() {
       </div>
 
       <Hero />
-      
-      {/* Decorative divider */}
-      <div className="relative h-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-blue-600/10 to-blue-800/10"></div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 rounded-full"></div>
-        </div>
-      </div>
-
       <ClaimBanners />
 
       {/* Services Section with enhanced styling */}
-      <div className="relative py-16">
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-blue-50/50 to-white"></div>
+      <div id="categories-section" className="relative py-16 bg-gradient-to-b from-white via-blue-50/30 to-white">
         <div className="container mx-auto px-4 relative">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-blue-950 mb-4">
@@ -46,53 +36,25 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Decorative divider */}
-      <div className="relative h-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-blue-600/10 to-blue-800/10"></div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 rounded-full"></div>
-        </div>
-      </div>
-
       <KnowYourPolicy />
 
       {/* Process Section with enhanced styling */}
-      <div className="relative py-16">
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-blue-50/50 to-white"></div>
+      <div className="relative py-16 bg-gradient-to-b from-white via-blue-50/30 to-white">
         <div className="container mx-auto px-4 relative">
           <Process />
-        </div>
-      </div>
-
-      {/* Decorative divider */}
-      <div className="relative h-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-blue-600/10 to-blue-800/10"></div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 rounded-full"></div>
         </div>
       </div>
 
       <Testimonials />
 
       {/* Partner Careers Section with enhanced styling */}
-      <div className="relative py-16">
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-blue-50/50 to-white"></div>
+      <div className="relative py-16 bg-gradient-to-b from-white via-blue-50/30 to-white">
         <div className="container mx-auto px-4 relative">
           <PartnerCareers />
         </div>
       </div>
 
-      {/* Decorative divider */}
-      <div className="relative h-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-blue-600/10 to-blue-800/10"></div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 rounded-full"></div>
-        </div>
-      </div>
-
-      <div className="-mt-8">
-        <CTA />
-      </div>
+      <CTA />
     </div>
   );
 }
