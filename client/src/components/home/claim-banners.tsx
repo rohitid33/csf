@@ -122,7 +122,7 @@ export default function ClaimBanners() {
                 <div
                   key={index}
                   className={`
-                    flex-shrink-0 w-[90%] snap-center mx-auto
+                    flex-shrink-0 w-[calc(100%-2rem)] snap-center mx-auto
                     flex items-center
                     h-24 px-5 rounded-2xl
                     bg-blue-50
@@ -175,7 +175,7 @@ export default function ClaimBanners() {
   // For desktop: show groups of 3 banners that scroll horizontally
   return (
     <div className="w-full bg-white py-10">
-      <div className="container mx-auto px-4 max-w-5xl">
+      <div className="container mx-auto px-4">
         <div className="relative overflow-hidden">
           {/* Left and right fade effects */}
           <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
@@ -199,7 +199,7 @@ export default function ClaimBanners() {
                     className="
                       flex-1
                       flex items-center
-                      h-24 px-5 rounded-2xl
+                      h-24 px-4 rounded-2xl
                       bg-blue-50
                       transition-all duration-300
                     "

@@ -13,7 +13,7 @@ export default function CTA() {
 
   return (
     <section className="bg-primary text-white">
-      <div className="container mx-auto px-4 py-12 text-center">
+      <div className="container mx-auto px-4 py-8 text-center">
         <h2 className="text-3xl font-bold sm:text-4xl">
           Ready to Resolve Your Insurance Issues?
         </h2>
@@ -21,7 +21,7 @@ export default function CTA() {
           Our team of experts is here to help you with your insurance grievances.
           Get started today with a free consultation.
         </p>
-        <Button size="lg" variant="secondary" className="mt-8" onClick={scrollToCategories}>
+        <Button size="lg" variant="secondary" className="mt-6" onClick={scrollToCategories}>
           File a Complaint Now
         </Button>
       </div>

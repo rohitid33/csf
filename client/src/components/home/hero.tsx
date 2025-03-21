@@ -38,58 +38,62 @@ export default function HeroBanner() {
   }, []);
 
   return (
-    <div className="px-6 py-2 md:px-6 md:py-4">
-      <div className="
-        relative h-[20vh] md:h-[30vh] lg:h-[35vh] rounded-2xl overflow-hidden max-w-5xl mx-auto
-        shadow-[0_8px_30px_rgb(0,0,0,0.12)]
-        border border-white/10
-        bg-gradient-to-r from-primary/5 via-background to-primary/5
-      ">
-        {/* Fixed background image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ 
-            backgroundImage: `url("${bannerImage}")`,
-            backgroundPosition: "center 40%", 
-            filter: 'brightness(0.85)'
-          }}
-        />
-        
-        {/* Stylish overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 mix-blend-overlay" />
-        
-        {/* Content container */}
-        <div className="relative h-full flex flex-col justify-center">
-          {/* Text content - changes with timer */}
-          <div className="container mx-auto px-4">
-            <div className="max-w-2xl text-white">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={`banner-${currentBanner}-text`}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5 }}
-                  className="p-3 md:p-4 lg:p-6"
-                >
-                  <div>
-                    <div className="mb-1 md:mb-2">
-                      <h1 className="text-xl md:text-3xl lg:text-4xl font-bold text-white/90">
-                        {currentBannerContent.title}
-                      </h1>
-                    </div>
-                    <p className="text-sm md:text-base lg:text-lg text-white/75">
-                      {currentBannerContent.subtitle}
-                    </p>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
+    <div className="px-4 py-2 md:px-4 md:py-4">
+      <div className="container mx-auto">
+        <div className="flex justify-center">
+          <div className="
+            relative h-[20vh] md:h-[250px] rounded-2xl overflow-hidden w-full md:w-[calc(33.333%-1rem)]
+            shadow-[0_8px_30px_rgb(0,0,0,0.12)]
+            border border-white/10
+            bg-gradient-to-r from-primary/5 via-background to-primary/5
+          ">
+            {/* Fixed background image */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ 
+                backgroundImage: `url("${bannerImage}")`,
+                backgroundPosition: "center 40%", 
+                filter: 'brightness(0.85)'
+              }}
+            />
+            
+            {/* Stylish overlay gradient */}
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 mix-blend-overlay" />
+            
+            {/* Content container */}
+            <div className="relative h-full flex flex-col justify-center">
+              {/* Text content - changes with timer */}
+              <div className="px-4">
+                <div className="max-w-2xl text-white">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`banner-${currentBanner}-text`}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.5 }}
+                      className="p-3 md:p-4 lg:p-6"
+                    >
+                      <div>
+                        <div className="mb-1 md:mb-2">
+                          <h1 className="text-xl md:text-3xl lg:text-4xl font-bold text-white/90">
+                            {currentBannerContent.title}
+                          </h1>
+                        </div>
+                        <p className="text-sm md:text-base lg:text-lg text-white/75">
+                          {currentBannerContent.subtitle}
+                        </p>
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </div>
             </div>
+
+            {/* Bottom gradient fade */}
+            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/20 to-transparent" />
           </div>
         </div>
-
-        {/* Bottom gradient fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/20 to-transparent" />
       </div>
     </div>
   );

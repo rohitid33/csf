@@ -7,6 +7,7 @@ import ClaimBanners from "@/components/home/claim-banners";
 import PartnerCareers from "@/components/home/partner-careers";
 import CTA from "@/components/home/cta";
 import SelectCategory from "@/components/home/select-category";
+import AdCampaign from "@/components/home/ad-campaign";
 
 export default function Home() {
   return (
@@ -37,6 +38,8 @@ export default function Home() {
       </div>
 
       <KnowYourPolicy />
+      
+      <AdCampaign />
 
       {/* Process Section with enhanced styling */}
       <div className="relative py-16 bg-gradient-to-b from-white via-blue-50/30 to-white">

@@ -91,22 +91,15 @@ export default function Navbar() {
     <div>
       <header className="relative z-50 bg-background/80 backdrop-blur-sm w-full">
         <div className="flex items-center justify-between p-2 w-full px-4 md:px-6">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center">
-                <span className="text-white text-lg">✓</span>
-              </div>
-              <div className="relative">
-                <span className="font-bold text-xl text-primary">Claimsutra</span>
-                <span className="absolute -top-1 -right-3 text-[10px] text-primary font-medium">TM</span>
-              </div>
-            </Link>
-            <div className="hidden md:block">
-              <p className="text-sm font-medium text-primary/80 italic">
-                Policy Lo Kahinse, <span className="text-primary font-semibold">Claim keval yahi se!</span>
-              </p>
+          <Link href="/" className="flex items-center gap-2">
+            <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center">
+              <span className="text-white text-lg">✓</span>
             </div>
-          </div>
+            <div className="relative">
+              <span className="font-bold text-xl text-primary">Claimsutra</span>
+              <span className="absolute -top-1 -right-3 text-[10px] text-primary font-medium">TM</span>
+            </div>
+          </Link>
           
           <div className="flex items-center h-10 gap-3">
             {user ? (
