@@ -5,7 +5,6 @@ interface Service {
   name: string;
   icon: string;
   url: string;
-  description: string;
 }
 
 interface IPServices {
@@ -17,119 +16,103 @@ const ipServices: IPServices = {
     {
       name: "Trademark Registration",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/trademark-registration",
-      description: "Register your brand identity with expert trademark registration services"
+      url: "/vakilsutra/ip/trademark-registration"
     },
     {
       name: "Search for Trademark",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/trademark-search",
-      description: "Comprehensive trademark search to ensure your brand is unique"
+      url: "/vakilsutra/ip/trademark-search"
     },
     {
       name: "Respond to TM Objection",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/trademark-objection",
-      description: "Professional assistance in responding to trademark objections"
+      url: "/vakilsutra/ip/trademark-objection"
     },
     {
       name: "Well-Known Trademark",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/well-known-trademark",
-      description: "Apply for well-known trademark status to strengthen your brand protection"
+      url: "/vakilsutra/ip/well-known-trademark"
     },
     {
       name: "Trademark Watch",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/trademark-watch",
-      description: "Monitor and protect your trademark from potential infringements"
+      url: "/vakilsutra/ip/trademark-watch"
     },
     {
       name: "Trademark Renewal",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/trademark-renewal",
-      description: "Timely renewal of your trademark registration to maintain protection"
+      url: "/vakilsutra/ip/trademark-renewal"
     },
     {
       name: "Trademark Assignment",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/trademark-assignment",
-      description: "Legal transfer of trademark ownership with proper documentation"
+      url: "/vakilsutra/ip/trademark-assignment"
     },
     {
       name: "USA Trademark",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/usa-trademark",
-      description: "Register your trademark in the United States market"
+      url: "/vakilsutra/ip/usa-trademark"
     },
     {
       name: "International Trademark",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/international-trademark",
-      description: "Global trademark registration through international treaties"
+      url: "/vakilsutra/ip/international-trademark"
     },
     {
       name: "Trademark Infringement",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/trademark-infringement",
-      description: "Protect your trademark rights against unauthorized use"
+      url: "/vakilsutra/ip/trademark-infringement"
     }
   ],
   "Copyright Services": [
     {
       name: "Copyright Registration",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/copyright-registration",
-      description: "Register your creative works for copyright protection"
+      url: "/vakilsutra/ip/copyright-registration"
     },
     {
       name: "Copyright Infringement",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/copyright-infringement",
-      description: "Take action against unauthorized use of your copyrighted works"
+      url: "/vakilsutra/ip/copyright-infringement"
     }
   ],
   "Patent Services": [
     {
       name: "Indian Patent Search",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/patent-search",
-      description: "Comprehensive patent search in Indian patent database"
+      url: "/vakilsutra/ip/patent-search"
     },
     {
       name: "Provisional Application",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/provisional-patent",
-      description: "File a provisional patent application to secure priority date"
+      url: "/vakilsutra/ip/provisional-patent"
     },
     {
       name: "Permanent Patent",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/permanent-patent",
-      description: "Complete patent application and registration process"
+      url: "/vakilsutra/ip/permanent-patent"
     },
     {
       name: "Patent Infringement",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/patent-infringement",
-      description: "Protect your patent rights against unauthorized use"
+      url: "/vakilsutra/ip/patent-infringement"
     }
   ],
   "Design & Branding Services": [
     {
       name: "Logo Design",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/logo-design",
-      description: "Professional logo design services for your brand"
+      url: "/vakilsutra/ip/logo-design"
     },
     {
       name: "Design Registration",
       icon: "/icons/motor.png",
-      url: "/vakilsutra/ip/design-registration",
-      description: "Register your industrial designs for legal protection"
+      url: "/vakilsutra/ip/design-registration"
     }
   ]
 };
+
+const JWT_EXPIRES_IN: number = 24 * 60 * 60; // 24 hours in seconds
 
 export default function SelectService() {
   const [selectedService, setSelectedService] = useState<string | null>(null);
@@ -158,25 +141,22 @@ export default function SelectService() {
                         : 'hover:bg-blue-50/50'
                     }`}
                   >
-                    <div className={`w-16 h-16 flex items-center justify-center transition-all duration-200 group-hover:shadow-xl rounded-xl ${
+                    <div className={`w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center transition-all duration-200 group-hover:shadow-xl rounded-xl ${
                       selectedService === service.name ? 'bg-white' : 'bg-blue-50'
                     }`}>
                       <img
                         src={service.icon}
                         alt={service.name}
-                        className="w-full h-full object-contain rounded-xl transition-all duration-200"
+                        className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded-xl transition-all duration-200"
                       />
                     </div>
                     <div className="text-center">
-                      <span className={`text-base font-medium block transition-colors duration-200 mb-1 ${
+                      <span className={`text-base font-medium block transition-colors duration-200 ${
                         selectedService === service.name 
                           ? 'text-blue-950' 
                           : 'text-blue-800 group-hover:text-blue-600'
                       }`}>
                         {service.name}
-                      </span>
-                      <span className="text-sm text-gray-600">
-                        {service.description}
                       </span>
                     </div>
                   </div>

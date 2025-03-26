@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 
 export default function ConsumerCTA() {
-  const scrollToComplaint = () => {
-    const complaintSection = document.getElementById('complaint-section');
-    if (complaintSection) {
-      complaintSection.scrollIntoView({ 
+  const scrollToServices = () => {
+    const serviceSection = document.getElementById('service-section');
+    if (serviceSection) {
+      serviceSection.scrollIntoView({ 
         behavior: 'smooth',
         block: 'start'
       });
@@ -12,16 +12,16 @@ export default function ConsumerCTA() {
   };
 
   return (
-    <section className="bg-blue-600 text-white">
-      <div className="container mx-auto px-4 py-8 text-center">
-        <h2 className="text-3xl font-bold sm:text-4xl">
+    <section className="bg-blue-600 text-white rounded-2xl">
+      <div className="container mx-auto py-4 text-center px-4">
+        <h2 className="text-xl font-bold sm:text-2xl">
           Ready to Fight for Your Consumer Rights?
         </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-lg opacity-90">
+        <p className="mx-auto mt-2 max-w-lg text-sm opacity-90">
           Our expert legal team is here to help you resolve your consumer complaints.
           Get started today with a free consultation.
         </p>
-        <Button size="lg" variant="secondary" className="mt-6" onClick={scrollToComplaint}>
+        <Button size="default" variant="secondary" className="mt-3" onClick={scrollToServices}>
           File Your Complaint Now
         </Button>
       </div>

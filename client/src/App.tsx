@@ -26,6 +26,7 @@ import NotificationContainer from './components/NotificationContainer';
 import PhoneWidget from './components/PhoneWidget';
 import { Redirect } from "wouter";
 import { TaskNotificationProvider } from "@/hooks/use-task-notifications";
+import ScrollToTop from "@/components/ui/scroll-to-top";
 
 function AppContent() {
   const [location] = useLocation();
@@ -272,6 +273,7 @@ function AppContent() {
           </Switch>
         </main>
         {!isAdminRoute && <Footer />}
+        {!isAdminRoute && <ScrollToTop />}
         {!isAdminRoute && <BottomNav />}
       </Suspense>
       <NotificationContainer />

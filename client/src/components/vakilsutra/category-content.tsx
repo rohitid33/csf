@@ -28,6 +28,24 @@ import IPCTA from "./ip/cta";
 import SelectService from "./ip/select-service";
 import PromotionalBanner from "./ip/promotional-banner";
 
+// Import Corporate components
+import CorporateHero from "./corporate/hero";
+import CorporateBanners from "./corporate/banners";
+import CorporateSelectService from "./corporate/select-service";
+import CorporatePromotionalBanner from "./corporate/promotional-banner";
+import CorporateProcess from "./corporate/process";
+import CorporateTestimonials from "./corporate/testimonials";
+import CorporateAboutUs from "./corporate/about-us";
+import CorporateCTA from "./corporate/cta";
+import DebtHero from "./debt/hero";
+import DebtBanners from "./debt/banners";
+import DebtSelectService from "./debt/select-service";
+import DebtPromotionalBanner from "./debt/promotional-banner";
+import DebtProcess from "./debt/process";
+import DebtTestimonials from "./debt/testimonials";
+import DebtAboutUs from "./debt/about-us";
+import DebtCTA from "./debt/cta";
+
 interface CategoryContentProps {
   category: string;
 }
@@ -61,13 +79,39 @@ export default function CategoryContent({ category }: CategoryContentProps) {
             <IPCTA />
           </>
         );
+      case "Business Incorporation":
+        return (
+          <>
+            <CorporateHero />
+            <CorporateBanners />
+            <CorporateSelectService />
+            <CorporatePromotionalBanner />
+            <CorporateProcess />
+            <CorporateTestimonials />
+            <CorporateAboutUs />
+            <CorporateCTA />
+          </>
+        );
+      case "Debt Relief":
+        return (
+          <>
+            <DebtHero />
+            <DebtBanners />
+            <DebtSelectService />
+            <DebtPromotionalBanner />
+            <DebtProcess />
+            <DebtTestimonials />
+            <DebtAboutUs />
+            <DebtCTA />
+          </>
+        );
       default:
         return null;
     }
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {renderContent()}
     </div>
   );

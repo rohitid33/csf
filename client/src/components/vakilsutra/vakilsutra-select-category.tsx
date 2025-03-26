@@ -13,14 +13,19 @@ const legalCategories = [
     url: "/vakilsutra/consumer"
   },
   {
+    name: "Business Incorporation",
+    icon: "/icons/motor.png",
+    url: "/vakilsutra/corporate"
+  },
+  {
     name: "Intellectual Property",
     icon: "/icons/motor.png",
     url: "/vakilsutra/ip"
   },
   {
-    name: "Business Incorporation",
+    name: "Debt Relief",
     icon: "/icons/motor.png",
-    url: "/vakilsutra/corporate"
+    url: "/vakilsutra/debt"
   },
   {
     name: "Labor & Compliance",
@@ -46,11 +51,6 @@ const legalCategories = [
     name: "Cyber Fraud",
     icon: "/icons/motor.png",
     url: "/vakilsutra/cyber"
-  },
-  {
-    name: "Debt Relief",
-    icon: "/icons/motor.png",
-    url: "/vakilsutra/debt"
   }
 ];
 

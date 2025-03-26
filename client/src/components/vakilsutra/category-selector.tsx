@@ -55,19 +55,19 @@ export default function CategorySelector({
       <h2 className="text-2xl font-semibold text-blue-950 mb-6">Select Your Category</h2>
       <div 
         ref={scrollContainerRef}
-        className="flex items-start gap-6 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        className="flex items-start gap-4 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       >
         {filteredCategories.map((category, index) => (
           <div 
             key={index}
             onClick={() => onCategorySelect(category.name)}
-            className={`flex flex-col items-center w-[140px] h-[180px] cursor-pointer group transition-all duration-200 ${
+            className={`flex flex-col items-center w-[120px] min-w-[120px] h-[160px] cursor-pointer group transition-all duration-200 ${
               selectedCategory === category.name 
-                ? 'bg-blue-600 rounded-xl p-4' 
-                : 'p-4'
+                ? 'bg-blue-600 rounded-xl p-3' 
+                : 'p-3'
             }`}
           >
-            <div className="w-16 h-16 flex items-center justify-center mb-4">
+            <div className="w-14 h-14 flex items-center justify-center mb-3">
               <img
                 src={category.icon}
                 alt={category.name}
