@@ -6,19 +6,19 @@ const promotionalBanners = [
   {
     title: "Patent Protection Services",
     description: "Secure your inventions with expert patent filing and protection",
-    image: "/banner.jpg",
+    image: "/consumer.jpg",
     url: "/vakilsutra/ip/patent-protection"
   },
   {
     title: "Copyright Registration",
     description: "Protect your creative works with copyright registration",
-    image: "/banner.jpg",
+    image: "/consumer.jpg",
     url: "/vakilsutra/ip/copyright-registration"
   },
   {
     title: "Trademark Services",
     description: "Register and protect your brand identity",
-    image: "/banner.jpg",
+    image: "/consumer.jpg",
     url: "/vakilsutra/ip/trademark-services"
   }
 ];
@@ -39,9 +39,9 @@ export default function PromotionalBanner() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.2 }}
               onClick={() => handleBannerClick(banner.url)}
-              className="relative group overflow-hidden rounded-2xl shadow-lg cursor-pointer min-w-[280px] sm:min-w-[300px] md:min-w-[400px] lg:min-w-[500px] flex-shrink-0"
+              className="relative group overflow-hidden rounded-2xl shadow-lg cursor-pointer w-[85vw] sm:w-[300px] md:w-[400px] lg:w-[500px] flex-shrink-0"
             >
-              <div className="relative h-[20vh] md:h-[250px]">
+              <div className="relative h-[200px] sm:h-[250px]">
                 <img
                   src={banner.image}
                   alt={banner.title}

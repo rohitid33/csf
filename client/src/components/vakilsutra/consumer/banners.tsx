@@ -7,17 +7,17 @@ const banners = [
   {
     title: "Expert Consumer Protection",
     subtitle: "We help you fight for your consumer rights and get justice",
-    image: "/banner.jpg"
+    image: "/consumer.jpg"
   },
   {
     title: "Fast Complaint Resolution",
     subtitle: "Quick and efficient resolution for your consumer disputes",
-    image: "/banner.jpg"
+    image: "/consumer.jpg"
   },
   {
     title: "Professional Legal Support",
     subtitle: "Expert legal team ready to support your consumer complaints",
-    image: "/banner.jpg"
+    image: "/consumer.jpg"
   }
 ];
 
@@ -35,9 +35,9 @@ export default function ConsumerBanners() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.2 }}
-              className="relative group overflow-hidden rounded-2xl shadow-lg min-w-[280px] sm:min-w-[300px] md:min-w-[400px] lg:min-w-[500px] flex-shrink-0"
+              className="relative group overflow-hidden rounded-2xl shadow-lg w-[85vw] sm:w-[300px] md:w-[400px] lg:w-[500px] flex-shrink-0"
             >
-              <div className="relative h-[20vh] md:h-[250px]">
+              <div className="relative h-[200px] sm:h-[250px]">
                 <img
                   src={banner.image}
                   alt={banner.title}

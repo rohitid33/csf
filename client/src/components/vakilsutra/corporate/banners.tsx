@@ -7,17 +7,17 @@ const banners = [
   {
     title: "Business Registration",
     subtitle: "Start your business journey with proper legal registration",
-    image: "/banner.jpg"
+    image: "/consumer.jpg"
   },
   {
     title: "Legal Compliance",
     subtitle: "Stay compliant with all legal requirements",
-    image: "/banner.jpg"
+    image: "/consumer.jpg"
   },
   {
     title: "Business Agreements",
     subtitle: "Protect your business with proper legal agreements",
-    image: "/banner.jpg"
+    image: "/consumer.jpg"
   }
 ];
 
@@ -35,9 +35,9 @@ export default function CorporateBanners() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.2 }}
-              className="relative group overflow-hidden rounded-2xl shadow-lg min-w-[280px] sm:min-w-[300px] md:min-w-[400px] lg:min-w-[500px] flex-shrink-0"
+              className="relative group overflow-hidden rounded-2xl shadow-lg w-[85vw] sm:w-[300px] md:w-[400px] lg:w-[500px] flex-shrink-0"
             >
-              <div className="relative h-[20vh] md:h-[250px]">
+              <div className="relative h-[200px] sm:h-[250px]">
                 <img
                   src={banner.image}
                   alt={banner.title}

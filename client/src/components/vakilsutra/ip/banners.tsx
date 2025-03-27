@@ -7,19 +7,19 @@ const banners = [
   {
     title: "Patent Protection",
     subtitle: "Secure your inventions with expert patent filing and protection services",
-    image: "/banner.jpg",
+    image: "/consumer.jpg",
     icon: Shield
   },
   {
     title: "Copyright Registration",
     subtitle: "Protect your creative works with copyright registration and enforcement",
-    image: "/banner.jpg",
+    image: "/consumer.jpg",
     icon: Copyright
   },
   {
     title: "Trademark Services",
     subtitle: "Register and protect your brand identity with trademark services",
-    image: "/banner.jpg",
+    image: "/consumer.jpg",
     icon: FileText
   }
 ];
@@ -35,9 +35,9 @@ export default function IPBanners() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.2 }}
-              className="relative group overflow-hidden rounded-2xl shadow-lg cursor-pointer min-w-[280px] sm:min-w-[300px] md:min-w-[400px] lg:min-w-[500px] flex-shrink-0"
+              className="relative group overflow-hidden rounded-2xl shadow-lg cursor-pointer w-[85vw] sm:w-[300px] md:w-[400px] lg:w-[500px] flex-shrink-0"
             >
-              <div className="relative h-[20vh] md:h-[250px]">
+              <div className="relative h-[200px] sm:h-[250px]">
                 <img
                   src={banner.image}
                   alt={banner.title}
