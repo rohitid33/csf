@@ -15,7 +15,7 @@ import ConsumerProcess from "./consumer/process";
 import ConsumerTestimonials from "./consumer/testimonials";
 import ConsumerAboutUs from "./consumer/about-us";
 import ConsumerCTA from "./consumer/cta";
-import ConsumerSelectService from "./consumer/select-service";
+import ConsumerSelectCategory from "./consumer/select-category";
 import ConsumerPromotionalBanner from "./consumer/promotional-banner";
 
 // Import IP components
@@ -25,21 +25,23 @@ import IPProcess from "./ip/process";
 import IPTestimonials from "./ip/testimonials";
 import IPAboutUs from "./ip/about-us";
 import IPCTA from "./ip/cta";
-import SelectService from "./ip/select-service";
+import IPSelectCategory from "./ip/select-category";
 import PromotionalBanner from "./ip/promotional-banner";
 
 // Import Corporate components
 import CorporateHero from "./corporate/hero";
 import CorporateBanners from "./corporate/banners";
-import CorporateSelectService from "./corporate/select-service";
+import CorporateSelectCategory from "./corporate/select-category";
 import CorporatePromotionalBanner from "./corporate/promotional-banner";
 import CorporateProcess from "./corporate/process";
 import CorporateTestimonials from "./corporate/testimonials";
 import CorporateAboutUs from "./corporate/about-us";
 import CorporateCTA from "./corporate/cta";
+
+// Import Debt components
 import DebtHero from "./debt/hero";
 import DebtBanners from "./debt/banners";
-import DebtSelectService from "./debt/select-service";
+import DebtSelectCategory from "./debt/select-category";
 import DebtPromotionalBanner from "./debt/promotional-banner";
 import DebtProcess from "./debt/process";
 import DebtTestimonials from "./debt/testimonials";
@@ -58,7 +60,7 @@ export default function CategoryContent({ category }: CategoryContentProps) {
           <>
             <ConsumerHero />
             <ConsumerBanners />
-            <ConsumerSelectService />
+            <ConsumerSelectCategory />
             <ConsumerPromotionalBanner />
             <ConsumerProcess />
             <ConsumerTestimonials />
@@ -71,7 +73,7 @@ export default function CategoryContent({ category }: CategoryContentProps) {
           <>
             <IPHero />
             <IPBanners />
-            <SelectService />
+            <IPSelectCategory />
             <PromotionalBanner />
             <IPProcess />
             <IPTestimonials />
@@ -84,7 +86,7 @@ export default function CategoryContent({ category }: CategoryContentProps) {
           <>
             <CorporateHero />
             <CorporateBanners />
-            <CorporateSelectService />
+            <CorporateSelectCategory />
             <CorporatePromotionalBanner />
             <CorporateProcess />
             <CorporateTestimonials />
@@ -97,7 +99,7 @@ export default function CategoryContent({ category }: CategoryContentProps) {
           <>
             <DebtHero />
             <DebtBanners />
-            <DebtSelectService />
+            <DebtSelectCategory />
             <DebtPromotionalBanner />
             <DebtProcess />
             <DebtTestimonials />

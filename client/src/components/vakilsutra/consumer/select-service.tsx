@@ -58,7 +58,11 @@ const consumerServices: ConsumerServices = {
   ]
 };
 
-export default function SelectService() {
+interface SelectServiceProps {
+  category: string;
+}
+
+export default function SelectService({ category }: SelectServiceProps) {
   const [selectedService, setSelectedService] = useState<string | null>(null);
 
   const handleServiceClick = (serviceName: string, url: string) => {
@@ -66,51 +70,46 @@ export default function SelectService() {
     window.location.href = url;
   };
 
+  const services = consumerServices[category] || [];
+
   return (
     <div id="service-section" className="mt-6 pt-4 border-t border-blue-100">
-      <h3 className="text-lg font-semibold text-blue-950 mb-4">Consumer Services</h3>
-      <div className="space-y-8">
-        {Object.entries(consumerServices).map(([subcategory, services]) => (
-          <div key={subcategory}>
-            <h4 className="text-md font-medium text-blue-800 mb-4">{subcategory}</h4>
-            <ScrollArea className="w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
-              <div className="flex gap-4 pb-4 overflow-y-visible" style={{ scrollBehavior: 'smooth', willChange: 'transform' }}>
-                {services.map((service: Service, index: number) => (
-                  <div 
-                    key={index}
-                    onClick={() => handleServiceClick(service.name, service.url)}
-                    className={`flex flex-col items-center gap-3 p-4 cursor-pointer group rounded-xl transition-all duration-200 min-w-[200px] sm:min-w-[250px] ${
-                      selectedService === service.name 
-                        ? 'bg-blue-50 shadow-md' 
-                        : 'hover:bg-blue-50/50'
-                    }`}
-                  >
-                    <div className={`w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center transition-all duration-200 group-hover:shadow-xl rounded-xl ${
-                      selectedService === service.name ? 'bg-white' : 'bg-blue-50'
-                    }`}>
-                      <img
-                        src={service.icon}
-                        alt={service.name}
-                        className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded-xl transition-all duration-200"
-                      />
-                    </div>
-                    <div className="text-center">
-                      <span className={`text-base font-medium block transition-colors duration-200 ${
-                        selectedService === service.name 
-                          ? 'text-blue-950' 
-                          : 'text-blue-800 group-hover:text-blue-600'
-                      }`}>
-                        {service.name}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+      <h3 className="text-lg font-semibold text-blue-950 mb-4">{category} Services</h3>
+      <ScrollArea className="w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div className="flex gap-4 pb-4 overflow-y-visible" style={{ scrollBehavior: 'smooth', willChange: 'transform' }}>
+          {services.map((service: Service, index: number) => (
+            <div 
+              key={index}
+              onClick={() => handleServiceClick(service.name, service.url)}
+              className={`flex flex-col items-center gap-3 p-4 cursor-pointer group rounded-xl transition-all duration-200 min-w-[200px] sm:min-w-[250px] ${
+                selectedService === service.name 
+                  ? 'bg-blue-50 shadow-md' 
+                  : 'hover:bg-blue-50/50'
+              }`}
+            >
+              <div className={`w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center transition-all duration-200 group-hover:shadow-xl rounded-xl ${
+                selectedService === service.name ? 'bg-white' : 'bg-blue-50'
+              }`}>
+                <img
+                  src={service.icon}
+                  alt={service.name}
+                  className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded-xl transition-all duration-200"
+                />
               </div>
-              <ScrollBar orientation="horizontal" className="invisible" />
-            </ScrollArea>
-          </div>
-        ))}
-      </div>
+              <div className="text-center">
+                <span className={`text-base font-medium block transition-colors duration-200 ${
+                  selectedService === service.name 
+                    ? 'text-blue-950' 
+                    : 'text-blue-800 group-hover:text-blue-600'
+                }`}>
+                  {service.name}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <ScrollBar orientation="horizontal" className="invisible" />
+      </ScrollArea>
     </div>
   );
 } 
