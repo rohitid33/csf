@@ -13,7 +13,10 @@ interface MigrationStatus {
 interface User {
   id: string;
   username: string;
-  preferredAuthMethod?: 'otp' | 'password';
+  preferredAuthMethod?: 'otp' | 'password' | 'google';
+  googleId?: string;
+  displayName?: string;
+  profilePicture?: string;
   createdAt: string;
   migrationStatus?: MigrationStatus;
   warning?: string;
@@ -22,6 +25,14 @@ interface User {
 interface AuthResponse extends User {
   migrationStatus?: MigrationStatus;
   warning?: string;
+}
+
+interface GoogleAuthStatus {
+  connected: boolean;
+  preferredAuthMethod?: 'otp' | 'password' | 'google';
+  username?: string;
+  displayName?: string;
+  profilePicture?: string;
 }
 
 interface AuthStore {
@@ -156,7 +167,7 @@ export function useAuth() {
   });
 
   const changeAuthMethodMutation = useMutation({
-    mutationFn: async (method: 'otp' | 'password'): Promise<AuthResponse> => {
+    mutationFn: async (method: 'otp' | 'password' | 'google'): Promise<AuthResponse> => {
       const response = await fetch("/api/auth/password/change-auth-method", {
         method: "POST",
         headers: {
@@ -177,6 +188,57 @@ export function useAuth() {
         setUser(updatedUser);
         queryClient.setQueryData(["user"], updatedUser);
       }
+    },
+  });
+
+  // Get Google auth status
+  const getGoogleAuthStatusQuery = useQuery<GoogleAuthStatus>({
+    queryKey: ["googleAuthStatus"],
+    queryFn: async () => {
+      try {
+        const response = await fetch("/api/auth/google/status");
+        if (!response.ok) {
+          return { connected: false };
+        }
+        return response.json();
+      } catch (error) {
+        console.error("Error fetching Google auth status:", error);
+        return { connected: false };
+      }
+    },
+    enabled: !!user, // Only run if user is logged in
+    gcTime: 3600000, // Cache for 1 hour
+    staleTime: 30000, // Consider data fresh for 30 seconds
+  });
+
+  // Disconnect Google account
+  const disconnectGoogleMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/auth/google/disconnect", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to disconnect Google account");
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      // Update user in state
+      if (user) {
+        const updatedUser: User = { 
+          ...user, 
+          preferredAuthMethod: 'otp' as const,
+          googleId: undefined,
+        };
+        setUser(updatedUser);
+        queryClient.setQueryData(["user"], updatedUser);
+      }
+      // Invalidate Google auth status
+      queryClient.invalidateQueries({ queryKey: ["googleAuthStatus"] });
     },
   });
 
@@ -234,5 +296,8 @@ export function useAuth() {
     setupPasswordMutation,
     changeAuthMethodMutation,
     logoutMutation,
+    googleAuthStatus: getGoogleAuthStatusQuery.data,
+    isGoogleConnected: getGoogleAuthStatusQuery.data?.connected || false,
+    disconnectGoogleMutation,
   };
-} 
+}

@@ -5,6 +5,8 @@ import session from "express-session";
 import { IStorage } from "./storage";
 import { User as SelectUser } from "@shared/schema";
 import { env } from './config/env';
+import googleAuthRoutes from './routes/google-auth';
+import { setupGoogleAuth } from './google-auth-direct';
 
 // Extend express-session types to include passport
 declare module 'express-session' {
@@ -24,7 +26,7 @@ declare global {
 export function setupAuth(app: Express, storage: IStorage) {
   const sessionSettings: session.SessionOptions = {
     secret: env.auth.sessionSecret,
-    resave: true,
+    resave: false, // Changed to false to avoid unnecessary session saves
     saveUninitialized: false,
     rolling: true,
     name: 'sessionId',
@@ -44,9 +46,18 @@ export function setupAuth(app: Express, storage: IStorage) {
     app.set('trust proxy', 1);
   }
 
+  // First initialize passport core
   app.use(session(sessionSettings));
   app.use(passport.initialize());
   app.use(passport.session());
+
+  // Then set up the Google authentication strategy directly
+  // This must happen BEFORE registering routes
+  console.log('Setting up direct Google authentication strategy');
+  setupGoogleAuth();
+
+  // Add Google authentication routes AFTER strategy is set up
+  app.use('/api/auth/google', googleAuthRoutes);
 
   // Add session debug middleware in development
   if (env.isDevelopment) {
@@ -62,6 +73,18 @@ export function setupAuth(app: Express, storage: IStorage) {
       next();
     });
   }
+
+  // Add middleware to ensure session consistency
+  app.use((req, res, next) => {
+    // If user is authenticated but session is about to expire, extend it
+    if (req.isAuthenticated() && req.session.cookie && 
+        typeof req.session.cookie.maxAge === 'number' && 
+        req.session.cookie.maxAge < 1000 * 60 * 10) { // Less than 10 minutes left
+      req.session.cookie.maxAge = env.auth.sessionDuration;
+      req.session.save();
+    }
+    next();
+  });
 
   passport.use(
     new LocalStrategy(async (username, password, done) => {
@@ -149,14 +172,22 @@ export function setupAuth(app: Express, storage: IStorage) {
           return res.status(500).json({ message: "Error creating session" });
         }
         
-        // Return user without sensitive data
-        const safeUser = {
-          id: user.id,
-          username: user.username,
-          createdAt: user.createdAt
-        };
-        
-        return res.json(safeUser);
+        // Ensure session is saved
+        req.session.save((err) => {
+          if (err) {
+            console.error("Session save error:", err);
+            return res.status(500).json({ message: "Error saving session" });
+          }
+          
+          // Return user without sensitive data
+          const safeUser = {
+            id: user.id,
+            username: user.username,
+            createdAt: user.createdAt
+          };
+          
+          return res.json(safeUser);
+        });
       });
     } catch (error) {
       console.error("Login/Registration error:", error);
@@ -165,11 +196,26 @@ export function setupAuth(app: Express, storage: IStorage) {
   });
 
   app.post("/api/logout", (req, res) => {
+    // Store session ID before logout for debugging
+    const sessionId = req.sessionID;
+    
     req.logout((err) => {
       if (err) {
+        console.error("Logout error:", err);
         return res.status(500).json({ message: "Error logging out" });
       }
-      res.sendStatus(200);
+      
+      // Destroy session to ensure complete cleanup
+      req.session.destroy((destroyErr) => {
+        if (destroyErr) {
+          console.error("Session destruction error:", destroyErr);
+          return res.status(500).json({ message: "Error destroying session" });
+        }
+        
+        console.log(`Session ${sessionId} destroyed successfully`);
+        res.clearCookie('sessionId');
+        res.sendStatus(200);
+      });
     });
   });
 
@@ -194,6 +240,7 @@ export function setupAuth(app: Express, storage: IStorage) {
       }
       return res.status(401).json({ error: "not_authenticated" });
     }
+
     res.json(req.user);
   });
 }

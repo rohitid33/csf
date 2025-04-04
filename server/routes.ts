@@ -13,7 +13,6 @@ import {
   insertTaskSchema,
   updateTaskSchema
 } from "@shared/schema";
-import { setupAuth } from "./auth";
 import { Category } from './models/Category';
 import adminAuthRoutes from './admin-auth';
 import adminAuthMiddleware from './middleware/admin-auth';
@@ -71,9 +70,6 @@ function getDeviceInfo(req: Request): { ipAddress: string; deviceInfo: string } 
 }
 
 export async function registerRoutes(app: Express) {
-  // Setup authentication routes and middleware
-  setupAuth(app, storage);
-
   // Add password authentication routes
   app.use('/api/auth/password', passwordAuthRoutes);
 
@@ -647,6 +643,27 @@ export async function registerRoutes(app: Express) {
       
       await newService.save();
       console.log("App service created successfully:", newService.toJSON());
+      
+      // If subcategories are provided, update the corresponding subcategories with this service ID
+      if (req.body.subcategoryIds && req.body.subcategoryIds.length > 0) {
+        const { Subcategory } = await import('./models/Subcategory');
+        
+        console.log(`Updating ${req.body.subcategoryIds.length} subcategories with this service ID`);
+        
+        const serviceId = newService._id ? newService._id.toString() : '';
+        
+        // Update each subcategory to include this service ID
+        for (const subcategoryId of req.body.subcategoryIds) {
+          const subcategory = await Subcategory.findById(subcategoryId);
+          if (subcategory) {
+            if (!subcategory.serviceIds.includes(serviceId)) {
+              subcategory.serviceIds.push(serviceId);
+              await subcategory.save();
+              console.log(`Added service ID ${serviceId} to subcategory ${subcategoryId}`);
+            }
+          }
+        }
+      }
       
       res.status(201).json(newService.toJSON());
     } catch (error) {
@@ -1599,6 +1616,35 @@ export async function registerRoutes(app: Express) {
     try {
       const taskData = updateTaskSchema.parse(req.body);
       const task = await storage.updateTask(req.params.id, taskData);
+      
+      // Broadcast task update notification to all connected clients
+      if (req.app.locals.broadcastNotification) {
+        console.log('Broadcasting task update notification:', {
+          type: 'notification',
+          message: `Task "${task.title}" has been updated`,
+          notificationType: 'info',
+          taskId: task.id,
+          ticketId: task.ticketId
+        });
+        
+        req.app.locals.broadcastNotification({
+          type: 'notification',
+          message: `Task "${task.title}" has been updated`,
+          notificationType: 'info',
+          taskId: task.id,
+          ticketId: task.ticketId
+        });
+        
+        // Also send a TASK_UPDATE event for clients that handle this specific event type
+        req.app.locals.broadcastNotification({
+          type: 'TASK_UPDATE',
+          message: `Task "${task.title}" has been updated`,
+          taskId: task.id,
+          ticketId: task.ticketId,
+          task: task
+        });
+      }
+      
       res.json(task);
     } catch (error: unknown) {
       console.error(`Error updating task ${req.params.id}:`, error);

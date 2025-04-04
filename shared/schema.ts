@@ -7,7 +7,10 @@ export const userSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters").optional(),
   createdAt: z.date().or(z.string()).optional(), // MongoDB might return date as string
   isAdmin: z.boolean().optional().default(false),
-  preferredAuthMethod: z.enum(['otp', 'password']).optional().default('otp')
+  preferredAuthMethod: z.enum(['otp', 'password', 'google']).optional().default('otp'),
+  googleId: z.string().optional(),
+  displayName: z.string().optional(),
+  profilePicture: z.string().optional()
 });
 
 export const complaintSchema = z.object({

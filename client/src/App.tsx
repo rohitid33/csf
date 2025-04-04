@@ -27,6 +27,13 @@ import PhoneWidget from './components/PhoneWidget';
 import { Redirect } from "wouter";
 import { TaskNotificationProvider } from "@/hooks/use-task-notifications";
 import ScrollToTop from "@/components/ui/scroll-to-top";
+import { setupTestNotifications } from "@/lib/notification-utils";
+
+// Initialize test notifications for development
+if (typeof window !== 'undefined') {
+  // Setup test notifications
+  setupTestNotifications();
+}
 
 function AppContent() {
   const [location] = useLocation();

@@ -5,7 +5,10 @@ export interface IUser extends Document {
   username: string;
   password?: string; // @deprecated - Will be removed in future version
   hasPassword: boolean; // @deprecated - Will be removed in future version
-  preferredAuthMethod: 'otp' | 'password';
+  preferredAuthMethod: 'otp' | 'password' | 'google';
+  googleId?: string; // Google OAuth ID
+  displayName?: string; // User's display name (from Google)
+  profilePicture?: string; // Profile picture URL (from Google)
   isAdmin?: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -47,8 +50,19 @@ const UserSchema = new Schema<IUser>({
   },
   preferredAuthMethod: {
     type: String,
-    enum: ['otp', 'password'],
+    enum: ['otp', 'password', 'google'],
     default: 'otp'
+  },
+  googleId: {
+    type: String,
+    index: true,
+    sparse: true
+  },
+  displayName: {
+    type: String
+  },
+  profilePicture: {
+    type: String
   },
   isAdmin: {
     type: Boolean,
@@ -93,6 +107,7 @@ const UserSchema = new Schema<IUser>({
 // Index for faster queries
 UserSchema.index({ 'deviceInfo.lastDevices.ipAddress': 1 });
 UserSchema.index({ 'migrationStatus.scheduledDeletionDate': 1 });
+// Removed duplicate index for googleId as it's already defined in the schema
 
 // Update the updatedAt timestamp before saving
 UserSchema.pre('save', function(next) {

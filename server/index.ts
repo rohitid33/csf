@@ -7,6 +7,10 @@ import { setupVite, serveStatic } from './vite';
 import { env, validateEnv } from './config/env';
 import { setupWebSocketServer } from './websocket';
 import { WebSocketServer } from 'ws';
+import { setupAuth } from './auth';
+import { setupGoogleStrategy } from './setup-google-auth';
+import { IStorage } from './storage';
+import { storage } from './storage';
 
 let wss: WebSocketServer;
 
@@ -39,6 +43,17 @@ async function bootstrap() {
     
     // Add broadcastNotification to app locals for use in routes
     app.locals.broadcastNotification = wsServer.broadcastNotification;
+    
+    // Make storage available in app.locals
+    app.locals.storage = storage;
+    
+    // Set up Google authentication strategy directly BEFORE auth setup
+    console.log('Setting up Google authentication strategy...');
+    setupGoogleStrategy();
+
+    // Set up authentication with the already initialized Google strategy
+    console.log('Setting up authentication...');
+    setupAuth(app, storage);
     
     // Register all API routes
     await registerRoutes(app);

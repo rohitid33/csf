@@ -1,18 +1,7 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -21,35 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { z } from "zod";
 import { MigrationWarning } from "@/components/MigrationWarning";
-
-const usernameSchema = z.object({
-  username: z.string()
-    .regex(/^\d{10}$/, "Phone number must be exactly 10 digits")
-    .transform(val => val.replace(/\D/g, '')) // Remove any non-digits
-});
-
-const otpSchema = z.object({
-  otp: z.string().length(6, "OTP must be 6 digits").regex(/^\d+$/, "OTP must contain only numbers"),
-});
-
-const passwordSchema = z.object({
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
-
-type UsernameFormData = z.infer<typeof usernameSchema>;
-type OTPFormData = z.infer<typeof otpSchema>;
-type PasswordFormData = z.infer<typeof passwordSchema>;
-
-const RESEND_COOLDOWN = 30; // 30 seconds cooldown
+import { FaGoogle } from "react-icons/fa";
 
 interface MigrationStatus {
   startedAt: string;
@@ -82,14 +44,24 @@ const testimonials = [
 
 export default function AuthPage() {
   const [_, setLocation] = useLocation();
-  const { user, requestOTPMutation, verifyOTPMutation, loginWithPasswordMutation } = useAuthContext();
-  const [userId, setUserId] = useState<string | null>(null);
-  const [otpValue, setOtpValue] = useState("");
+  const { user } = useAuthContext();
   const [error, setError] = useState<string | null>(null);
-  const [resendTimer, setResendTimer] = useState(0);
-  const [username, setUsername] = useState("");
-  const [authMethod] = useState<"otp">("otp");
   const [migrationStatus, setMigrationStatus] = useState<MigrationStatus | null>(null);
+  
+  // Check for Google auth success/error in URL params
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const googleSuccess = params.get('success');
+    const googleError = params.get('error');
+    
+    if (googleSuccess === 'google-auth-success') {
+      // Refresh user data after successful Google login
+      window.history.replaceState({}, document.title, '/auth');
+    } else if (googleError === 'google-auth-failed') {
+      setError('Google authentication failed. Please try again.');
+      window.history.replaceState({}, document.title, '/auth');
+    }
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -100,113 +72,6 @@ export default function AuthPage() {
       setLocation(returnUrl || "/");
     }
   }, [user, setLocation]);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (resendTimer > 0) {
-      interval = setInterval(() => {
-        setResendTimer(prev => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [resendTimer]);
-
-  const startResendTimer = useCallback(() => {
-    setResendTimer(RESEND_COOLDOWN);
-  }, []);
-
-  const handleResendOTP = async () => {
-    if (resendTimer > 0 || !username) return;
-    
-    setError(null);
-    try {
-      const result = await requestOTPMutation.mutateAsync({ username });
-      setUserId(result.userId);
-      startResendTimer();
-    } catch (error) {
-      console.error("Failed to resend OTP:", error);
-      setError(error instanceof Error ? error.message : "Failed to resend OTP");
-    }
-  };
-
-  const usernameForm = useForm<UsernameFormData>({
-    resolver: zodResolver(usernameSchema),
-  });
-
-  const otpForm = useForm<OTPFormData>({
-    resolver: zodResolver(otpSchema),
-    defaultValues: {
-      otp: ''
-    }
-  });
-
-  const passwordForm = useForm<PasswordFormData>({
-    resolver: zodResolver(passwordSchema),
-  });
-
-  const handleUsernameSubmit = async (data: UsernameFormData) => {
-    setError(null);
-    // Add +91 prefix to the phone number
-    const phoneWithPrefix = `+91${data.username}`;
-    setUsername(phoneWithPrefix);
-    
-    if (authMethod === "otp") {
-      try {
-        const result = await requestOTPMutation.mutateAsync({ 
-          username: phoneWithPrefix 
-        });
-        setUserId(result.userId);
-        startResendTimer();
-      } catch (error) {
-        console.error("Failed to request OTP:", error);
-        setError(error instanceof Error ? error.message : "Failed to request OTP");
-        usernameForm.setError("username", { message: "Failed to send OTP" });
-      }
-    } else {
-      setUserId("password");
-    }
-  };
-
-  const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setError(null);
-    const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
-    setOtpValue(value);
-    otpForm.setValue('otp', value);
-  };
-
-  const handleOTPSubmit = async (data: OTPFormData) => {
-    if (!userId) return;
-    setError(null);
-    try {
-      await verifyOTPMutation.mutateAsync({
-        userId,
-        otp: data.otp,
-      });
-    } catch (error) {
-      console.error("Failed to verify OTP:", error);
-      setError(error instanceof Error ? error.message : "Failed to verify OTP");
-      otpForm.setError("otp", { message: "Invalid OTP" });
-    }
-  };
-
-  const handlePasswordSubmit = async (data: PasswordFormData) => {
-    setError(null);
-    try {
-      const response = await loginWithPasswordMutation.mutateAsync({
-        username,
-        password: data.password,
-      });
-      
-      // Check for migration status in response
-      if (response.migrationStatus) {
-        setMigrationStatus(response.migrationStatus);
-      }
-    } catch (error) {
-      console.error("Failed to login:", error);
-      setError(error instanceof Error ? error.message : "Failed to login");
-      passwordForm.setError("password", { message: "Invalid credentials" });
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -278,7 +143,7 @@ export default function AuthPage() {
               India's Legal Claim Expert!
             </CardTitle>
             <CardDescription className="text-base">
-              Login in or Sign up
+              Sign in with Google to continue
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
@@ -287,190 +152,34 @@ export default function AuthPage() {
                 <p className="text-sm text-red-700">{error}</p>
               </div>
             )}
-            {userId === "password" && migrationStatus && (
+            {migrationStatus && (
               <MigrationWarning 
                 migrationStatus={migrationStatus}
                 onSwitchToOTP={() => {
-                  setUserId(null);
+                  // Not applicable anymore
                 }}
               />
             )}
-            {!userId ? (
-              <Form {...usernameForm}>
-                <form
-                  onSubmit={usernameForm.handleSubmit(handleUsernameSubmit)}
-                  className="space-y-6"
-                >
-                  <FormField
-                    control={usernameForm.control}
-                    name="username"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-base font-semibold">Phone Number</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <div className="absolute inset-y-0 left-0 flex items-center px-3 pointer-events-none bg-gray-100 border-r rounded-l-md">
-                              <span className="text-gray-500 text-sm font-medium">+91</span>
-                            </div>
-                            <Input
-                              {...field}
-                              className="pl-14"
-                              type="tel"
-                              maxLength={10}
-                              placeholder="Enter 10 digit mobile number"
-                              onChange={(e) => {
-                                const value = e.target.value.replace(/\D/g, '').slice(0, 10);
-                                field.onChange(value);
-                              }}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={requestOTPMutation.isPending}
-                  >
-                    {requestOTPMutation.isPending ? "Sending..." : "Continue"}
-                  </Button>
-                </form>
-              </Form>
-            ) : userId === "password" ? (
-              <Form {...passwordForm}>
-                <form
-                  onSubmit={passwordForm.handleSubmit(handlePasswordSubmit)}
-                  className="space-y-6"
-                >
-                  <FormField
-                    control={passwordForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-base font-semibold">Password</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="password"
-                            className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400"
-                            disabled={loginWithPasswordMutation.isPending}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="space-y-3">
-                    <Button
-                      type="submit"
-                      className="w-full border border-gray-300 rounded-lg h-12 text-lg font-semibold hover:bg-gray-100"
-                      disabled={loginWithPasswordMutation.isPending}
-                    >
-                      {loginWithPasswordMutation.isPending ? (
-                        <div className="flex items-center justify-center">
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900 mr-2"></div>
-                          Logging in...
-                        </div>
-                      ) : (
-                        "Login"
-                      )}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => {
-                        setUserId(null);
-                        setError(null);
-                        passwordForm.reset();
-                      }}
-                      disabled={loginWithPasswordMutation.isPending}
-                    >
-                      Back to Username
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            ) : (
-              <Form {...otpForm}>
-                <form
-                  onSubmit={otpForm.handleSubmit(handleOTPSubmit)}
-                  className="space-y-6"
-                >
-                  <FormField
-                    control={otpForm.control}
-                    name="otp"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-base font-semibold">Enter OTP</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="text"
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            maxLength={6}
-                            placeholder="Enter 6-digit OTP"
-                            className="border border-gray-300 rounded-lg h-12 text-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400 text-center tracking-widest"
-                            value={otpValue}
-                            onChange={handleOtpChange}
-                            onFocus={(e) => e.target.select()}
-                            disabled={verifyOTPMutation.isPending}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                        {resendTimer > 0 ? (
-                          <p className="text-sm text-gray-500 mt-2">
-                            Resend OTP in {resendTimer} seconds
-                          </p>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={handleResendOTP}
-                            className="text-sm text-blue-600 hover:text-blue-800 mt-2"
-                            disabled={requestOTPMutation.isPending}
-                          >
-                            Resend OTP
-                          </button>
-                        )}
-                      </FormItem>
-                    )}
-                  />
-                  <div className="space-y-3">
-                    <Button
-                      type="submit"
-                      className="w-full border border-gray-300 rounded-lg h-12 text-lg font-semibold hover:bg-gray-100"
-                      disabled={verifyOTPMutation.isPending}
-                    >
-                      {verifyOTPMutation.isPending ? (
-                        <div className="flex items-center justify-center">
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900 mr-2"></div>
-                          Verifying...
-                        </div>
-                      ) : (
-                        "Verify OTP"
-                      )}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => {
-                        setUserId(null);
-                        setOtpValue("");
-                        setError(null);
-                        setResendTimer(0);
-                        otpForm.reset();
-                      }}
-                      disabled={verifyOTPMutation.isPending}
-                    >
-                      Back to Username
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            )}
+            
+            {/* Google Login Button */}
+            <div className="py-6">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2 border-gray-300 h-12"
+                onClick={() => window.location.href = '/api/auth/google'}
+              >
+                <FaGoogle className="h-4 w-4 text-red-500" />
+                <span>Continue with Google</span>
+              </Button>
+            </div>
+            
+            <div className="text-center text-sm text-gray-500 mt-4">
+              By signing in, you agree to our 
+              <a href="/terms" className="text-primary hover:underline mx-1">Terms of Service</a>
+              and
+              <a href="/privacy" className="text-primary hover:underline mx-1">Privacy Policy</a>
+            </div>
           </CardContent>
         </Card>
       </div>
