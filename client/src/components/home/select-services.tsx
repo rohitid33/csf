@@ -23,12 +23,12 @@ const motorInsuranceServices: Service[] = [
   {
     name: "Motor Accident Insurance Claim",
     icon: "/icons/accident.png",
-    url: "/service/67d7f548aee5a4ad962514e0"
+    url: "/service/67d87dd8586ae9b3babb7d63"
   },
   {
     name: "Third Party Accident Claims",
     icon: "/icons/thirdparty.png",
-    url: "/service/67d7d0b9ba8af0c60c60b7a0"
+    url: "/service/67d87dd8586ae9b3babb7d63"
   }
 ];
 
@@ -36,69 +36,69 @@ const generalInsuranceServices: GeneralInsuranceServices = {
   FIRE: [
     {
       name: "Fire Damage Claim",
-      icon: "/icons/fire-damage.png",
-      url: "/service/fire-damage-claim"
+      icon: "/icons/fire.png",
+      url: "/service/67d87dd8586ae9b3babb7d63"
     },
     {
       name: "Business Interruption",
       icon: "/icons/business-interruption.png",
-      url: "/service/business-interruption"
+      url: "/service/67d87dd8586ae9b3babb7d63"
     },
     {
       name: "Fire Safety Audit",
       icon: "/icons/fire-safety.png",
-      url: "/service/fire-safety-audit"
+      url: "/service/67d87dd8586ae9b3babb7d63"
     }
   ],
   PROPERTY: [
     {
       name: "Property Damage",
       icon: "/icons/property-damage.png",
-      url: "/service/property-damage"
+      url: "/service/67d87dd8586ae9b3babb7d63"
     },
     {
       name: "Natural Calamity",
       icon: "/icons/natural-calamity.png",
-      url: "/service/natural-calamity"
+      url: "/service/67d87dd8586ae9b3babb7d63"
     },
     {
       name: "Theft & Burglary",
       icon: "/icons/theft-burglary.png",
-      url: "/service/theft-burglary"
+      url: "/service/67d87dd8586ae9b3babb7d63"
     }
   ],
   MARINE: [
     {
       name: "Cargo Insurance",
       icon: "/icons/cargo-insurance.png",
-      url: "/service/cargo-insurance"
+      url: "/service/67d87dd8586ae9b3babb7d63"
     },
     {
       name: "Ship Insurance",
       icon: "/icons/ship-insurance.png",
-      url: "/service/ship-insurance"
+      url: "/service/67d87dd8586ae9b3babb7d63"
     },
     {
       name: "Marine Liability",
       icon: "/icons/marine-liability.png",
-      url: "/service/marine-liability"
+      url: "/service/67d87dd8586ae9b3babb7d63"
     }
   ],
   "HOME INSURANCE": [
     {
       name: "Home Structure",
       icon: "/icons/home-structure.png",
-      url: "/service/home-structure"
+      url: "/service/67d87dd8586ae9b3babb7d63"
     },
     {
       name: "Contents Insurance",
       icon: "/icons/contents-insurance.png",
-      url: "/service/contents-insurance"
+      url: "/service/67d87dd8586ae9b3babb7d63"
     },
     {
       name: "Personal Liability",
       icon: "/icons/personal-liability.png",
-      url: "/service/personal-liability"
+      url: "/service/67d87dd8586ae9b3babb7d63"
     }
   ]
 };
