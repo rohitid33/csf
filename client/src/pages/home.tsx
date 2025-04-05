@@ -39,7 +39,7 @@ export default function Home() {
       <KnowYourPolicy />
 
       {/* Process Section with enhanced styling */}
-      <div className="relative py-16 bg-gradient-to-b from-white via-blue-50/30 to-white">
+      <div id="how-we-work-section" className="relative py-16 bg-gradient-to-b from-white via-blue-50/30 to-white">
         <div className="container mx-auto px-4 relative">
           <Process />
         </div>

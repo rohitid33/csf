@@ -19,17 +19,17 @@ export default function BottomNav() {
       active: location === "/"
     },
     {
-      label: "All Services",
-      href: "/vakilsutra",
-      icon: <Gavel className="h-6 w-6" />,
-      active: location === "/vakilsutra"
-    },
-    {
       label: "Tickets",
       href: "/tickets",
       icon: <FileText className="h-6 w-6" />,
       active: location === "/tickets",
       badge: unseenTasksCount > 0 ? unseenTasksCount : undefined
+    },
+    {
+      label: "Vakilsutra",
+      href: "/vakilsutra",
+      icon: <Gavel className="h-6 w-6" />,
+      active: location === "/vakilsutra"
     },
     {
       label: "Consult",

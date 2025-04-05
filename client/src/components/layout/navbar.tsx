@@ -102,15 +102,15 @@ export default function Navbar() {
             </div>
           </Link>
           
-          <div className="flex items-center h-10 gap-3">
+          <div className="flex items-center h-10 gap-3 md:gap-3">
             {/* Notification Bell - shown for both logged in and logged out states */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button 
-                  className="relative flex items-center justify-center h-9 w-9 rounded-full bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-colors"
+                  className="relative flex items-center justify-center h-10 w-10 md:h-9 md:w-9 rounded-full bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-colors"
                   onClick={() => !user && setLocation('/auth')}
                 >
-                  <Bell className="h-5 w-5 text-primary" />
+                  <Bell className="h-6 w-6 md:h-5 md:w-5 text-primary" />
                   {user && unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-[10px] text-white flex items-center justify-center">
                       {unreadCount}
@@ -209,8 +209,8 @@ export default function Navbar() {
                 <DropdownMenuTrigger className="focus:outline-none">
                   <div className="flex items-center cursor-pointer">
                     <div className="relative">
-                      <div className="h-9 w-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                        <UserIcon className="h-5 w-5 text-primary" />
+                      <div className="h-10 w-10 md:h-9 md:w-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                        <UserIcon className="h-6 w-6 md:h-5 md:w-5 text-primary" />
                       </div>
                       <div className="absolute -bottom-1 -right-1 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-background"></div>
                     </div>
@@ -233,8 +233,8 @@ export default function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link href="/auth" className="cursor-pointer flex items-center justify-center h-9 w-9 rounded-full bg-primary/10 border border-primary/20">
-                <UserIcon className="h-5 w-5 text-primary" />
+              <Link href="/auth" className="cursor-pointer flex items-center justify-center h-10 w-10 md:h-9 md:w-9 rounded-full bg-primary/10 border border-primary/20">
+                <UserIcon className="h-6 w-6 md:h-5 md:w-5 text-primary" />
               </Link>
             )}
             <Sheet>

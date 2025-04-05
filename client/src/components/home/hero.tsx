@@ -43,6 +43,21 @@ export default function HeroBanner() {
     setCurrentBanner((prev) => (prev - 1 + banners.length) % banners.length);
   };
 
+  // Scroll to specific sections
+  const scrollToCategories = () => {
+    const categoriesSection = document.getElementById('categories-section');
+    if (categoriesSection) {
+      categoriesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const scrollToHowWeWork = () => {
+    const howWeWorkSection = document.getElementById('how-we-work-section');
+    if (howWeWorkSection) {
+      howWeWorkSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   useEffect(() => {
     const timer = setInterval(() => {
       goToNextBanner();
@@ -56,8 +71,8 @@ export default function HeroBanner() {
       <div className="container mx-auto px-3 md:px-6">
         {/* Narrower, taller hero banner with rounded edges */}
         <div className="mx-auto max-w-4xl">
-          <div className="relative overflow-hidden rounded-xl shadow-sm border border-primary">
-            <div className="relative z-10 flex flex-row py-5 px-3 md:py-10 md:px-8">
+          <div className="relative overflow-hidden rounded-xl shadow-sm border border-primary bg-white md:bg-transparent">
+            <div className="relative z-10 flex flex-row py-8 px-3 md:py-10 md:px-8">
               {/* Left section with text content */}
               <div className="w-3/5 md:w-1/2 pr-2 md:pr-4 flex flex-col justify-center">
                 <AnimatePresence mode="wait">
@@ -75,10 +90,19 @@ export default function HeroBanner() {
                       {banners[currentBanner].subtitle}
                     </p>
                     <div className="flex flex-wrap gap-1 md:gap-2">
-                      <Button size="sm" className="bg-primary hover:bg-primary/90 text-white text-xs md:text-sm py-1 h-7 md:h-8">
+                      <Button 
+                        size="sm" 
+                        className="bg-primary hover:bg-primary/90 text-white text-xs md:text-sm py-1 h-7 md:h-8"
+                        onClick={scrollToCategories}
+                      >
                         Get Started
                       </Button>
-                      <Button variant="outline" size="sm" className="border-primary text-primary hover:border-primary hover:bg-primary/5 text-xs md:text-sm py-1 h-7 md:h-8">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-primary text-primary hover:border-primary hover:bg-primary/5 text-xs md:text-sm py-1 h-7 md:h-8"
+                        onClick={scrollToHowWeWork}
+                      >
                         Learn More
                       </Button>
                     </div>
@@ -104,7 +128,7 @@ export default function HeroBanner() {
               
               {/* Right section with customer images */}
               <div className="w-2/5 md:w-1/2 flex justify-center items-center">
-                <div className="relative h-[100px] md:h-[220px] w-[100px] md:w-[220px] border border-primary rounded-full p-2 md:p-3">
+                <div className="relative h-[140px] md:h-[220px] w-[140px] md:w-[220px] border border-primary rounded-full p-2 md:p-3">
                   {/* Main featured customer image */}
                   <AnimatePresence mode="wait">
                     <motion.div
@@ -124,16 +148,16 @@ export default function HeroBanner() {
                   </AnimatePresence>
                   
                   {/* Floating small customer images - mobile and desktop optimized */}
-                  <div className="absolute top-[-5%] right-[-5%] h-7 w-7 md:h-14 md:w-14 rounded-full overflow-hidden border border-primary shadow-sm z-10">
+                  <div className="absolute top-[-5%] right-[-5%] h-9 w-9 md:h-14 md:w-14 rounded-full overflow-hidden border border-primary shadow-sm z-10">
                     <img src={customerImages[0]} alt="Customer" className="h-full w-full object-cover" />
                   </div>
-                  <div className="absolute bottom-[10%] right-[-8%] h-6 w-6 md:h-12 md:w-12 rounded-full overflow-hidden border border-primary shadow-sm z-10">
+                  <div className="absolute bottom-[10%] right-[-8%] h-8 w-8 md:h-12 md:w-12 rounded-full overflow-hidden border border-primary shadow-sm z-10">
                     <img src={customerImages[1]} alt="Customer" className="h-full w-full object-cover" />
                   </div>
-                  <div className="absolute bottom-[-5%] left-[25%] h-6 w-6 md:h-16 md:w-16 rounded-full overflow-hidden border border-primary shadow-sm z-10">
+                  <div className="absolute bottom-[-5%] left-[25%] h-10 w-10 md:h-16 md:w-16 rounded-full overflow-hidden border border-primary shadow-sm z-10">
                     <img src={customerImages[2]} alt="Customer" className="h-full w-full object-cover" />
                   </div>
-                  <div className="absolute top-[15%] left-[-10%] h-5 w-5 md:h-13 md:w-13 rounded-full overflow-hidden border border-primary shadow-sm z-10">
+                  <div className="absolute top-[15%] left-[-10%] h-8 w-8 md:h-13 md:w-13 rounded-full overflow-hidden border border-primary shadow-sm z-10">
                     <img src={customerImages[3]} alt="Customer" className="h-full w-full object-cover" />
                   </div>
                 </div>

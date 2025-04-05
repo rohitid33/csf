@@ -1,0 +1,94 @@
+# CLAIMSUTRA PROJECT STRUCTURE
+
+## Root Directory
+/v4-improved homepage layout/
+- `package.json` - Main project configuration, dependencies, and scripts
+- `package-lock.json` - Auto-generated file for npm dependency versioning
+- `.gitignore` - Specifies files to be ignored by Git
+- `README.md` - Project overview and documentation
+- `.env` - Environment variables (should be in .gitignore)
+- `.eslintrc.js` - ESLint configuration for code quality
+- `tsconfig.json` - TypeScript configuration (if applicable)
+
+## Source Code
+/src/
+- `index.js` - Application entry point
+- `App.js` - Main application component
+
+## Components
+/src/components/
+- `/common/` - Reusable UI components following Single Responsibility Principle
+  - `Button.js` - Custom button component
+  - `Input.js` - Custom input field component
+  - `Modal.js` - Reusable modal component
+  - `Card.js` - Card container component
+  - `Loading.js` - Loading spinner/indicator
+- `/layout/` - Layout components
+  - `Header.js` - Application header component
+  - `Footer.js` - Application footer component
+  - `Sidebar.js` - Sidebar navigation component
+  - `MainContent.js` - Main content wrapper
+
+## Homepage Components
+/src/components/homepage/
+- `Hero.js` - Hero section for homepage
+- `Features.js` - Features section showcasing key benefits
+- `Testimonials.js` - Customer testimonials section
+- `CTASection.js` - Call to action section
+- `InfoCards.js` - Information cards section
+
+## Pages
+/src/pages/
+- `HomePage.js` - Improved homepage implementation
+- `ClaimsPage.js` - Insurance claims page
+- `ProfilePage.js` - User profile page
+- `LoginPage.js` - User login page
+- `RegisterPage.js` - User registration page
+
+## Services
+/src/services/
+- `api.js` - API service following Dependency Inversion Principle
+- `auth.js` - Authentication service
+- `claims.js` - Claims-related service
+- `storage.js` - Local storage service
+
+## Utilities
+/src/utils/
+- `validators.js` - Input validation helpers
+- `formatters.js` - Data formatting utilities
+- `constants.js` - Application constants
+- `helpers.js` - Common helper functions
+
+## Assets
+/public/assets/
+- `/images/` - Image files
+- `/icons/` - Icon files
+- `/fonts/` - Custom fonts
+
+## Styles
+/src/styles/
+- `global.css` - Global CSS styles
+- `variables.css` - CSS variables for theming
+- `components/` - Component-specific styles
+  - `button.css`
+  - `form.css`
+  - `modal.css`
+
+## Documentation
+/guide/
+- `STRUCTURE` - This file, documenting the project structure
+- `project-documentation.md` - Detailed project documentation
+- `api-docs.md` - API documentation
+- `dev-guide.md` - Developer guide and best practices
+- `user-guide.md` - End-user documentation
+
+## Configuration
+/config/
+- `webpack.config.js` - Webpack configuration
+- `routes.js` - Application route definitions
+
+## Tests
+/tests/
+- `/unit/` - Unit tests for components and services
+- `/integration/` - Integration tests
+- `/e2e/` - End-to-end tests
