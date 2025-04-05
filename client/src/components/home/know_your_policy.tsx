@@ -12,22 +12,22 @@ interface Banner {
 const banners: Banner[] = [
   {
     id: "1",
-    title: "Insurance Claims",
-    description: "Get expert help with your insurance claims",
+    title: "Claim Filing Support",
+    description: "Get expert help in filing your insurance claims to ensure accuracy, complete paperwork, and avoid unnecessary rejections.",
     buttonText: "File a Claim",
     redirectUrl: "/service/file-claim"
   },
   {
     id: "2",
-    title: "Policy Analysis",
-    description: "Understand your policy better",
+    title: "Policy Review & Analysis",
+    description: "Our legal and insurance experts break down your policy, highlighting gaps, risks, and share personalized do’s & don’ts.",
     buttonText: "Analyze Policy",
     redirectUrl: "/service/policy-analysis"
   },
   {
     id: "3",
-    title: "Expert Consultation",
-    description: "Talk to our insurance experts",
+    title: "Report Insurance Fraud",
+    description: "Been misled by an agent or insurer? Let us help you take the right legal steps to report and address the fraud.",
     buttonText: "Consult Now",
     redirectUrl: "/service/consult"
   }
@@ -70,16 +70,26 @@ export default function KnowYourPolicy() {
   };
 
   return (
-    <section className="py-4 md:py-6 bg-white">
+    <section className="py-4 md:py-12 bg-white">
       <div className="container mx-auto px-4">
+        {/* Section Title and Description */}
+        <div className="text-center mb-8 md:mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-blue-950 mb-3">
+            Claim Assist Hub
+          </h2>
+          <p className="text-gray-600 max-w-3xl mx-auto text-base md:text-lg">
+            Helping you at every stage of your insurance journey – from filing to analysis to raising red flags.
+          </p>
+        </div>
+        
         <div 
           ref={scrollContainerRef}
-          className="flex gap-3 md:gap-4 overflow-x-auto md:overflow-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          className="flex gap-3 md:gap-4 overflow-x-auto md:overflow-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-1"
         >
           {banners.map((banner) => (
             <div 
               key={banner.id}
-              className="relative w-[calc(100vw-2rem)] md:w-[calc(33.333%-1rem)] flex-shrink-0 h-[150px] md:h-[180px] rounded-xl md:rounded-2xl overflow-hidden group cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-300"
+              className="relative w-[80%] md:w-[calc(33.333%-1rem)] flex-shrink-0 h-[150px] md:h-[180px] rounded-xl md:rounded-2xl overflow-hidden group cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-300"
               onClick={() => handleClick(banner.redirectUrl)}
             >
               {/* Background Image */}
