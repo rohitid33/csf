@@ -23,22 +23,28 @@ interface MigrationStatus {
 
 const testimonials = [
   {
-    name: "Sarah Johnson",
+    name: "Devika Mishra",
     role: "Life Insurance Claim",
     content: "Claimsutra helped me get my life insurance claim settled within weeks.",
     image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644",
   },
   {
-    name: "Michael Chen",
+    name: "Freya Goyal",
     role: "Health Insurance Dispute",
     content: "Professional team that guided me through the entire resolution process.",
     image: "https://images.unsplash.com/photo-1516321497487-e288fb19713f",
   },
   {
-    name: "Emily Brown",
+    name: "Somya Mathur",
     role: "Policy Review",
     content: "Their expert analysis saved me from a potential claim rejection.",
     image: "https://images.unsplash.com/photo-1552664730-d307ca884978",
+  },
+  {
+    name: "Aditi Bajaj",
+    role: "Motor Insurance Claim",
+    content: "Quick resolution to my car insurance claim. Highly recommended!",
+    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2",
   },
 ];
 

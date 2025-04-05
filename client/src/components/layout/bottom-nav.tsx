@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/use-auth";
 import { useTaskNotifications } from "@/hooks/use-task-notifications";
-import { Home, MessageSquare, Gavel, FileText } from "lucide-react";
+import { Home, MessageSquare, FileText } from "lucide-react";
 
 export default function BottomNav() {
   const [location] = useLocation();
@@ -11,6 +10,7 @@ export default function BottomNav() {
 
   console.log('BottomNav rendering:', { location, unseenTasksCount });
 
+  // Only include the three visible tabs
   const navItems = [
     {
       label: "Home",
@@ -26,12 +26,6 @@ export default function BottomNav() {
       badge: unseenTasksCount > 0 ? unseenTasksCount : undefined
     },
     {
-      label: "Vakilsutra",
-      href: "/vakilsutra",
-      icon: <Gavel className="h-6 w-6" />,
-      active: location === "/vakilsutra"
-    },
-    {
       label: "Consult",
       href: "/consult",
       icon: <MessageSquare className="h-6 w-6" />,
@@ -41,7 +35,7 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#002B4E] border-t border-[#002B4E]">
-      <div className="h-20 grid grid-cols-4 text-white">
+      <div className="h-20 grid grid-cols-3 text-white">
         {navItems.map((item) => (
           <Link
             key={item.href}
