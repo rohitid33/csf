@@ -54,6 +54,7 @@ export default function Navbar() {
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const [services, setServices] = useState<ServiceData[]>([]);
   const sheetCloseRef = useRef<HTMLButtonElement>(null);
+  const { notifications, markAllAsRead, unreadCount, removeNotification } = useNotificationStore();
   
   useEffect(() => {
     const fetchServices = async () => {
@@ -111,9 +112,11 @@ export default function Navbar() {
                       className="relative flex items-center justify-center h-9 w-9 rounded-full bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-colors"
                     >
                       <Bell className="h-5 w-5 text-primary" />
-                      <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-[10px] text-white flex items-center justify-center">
-                        3
-                      </span>
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-[10px] text-white flex items-center justify-center">
+                          {unreadCount}
+                        </span>
+                      )}
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-80 max-h-[400px] overflow-y-auto">
@@ -123,6 +126,7 @@ export default function Navbar() {
                         variant="ghost" 
                         size="sm" 
                         className="h-auto py-1 px-2 text-xs"
+                        onClick={() => markAllAsRead()}
                       >
                         Mark all read
                       </Button>
@@ -130,114 +134,71 @@ export default function Navbar() {
                     <DropdownMenuSeparator />
                     
                     {/* Notification items */}
-                    <DropdownMenuItem className="flex flex-col items-start p-4 cursor-pointer bg-muted/50">
-                      <div className="flex items-start justify-between w-full gap-2">
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">
-                            A task has been updated
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            2 minutes ago
-                          </p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-muted-foreground hover:text-foreground -mt-1 -mr-2"
+                    {notifications.length > 0 ? (
+                      notifications.map((notification) => (
+                        <DropdownMenuItem 
+                          key={notification.id} 
+                          className={`flex flex-col items-start p-4 cursor-pointer ${!notification.read ? 'bg-muted/50' : ''}`}
                         >
-                          <span className="sr-only">Dismiss</span>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-4 w-4"
-                          >
-                            <path d="M18 6 6 18" />
-                            <path d="m6 6 12 12" />
-                          </svg>
-                        </Button>
+                          <div className="flex items-start justify-between w-full gap-2">
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">
+                                {notification.message}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {new Date(notification.createdAt).toLocaleString()}
+                              </p>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 text-muted-foreground hover:text-foreground -mt-1 -mr-2"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeNotification(notification.id);
+                              }}
+                            >
+                              <span className="sr-only">Dismiss</span>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="h-4 w-4"
+                              >
+                                <path d="M18 6 6 18" />
+                                <path d="m6 6 12 12" />
+                              </svg>
+                            </Button>
+                          </div>
+                        </DropdownMenuItem>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-sm text-muted-foreground">
+                        No notifications
                       </div>
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuItem className="flex flex-col items-start p-4 cursor-pointer">
-                      <div className="flex items-start justify-between w-full gap-2">
-                        <div className="flex-1">
-                          <p className="text-sm">
-                            Your ticket has been updated
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Yesterday at 12:40 PM
-                          </p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-muted-foreground hover:text-foreground -mt-1 -mr-2"
-                        >
-                          <span className="sr-only">Dismiss</span>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-4 w-4"
-                          >
-                            <path d="M18 6 6 18" />
-                            <path d="m6 6 12 12" />
-                          </svg>
-                        </Button>
-                      </div>
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuItem className="flex flex-col items-start p-4 cursor-pointer">
-                      <div className="flex items-start justify-between w-full gap-2">
-                        <div className="flex-1">
-                          <p className="text-sm">
-                            New claim available
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Apr 3, 2025 at 10:30 AM
-                          </p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-muted-foreground hover:text-foreground -mt-1 -mr-2"
-                        >
-                          <span className="sr-only">Dismiss</span>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-4 w-4"
-                          >
-                            <path d="M18 6 6 18" />
-                            <path d="m6 6 12 12" />
-                          </svg>
-                        </Button>
-                      </div>
-                    </DropdownMenuItem>
+                    )}
                     
                     {/* Footer section */}
                     <div className="text-xs text-center text-muted-foreground py-2 px-4 border-t">
                       Notifications will appear here when tasks are updated
+                    </div>
+                    <div className="text-xs text-center text-muted-foreground py-2 px-4 border-t">
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="text-primary text-xs font-medium w-full"
+                        onClick={() => {
+                          setLocation('/notifications');
+                        }}
+                      >
+                        Show All Notifications
+                      </Button>
                     </div>
                   </DropdownMenuContent>
                 </DropdownMenu>

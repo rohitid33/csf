@@ -175,6 +175,14 @@ function AppContent() {
                 </React.Suspense>
               )}
             </Route>
+            <ProtectedRoute 
+              path="/notifications" 
+              component={() => (
+                <React.Suspense fallback={null}>
+                  {React.createElement(React.lazy(() => import("@/pages/notifications")))}
+                </React.Suspense>
+              )} 
+            />
             <Route path="/services-directory">
               {() => (
                 <React.Suspense fallback={null}>
