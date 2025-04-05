@@ -2,96 +2,163 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // Banner content
 const banners = [
   {
     title: "Expert Insurance Support",
     subtitle: "We help you navigate through complex insurance claims",
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1920&q=100"
+    customerImage: "/glücklicher-junger-indischer-mann-und-frau-die-im-park-schläge-zeigen-modified.png"
   },
   {
     title: "Fast Claim Resolution",
     subtitle: "Quick and efficient resolution for your insurance disputes",
-    image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=1920&q=100"
+    customerImage: "/happyfarmer-modified.png"
   },
   {
     title: "Professional Assistance",
     subtitle: "Expert team ready to support your insurance needs",
-    image: "https://images.unsplash.com/photo-1521791055366-0d553872125f?auto=format&fit=crop&w=1920&q=100"
+    customerImage: "/happywoman_cir.png"
   }
+];
+
+// Customer testimonial images for the floating animation
+const customerImages = [
+  "/glücklicher-junger-indischer-mann-und-frau-die-im-park-schläge-zeigen-modified.png",
+  "/happy_cust.jpeg",
+  "/happyfarmer-modified.png",
+  "/junger-indischer-bauer-mit-seinem-neuen-motorrad-modified.png"
 ];
 
 export default function HeroBanner() {
   const [currentBanner, setCurrentBanner] = useState(0);
-  const currentBannerContent = banners[currentBanner];
   
-  // Use the banner image from public directory
-  const bannerImage = "/banner.jpg";
+  // Go to next or previous banner
+  const goToNextBanner = () => {
+    setCurrentBanner((prev) => (prev + 1) % banners.length);
+  };
+  
+  const goToPrevBanner = () => {
+    setCurrentBanner((prev) => (prev - 1 + banners.length) % banners.length);
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentBanner((prev) => (prev + 1) % banners.length);
+      goToNextBanner();
     }, 5000);
 
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <div className="px-4 py-2 md:px-4 md:py-4">
-      <div className="container mx-auto">
-        <div className="flex justify-center">
-          <div className="
-            relative h-[20vh] md:h-[250px] rounded-2xl overflow-hidden w-full md:w-[calc(33.333%-1rem)]
-            shadow-[0_8px_30px_rgb(0,0,0,0.12)]
-            border border-white/10
-            bg-gradient-to-r from-primary/5 via-background to-primary/5
-          ">
-            {/* Fixed background image */}
-            <div 
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ 
-                backgroundImage: `url("${bannerImage}")`,
-                backgroundPosition: "center 40%", 
-                filter: 'brightness(0.85)'
-              }}
-            />
-            
-            {/* Stylish overlay gradient */}
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 mix-blend-overlay" />
-            
-            {/* Content container */}
-            <div className="relative h-full flex flex-col justify-center">
-              {/* Text content - changes with timer */}
-              <div className="px-4">
-                <div className="max-w-2xl text-white">
+    <div className="w-full py-4 md:py-8">
+      <div className="container mx-auto px-3 md:px-6">
+        {/* Narrower, taller hero banner with rounded edges */}
+        <div className="mx-auto max-w-4xl">
+          <div className="relative overflow-hidden rounded-xl shadow-sm border border-primary">
+            <div className="relative z-10 flex flex-row py-5 px-3 md:py-10 md:px-8">
+              {/* Left section with text content */}
+              <div className="w-3/5 md:w-1/2 pr-2 md:pr-4 flex flex-col justify-center">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={`banner-content-${currentBanner}`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <h1 className="text-base md:text-xl lg:text-2xl font-bold mb-1 md:mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80">
+                      {banners[currentBanner].title}
+                    </h1>
+                    <p className="text-xs md:text-sm text-foreground/80 mb-2 md:mb-4 max-w-md line-clamp-3 md:line-clamp-none">
+                      {banners[currentBanner].subtitle}
+                    </p>
+                    <div className="flex flex-wrap gap-1 md:gap-2">
+                      <Button size="sm" className="bg-primary hover:bg-primary/90 text-white text-xs md:text-sm py-1 h-7 md:h-8">
+                        Get Started
+                      </Button>
+                      <Button variant="outline" size="sm" className="border-primary text-primary hover:border-primary hover:bg-primary/5 text-xs md:text-sm py-1 h-7 md:h-8">
+                        Learn More
+                      </Button>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+                
+                {/* Indicators */}
+                <div className="flex items-center gap-1 md:gap-1.5 mt-3 md:mt-6">
+                  {banners.map((_, index) => (
+                    <button
+                      key={`indicator-${index}`}
+                      onClick={() => setCurrentBanner(index)}
+                      aria-label={`Go to slide ${index + 1}`}
+                      className={`h-1 transition-all ${
+                        currentBanner === index 
+                          ? "bg-primary w-3 md:w-4" 
+                          : "bg-primary/30 w-1 md:w-1.5 hover:bg-primary/50"
+                      } rounded-full`}
+                    />
+                  ))}
+                </div>
+              </div>
+              
+              {/* Right section with customer images */}
+              <div className="w-2/5 md:w-1/2 flex justify-center items-center">
+                <div className="relative h-[100px] md:h-[220px] w-[100px] md:w-[220px] border border-primary rounded-full p-2 md:p-3">
+                  {/* Main featured customer image */}
                   <AnimatePresence mode="wait">
                     <motion.div
-                      key={`banner-${currentBanner}-text`}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
+                      key={`featured-customer-${currentBanner}`}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
                       transition={{ duration: 0.5 }}
-                      className="p-3 md:p-4 lg:p-6"
+                      className="h-full w-full rounded-full overflow-hidden border border-primary shadow-sm z-20 relative"
                     >
-                      <div>
-                        <div className="mb-1 md:mb-2">
-                          <h1 className="text-xl md:text-3xl lg:text-4xl font-bold text-white/90">
-                            {currentBannerContent.title}
-                          </h1>
-                        </div>
-                        <p className="text-sm md:text-base lg:text-lg text-white/75">
-                          {currentBannerContent.subtitle}
-                        </p>
-                      </div>
+                      <img 
+                        src={banners[currentBanner].customerImage} 
+                        alt="Happy customer" 
+                        className="h-full w-full object-cover"
+                      />
                     </motion.div>
                   </AnimatePresence>
+                  
+                  {/* Floating small customer images - mobile and desktop optimized */}
+                  <div className="absolute top-[-5%] right-[-5%] h-7 w-7 md:h-14 md:w-14 rounded-full overflow-hidden border border-primary shadow-sm z-10">
+                    <img src={customerImages[0]} alt="Customer" className="h-full w-full object-cover" />
+                  </div>
+                  <div className="absolute bottom-[10%] right-[-8%] h-6 w-6 md:h-12 md:w-12 rounded-full overflow-hidden border border-primary shadow-sm z-10">
+                    <img src={customerImages[1]} alt="Customer" className="h-full w-full object-cover" />
+                  </div>
+                  <div className="absolute bottom-[-5%] left-[25%] h-6 w-6 md:h-16 md:w-16 rounded-full overflow-hidden border border-primary shadow-sm z-10">
+                    <img src={customerImages[2]} alt="Customer" className="h-full w-full object-cover" />
+                  </div>
+                  <div className="absolute top-[15%] left-[-10%] h-5 w-5 md:h-13 md:w-13 rounded-full overflow-hidden border border-primary shadow-sm z-10">
+                    <img src={customerImages[3]} alt="Customer" className="h-full w-full object-cover" />
+                  </div>
                 </div>
               </div>
             </div>
-
-            {/* Bottom gradient fade */}
-            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/20 to-transparent" />
+            
+            {/* Navigation arrows */}
+            <div className="absolute top-1/2 left-1 z-10 transform -translate-y-1/2 md:left-2">
+              <button 
+                onClick={goToPrevBanner}
+                className="bg-primary/10 hover:bg-primary/20 p-1 rounded-full text-primary"
+                aria-label="Previous slide"
+              >
+                <ChevronLeft size={10} className="md:w-3 md:h-3 lg:w-4 lg:h-4" />
+              </button>
+            </div>
+            <div className="absolute top-1/2 right-1 z-10 transform -translate-y-1/2 md:right-2">
+              <button 
+                onClick={goToNextBanner}
+                className="bg-primary/10 hover:bg-primary/20 p-1 rounded-full text-primary"
+                aria-label="Next slide"
+              >
+                <ChevronRight size={10} className="md:w-3 md:h-3 lg:w-4 lg:h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

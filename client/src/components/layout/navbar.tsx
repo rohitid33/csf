@@ -103,134 +103,135 @@ export default function Navbar() {
           </Link>
           
           <div className="flex items-center h-10 gap-3">
-            {user ? (
-              <>
-                {/* Notification Bell with Dropdown */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button 
-                      className="relative flex items-center justify-center h-9 w-9 rounded-full bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-colors"
+            {/* Notification Bell - shown for both logged in and logged out states */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button 
+                  className="relative flex items-center justify-center h-9 w-9 rounded-full bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-colors"
+                  onClick={() => !user && setLocation('/auth')}
+                >
+                  <Bell className="h-5 w-5 text-primary" />
+                  {user && unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-[10px] text-white flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+              </DropdownMenuTrigger>
+              {user ? (
+                <DropdownMenuContent align="end" className="w-80 max-h-[400px] overflow-y-auto">
+                  <DropdownMenuLabel className="flex justify-between items-center">
+                    <span>Notifications</span>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-auto py-1 px-2 text-xs"
+                      onClick={() => markAllAsRead()}
                     >
-                      <Bell className="h-5 w-5 text-primary" />
-                      {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-[10px] text-white flex items-center justify-center">
-                          {unreadCount}
-                        </span>
-                      )}
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-80 max-h-[400px] overflow-y-auto">
-                    <DropdownMenuLabel className="flex justify-between items-center">
-                      <span>Notifications</span>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-auto py-1 px-2 text-xs"
-                        onClick={() => markAllAsRead()}
+                      Mark all read
+                    </Button>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  
+                  {/* Notification items */}
+                  {notifications.length > 0 ? (
+                    notifications.map((notification) => (
+                      <DropdownMenuItem 
+                        key={notification.id} 
+                        className={`flex flex-col items-start p-4 cursor-pointer ${!notification.read ? 'bg-muted/50' : ''}`}
                       >
-                        Mark all read
-                      </Button>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    
-                    {/* Notification items */}
-                    {notifications.length > 0 ? (
-                      notifications.map((notification) => (
-                        <DropdownMenuItem 
-                          key={notification.id} 
-                          className={`flex flex-col items-start p-4 cursor-pointer ${!notification.read ? 'bg-muted/50' : ''}`}
-                        >
-                          <div className="flex items-start justify-between w-full gap-2">
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">
-                                {notification.message}
-                              </p>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {new Date(notification.createdAt).toLocaleString()}
-                              </p>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6 text-muted-foreground hover:text-foreground -mt-1 -mr-2"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                removeNotification(notification.id);
-                              }}
-                            >
-                              <span className="sr-only">Dismiss</span>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="h-4 w-4"
-                              >
-                                <path d="M18 6 6 18" />
-                                <path d="m6 6 12 12" />
-                              </svg>
-                            </Button>
+                        <div className="flex items-start justify-between w-full gap-2">
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">
+                              {notification.message}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {new Date(notification.createdAt).toLocaleString()}
+                            </p>
                           </div>
-                        </DropdownMenuItem>
-                      ))
-                    ) : (
-                      <div className="p-4 text-center text-sm text-muted-foreground">
-                        No notifications
-                      </div>
-                    )}
-                    
-                    {/* Footer section */}
-                    <div className="text-xs text-center text-muted-foreground py-2 px-4 border-t">
-                      Notifications will appear here when tasks are updated
-                    </div>
-                    <div className="text-xs text-center text-muted-foreground py-2 px-4 border-t">
-                      <Button
-                        variant="link"
-                        size="sm"
-                        className="text-primary text-xs font-medium w-full"
-                        onClick={() => {
-                          setLocation('/notifications');
-                        }}
-                      >
-                        Show All Notifications
-                      </Button>
-                    </div>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="focus:outline-none">
-                    <div className="flex items-center cursor-pointer">
-                      <div className="relative">
-                        <div className="h-9 w-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                          <UserIcon className="h-5 w-5 text-primary" />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 text-muted-foreground hover:text-foreground -mt-1 -mr-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeNotification(notification.id);
+                            }}
+                          >
+                            <span className="sr-only">Dismiss</span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="h-4 w-4"
+                            >
+                              <path d="M18 6 6 18" />
+                              <path d="m6 6 12 12" />
+                            </svg>
+                          </Button>
                         </div>
-                        <div className="absolute -bottom-1 -right-1 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-background"></div>
-                      </div>
+                      </DropdownMenuItem>
+                    ))
+                  ) : (
+                    <div className="p-4 text-center text-sm text-muted-foreground">
+                      No notifications
                     </div>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuLabel>
-                      <div className="flex flex-col">
-                        <span className="font-medium">
-                          {/* Format phone number with spaces */}
-                          {user.username.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3')}
-                        </span>
+                  )}
+                  
+                  {/* Footer section */}
+                  <div className="text-xs text-center text-muted-foreground py-2 px-4 border-t">
+                    Notifications will appear here when tasks are updated
+                  </div>
+                  <div className="text-xs text-center text-muted-foreground py-2 px-4 border-t">
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className="text-primary text-xs font-medium w-full"
+                      onClick={() => {
+                        setLocation('/notifications');
+                      }}
+                    >
+                      Show All Notifications
+                    </Button>
+                  </div>
+                </DropdownMenuContent>
+              ) : null}
+            </DropdownMenu>
+
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="focus:outline-none">
+                  <div className="flex items-center cursor-pointer">
+                    <div className="relative">
+                      <div className="h-9 w-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                        <UserIcon className="h-5 w-5 text-primary" />
                       </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </>
+                      <div className="absolute -bottom-1 -right-1 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-background"></div>
+                    </div>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col">
+                      <span className="font-medium">
+                        {/* Format phone number with spaces */}
+                        {user.username.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3')}
+                      </span>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <Link href="/auth" className="cursor-pointer flex items-center justify-center h-9 w-9 rounded-full bg-primary/10 border border-primary/20">
                 <UserIcon className="h-5 w-5 text-primary" />

@@ -1,13 +1,12 @@
 import React from "react";
 import Hero from "@/components/home/hero";
-import KnowYourPolicy from "@/components/home/know-your-policy";
 import Process from "@/components/home/process";
 import Testimonials from "@/components/home/testimonials";
 import ClaimBanners from "@/components/home/claim-banners";
 import PartnerCareers from "@/components/home/partner-careers";
 import CTA from "@/components/home/cta";
 import SelectCategory from "@/components/home/select-category";
-import AdCampaign from "@/components/home/ad-campaign";
+import KnowYourPolicy from "@/components/home/know_your_policy";
 
 export default function Home() {
   return (
@@ -36,10 +35,8 @@ export default function Home() {
           <SelectCategory />
         </div>
       </div>
-
-      <KnowYourPolicy />
       
-      <AdCampaign />
+      <KnowYourPolicy />
 
       {/* Process Section with enhanced styling */}
       <div className="relative py-16 bg-gradient-to-b from-white via-blue-50/30 to-white">
